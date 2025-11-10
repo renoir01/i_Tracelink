@@ -1,0 +1,72 @@
+@startuml Deployment Diagram - iTraceLink Environments
+
+title iTraceLink Deployment Architecture
+
+skinparam backgroundColor #FEFEFE
+
+node "Mobile Devices" as MOBILE {
+    component "Android Phones" as ANDROID
+    component "iOS Devices" as IOS
+}
+
+node "Development Environment" as DEV {
+    database "Firebase Dev Project" as DEV_FB {
+        component "Dev Firestore" as DEV_FS
+        component "Dev Auth" as DEV_AUTH
+        component "Dev Storage" as DEV_STR
+    }
+
+    component "Africa's Talking\nDev Account" as DEV_SMS
+    component "Local Emulator" as EMULATOR
+}
+
+node "Staging Environment" as STAGING {
+    database "Firebase Staging Project" as STG_FB {
+        component "Staging Firestore" as STG_FS
+        component "Staging Auth" as STG_AUTH
+        component "Staging Storage" as STG_STR
+    }
+
+    component "Africa's Talking\nTest Account" as STG_SMS
+    component "Test Devices" as TEST_DEV
+}
+
+node "Production Environment" as PROD {
+    database "Firebase Prod Project" as PROD_FB {
+        component "Prod Firestore" as PROD_FS
+        component "Prod Auth" as PROD_AUTH
+        component "Prod Storage" as PROD_STR
+        component "Prod Functions" as PROD_FUNC
+    }
+
+    component "Africa's Talking\nProd Account" as PROD_SMS
+    component "Google Play Store" as PLAY_STORE
+    component "Crashlytics" as CRASH
+}
+
+node "External Services" as EXT {
+    component "Google Maps API" as MAPS
+    component "MTN/Airtel Money APIs" as MMONEY
+    component "RAB Certification API" as RAB
+}
+
+MOBILE --> DEV : Development Testing
+MOBILE --> STAGING : QA Testing
+MOBILE --> PROD : Production Usage
+
+DEV --> EXT : API Integration Testing
+STAGING --> EXT : Integration Testing
+PROD --> EXT : Live Operations
+
+DEV_FB --> DEV_SMS : SMS Notifications
+STG_FB --> STG_SMS : SMS Notifications
+PROD_FB --> PROD_SMS : SMS Notifications
+
+note right of DEV : Local development\nFirebase emulator\nTest data
+note right of STAGING : Pre-production\nLimited users\nReal APIs
+note right of PROD : Live system\nFull monitoring\nBackup systems
+
+note over CRASH : Error tracking\nPerformance monitoring
+note over PLAY_STORE : App distribution\nVersion management
+
+@enduml

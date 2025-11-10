@@ -1,0 +1,66 @@
+@startuml Traceability Verification Sequence Diagram
+
+title Traceability Verification Process
+
+actor "Institution User" as Institution
+participant "iTraceLink App" as App
+participant "QR Scanner" as QR
+participant "Firestore" as DB
+participant "PDF Generator" as PDF
+
+== QR Code Scanning ==
+Institution -> App: Open traceability scanner
+App -> QR: Initialize camera
+QR -> App: Camera ready
+Institution -> App: Scan QR code on product
+QR -> App: Decode QR data
+App -> DB: Validate QR code exists
+
+alt Valid QR Code
+    DB --> App: QR code found
+    App -> DB: Retrieve batch information
+    DB --> App: Return batch data
+else Invalid QR Code
+    DB --> App: QR code not found
+    App -> Institution: Show error message
+end
+
+== Supply Chain Verification ==
+App -> DB: Get seed producer data
+DB --> App: Return producer info
+App -> DB: Get agro-dealer data
+DB --> App: Return dealer info
+App -> DB: Get farmer data
+DB --> App: Return farmer info
+App -> DB: Get aggregator data
+DB --> App: Return aggregator info
+
+== Chain Validation ==
+App -> App: Validate chain integrity
+note right: Check all links exist\nVerify iron content levels\nConfirm certification status
+
+alt Chain Valid
+    App -> Institution: Display complete traceability
+    App -> PDF: Generate verification certificate
+    PDF -> App: Certificate created
+    App -> Institution: Show certificate download option
+else Chain Invalid
+    App -> Institution: Show verification failure
+    App -> Institution: Display missing links
+end
+
+== Certificate Generation ==
+Institution -> App: Request PDF certificate
+App -> PDF: Generate detailed certificate
+PDF -> App: Return PDF file
+App -> Institution: Download/save certificate
+
+note over Institution, PDF
+    Certificate includes:
+    - Complete supply chain
+    - Iron content verification
+    - Quality certifications
+    - Timestamps & signatures
+end note
+
+@enduml

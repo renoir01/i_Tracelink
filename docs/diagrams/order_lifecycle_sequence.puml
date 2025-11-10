@@ -1,0 +1,59 @@
+@startuml Order Lifecycle Sequence Diagram
+
+title Order Lifecycle - Farmer to Institution
+
+actor Farmer
+participant "iTraceLink App" as App
+participant "Firestore" as DB
+participant Aggregator
+participant Institution
+participant "SMS Service" as SMS
+
+== Order Creation ==
+Farmer -> App: Select beans for sale
+App -> DB: Check farmer's batch availability
+DB --> App: Return available batches
+App -> Farmer: Display batch details & pricing
+Farmer -> App: Confirm order details
+App -> DB: Create order document
+DB --> App: Order created successfully
+App -> SMS: Send order confirmation to farmer
+
+== Order Discovery ==
+App -> DB: Query available orders by location
+DB --> App: Return nearby orders
+Aggregator -> App: Browse available orders
+App -> Aggregator: Display order details
+Aggregator -> App: Express interest in order
+
+== Order Acceptance ==
+Aggregator -> App: Accept order
+App -> DB: Update order status to "accepted"
+DB --> App: Status updated
+App -> SMS: Notify farmer of acceptance
+App -> SMS: Notify aggregator of confirmation
+
+== Payment Processing ==
+Aggregator -> App: Initiate payment
+App -> DB: Create payment record
+App -> SMS: Send payment instructions
+note right: Mobile money integration
+Aggregator -> App: Confirm payment completion
+App -> DB: Update payment status
+DB --> App: Payment confirmed
+
+== Delivery & Verification ==
+Aggregator -> App: Mark order as delivered
+App -> DB: Update order status
+App -> SMS: Notify institution of delivery
+Institution -> App: Verify delivery & quality
+App -> DB: Update final order status
+App -> SMS: Send completion notifications
+
+== Traceability Chain ==
+Institution -> App: Request traceability info
+App -> DB: Query batch & seed data
+DB --> App: Return supply chain data
+App -> Institution: Display traceability chain
+
+@enduml

@@ -1,0 +1,120 @@
+@startuml Database Schema - iTraceLink Firestore Collections
+
+title iTraceLink Database Schema (Firestore)
+
+entity "Users" as users {
+    * id : String (Document ID)
+    --
+    * userType : String
+    * name : String
+    * email : String
+    * phone : String
+    * language : String
+    isVerified : Boolean
+    location : Map
+    createdAt : Timestamp
+}
+
+entity "Orders" as orders {
+    * id : String (Document ID)
+    --
+    * orderType : String
+    * buyerId : String (FK → users)
+    * sellerId : String (FK → users)
+    * quantity : Number
+    * pricePerKg : Number
+    * totalAmount : Number
+    * status : String
+    * requestDate : Timestamp
+    * expectedDeliveryDate : Timestamp
+    deliveryLocation : Map
+    paymentStatus : String
+    seedVariety : String
+    qualityGrade : String
+}
+
+entity "Batches" as batches {
+    * id : String (Document ID)
+    --
+    * farmerId : String (FK → users)
+    * seedBatchId : String (FK → seed_batches)
+    * cropType : String
+    * plantingDate : Timestamp
+    * expectedHarvestDate : Timestamp
+    * actualHarvestDate : Timestamp
+    * quantityPlanted : Number
+    * quantityHarvested : Number
+    * location : Map
+    ironContent : Number
+    status : String
+}
+
+entity "Seed Batches" as seed_batches {
+    * id : String (Document ID)
+    --
+    * producerId : String (FK → users)
+    * dealerId : String (FK → users)
+    * variety : String
+    * productionDate : Timestamp
+    * quantity : Number
+    * ironContent : Number
+    * expiryDate : Timestamp
+    * distributionDate : Timestamp
+}
+
+entity "Payments" as payments {
+    * id : String (Document ID)
+    --
+    * orderId : String (FK → orders)
+    * payerId : String (FK → users)
+    * payeeId : String (FK → users)
+    * amount : Number
+    * currency : String
+    * method : String
+    * status : String
+    * transactionId : String
+    * timestamp : Timestamp
+}
+
+entity "Notifications" as notifications {
+    * id : String (Document ID)
+    --
+    * userId : String (FK → users)
+    * type : String
+    * title : String
+    * message : String
+    * orderId : String (FK → orders)
+    * isRead : Boolean
+    * timestamp : Timestamp
+}
+
+entity "Inventory" as inventory {
+    * id : String (Document ID)
+    --
+    * userId : String (FK → users)
+    * itemType : String
+    * itemName : String
+    * quantity : Number
+    * unit : String
+    * location : Map
+    * lastUpdated : Timestamp
+}
+
+users ||--o{ orders : buyerId/sellerId
+users ||--o{ batches : farmerId
+users ||--o{ seed_batches : producerId/dealerId
+users ||--o{ payments : payerId/payeeId
+users ||--o{ notifications : userId
+users ||--o{ inventory : userId
+
+orders ||--o{ payments : orderId
+notifications ||--o{ orders : orderId
+
+seed_batches ||--o{ batches : seedBatchId
+
+note right of orders : Core business entity\nLinks supply chain actors
+note right of batches : Traceability foundation\nFarmer production data
+note right of payments : Financial transactions\nMobile money integration
+note bottom of users : Central user management\n5 user types supported
+
+@enduml

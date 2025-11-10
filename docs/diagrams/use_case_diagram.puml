@@ -1,0 +1,69 @@
+@startuml Use Case Diagram - iTraceLink Agricultural Traceability System
+
+left to right direction
+
+actor "Seed Producer" as SP #lightblue
+actor "Agro-Dealer" as AD #lightgreen
+actor "Farmer" as F #lightyellow
+actor "Aggregator" as AG #orange
+actor "Institution" as INST #pink
+
+rectangle "iTraceLink System" {
+    usecase "User Registration" as UC1
+    usecase "Authentication" as UC2
+    usecase "Profile Management" as UC3
+    usecase "Inventory Management" as UC4
+    usecase "Order Creation" as UC5
+    usecase "Order Management" as UC6
+    usecase "Payment Processing" as UC7
+    usecase "Traceability Verification" as UC8
+    usecase "SMS Notifications" as UC9
+    usecase "Report Generation" as UC10
+}
+
+SP --> UC1
+SP --> UC3
+SP --> UC4
+SP --> UC10
+
+AD --> UC1
+AD --> UC3
+AD --> UC4
+AD --> UC5
+AD --> UC6
+
+F --> UC1
+F --> UC3
+F --> UC4
+F --> UC5
+F --> UC6
+F --> UC7
+
+AG --> UC1
+AG --> UC3
+AG --> UC4
+AG --> UC5
+AG --> UC6
+AG --> UC7
+
+INST --> UC1
+INST --> UC3
+INST --> UC5
+INST --> UC6
+INST --> UC7
+INST --> UC8
+INST --> UC10
+
+note right of UC8
+    QR Code Scanning
+    Certificate Verification
+    Supply Chain Validation
+end note
+
+note bottom of UC9
+    Order Updates
+    Payment Confirmations
+    Delivery Notifications
+end note
+
+@enduml

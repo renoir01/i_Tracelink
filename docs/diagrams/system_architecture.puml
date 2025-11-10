@@ -1,0 +1,61 @@
+@startuml System Architecture - iTraceLink
+
+title iTraceLink System Architecture
+
+skinparam backgroundColor #FEFEFE
+skinparam componentStyle uml2
+
+package "Presentation Layer" as PL {
+    component "Flutter Mobile App" as APP {
+        component "Material Design UI" as UI
+        component "Screens" as SCREENS
+        component "Widgets" as WIDGETS
+    }
+}
+
+package "Application Layer" as AL {
+    component "Provider State Management" as PROVIDER
+    component "Business Logic" as BIZ
+    component "Services Layer" as SERVICES
+    component "Local Storage" as STORAGE
+}
+
+package "Data Layer" as DL {
+    database "Firestore Database" as FIRESTORE {
+        component "Users Collection" as USERS
+        component "Orders Collection" as ORDERS
+        component "Batches Collection" as BATCHES
+        component "Payments Collection" as PAYMENTS
+    }
+
+    component "Firebase Auth" as AUTH
+    component "Firebase Storage" as FB_STORAGE
+}
+
+package "External Services" as ES {
+    component "Africa's Talking SMS" as SMS
+    component "Google Maps API" as MAPS
+    component "Mobile Money APIs" as MMONEY
+    component "Firebase Cloud Messaging" as FCM
+}
+
+PL --> AL : State Updates
+AL --> DL : Data Operations
+AL --> ES : API Calls
+
+APP --> PROVIDER : State Management
+PROVIDER --> SERVICES : Business Logic
+SERVICES --> FIRESTORE : CRUD Operations
+SERVICES --> AUTH : Authentication
+SERVICES --> FB_STORAGE : File Upload/Download
+SERVICES --> SMS : Notifications
+SERVICES --> MAPS : Location Services
+SERVICES --> MMONEY : Payments
+SERVICES --> FCM : Push Notifications
+
+note right of APP : Android/iOS\nCross-platform
+note right of FIRESTORE : Real-time\nNoSQL Database
+note right of SMS : Order & Payment\nNotifications
+note right of AUTH : Email/Phone\nAuthentication
+
+@enduml

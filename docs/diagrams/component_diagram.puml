@@ -1,0 +1,82 @@
+@startuml Component Diagram - Flutter App Structure
+
+title iTraceLink Flutter App Component Architecture
+
+package "Presentation Layer" as PL {
+    package "Screens" as SCREENS {
+        component "Authentication Screens" as AUTH_SCR
+        component "Dashboard Screens" as DASH_SCR
+        component "Order Management" as ORDER_SCR
+        component "Profile Screens" as PROF_SCR
+        component "Traceability Screens" as TRACE_SCR
+    }
+
+    package "Widgets" as WIDGETS {
+        component "Custom Widgets" as CUST_WID
+        component "Form Widgets" as FORM_WID
+        component "List Widgets" as LIST_WID
+        component "Map Widgets" as MAP_WID
+    }
+
+    component "Material Design Theme" as THEME
+}
+
+package "Business Logic Layer" as BLL {
+    package "Providers (State Management)" as PROVIDERS {
+        component "AuthProvider" as AUTH_PROV
+        component "OrderProvider" as ORDER_PROV
+        component "UserProvider" as USER_PROV
+        component "LanguageProvider" as LANG_PROV
+    }
+
+    package "Services" as SERVICES {
+        component "AuthService" as AUTH_SERV
+        component "FirestoreService" as FS_SERV
+        component "SMService" as SMS_SERV
+        component "PaymentService" as PAY_SERV
+        component "NotificationService" as NOTIF_SERV
+        component "CertificationService" as CERT_SERV
+    }
+}
+
+package "Data Layer" as DL {
+    package "Models" as MODELS {
+        component "User Models" as USER_MOD
+        component "Order Models" as ORDER_MOD
+        component "Batch Models" as BATCH_MOD
+        component "Payment Models" as PAY_MOD
+        component "Location Models" as LOC_MOD
+    }
+
+    component "Local Storage" as LSTORAGE
+}
+
+package "Utilities & Core" as UTIL {
+    component "App Localizations" as I18N
+    component "Constants" as CONST
+    component "QR Generator" as QR_GEN
+    component "PDF Generator" as PDF_GEN
+    component "Validators" as VALID
+}
+
+SCREENS --> PROVIDERS : State Access
+WIDGETS --> SCREENS : UI Components
+THEME --> WIDGETS : Styling
+
+PROVIDERS --> SERVICES : Business Operations
+SERVICES --> MODELS : Data Mapping
+SERVICES --> DL : Data Persistence
+
+MODELS --> LSTORAGE : Local Caching
+SERVICES --> UTIL : Utility Functions
+
+AUTH_PROV --> AUTH_SERV
+ORDER_PROV --> FS_SERV
+USER_PROV --> FS_SERV
+
+note right of PROVIDERS : State management\nReactive updates
+note right of SERVICES : Firebase integration\nExternal APIs
+note right of MODELS : Data structures\nSerialization
+note bottom of UTIL : Cross-cutting concerns\nShared functionality
+
+@enduml
