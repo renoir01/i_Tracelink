@@ -523,7 +523,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                 name: seedProducer.organizationName,
                 location: '${seedProducer.location.district}, ${seedProducer.location.sector}',
                 details: seedBatch != null
-                    ? 'Batch: ${seedBatch.batchNumber} • ${seedBatch.variety} • ${seedBatch.ironContent.toStringAsFixed(0)}mg Fe/100g'
+                    ? 'Batch: ${seedBatch.batchNumber} • ${seedBatch.variety}${seedBatch.ironContent != null ? ' • ${seedBatch.ironContent!.toStringAsFixed(0)}mg Fe/100g' : ''}'
                     : 'Certified seed producer',
                 color: Colors.brown,
                 showConnector: true,
