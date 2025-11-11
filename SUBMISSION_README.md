@@ -82,6 +82,30 @@ iTraceLink is a comprehensive mobile application that creates end-to-end transpa
 
 ---
 
+## 🔨 Building the APK
+
+**⚠️ IMPORTANT:** The APK must be built on a LOCAL MACHINE with Flutter installed.
+
+### Quick Build Instructions
+
+📄 **[HOW_TO_BUILD_APK.md](HOW_TO_BUILD_APK.md)** - Quick 3-step guide
+
+📄 **[BUILD_AND_SUBMIT_CHECKLIST.md](BUILD_AND_SUBMIT_CHECKLIST.md)** - Complete submission checklist
+
+**For Linux/macOS:**
+```bash
+./build_apk.sh
+```
+
+**For Windows:**
+```cmd
+build_apk.bat
+```
+
+The APK will be created at: `build/app/outputs/flutter-apk/app-release.apk`
+
+---
+
 ## 🚀 Quick Start (For Reviewers)
 
 ### Option 1: Install from APK
@@ -89,6 +113,10 @@ iTraceLink is a comprehensive mobile application that creates end-to-end transpa
 1. Download the release APK:
    ```
    build/app/outputs/flutter-apk/app-release.apk
+   ```
+   Or from submission folder:
+   ```
+   ~/Desktop/iTraceLink_Submission/iTraceLink-v1.0.apk
    ```
 
 2. Enable "Install from Unknown Sources" on your Android device
