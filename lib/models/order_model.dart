@@ -18,6 +18,17 @@ class OrderModel {
   final String? seedVariety;
   final String? qualityGrade;
 
+  // Status timestamps for tracking order progress
+  final DateTime? acceptedAt;
+  final DateTime? rejectedAt;
+  final String? rejectionReason;
+  final DateTime? preparingAt;
+  final DateTime? shippedAt;
+  final DateTime? collectedAt;
+  final DateTime? inTransitAt;
+  final DateTime? deliveredAt;
+  final DateTime? completedAt;
+
   OrderModel({
     required this.id,
     required this.orderType,
@@ -34,6 +45,15 @@ class OrderModel {
     this.notes,
     this.seedVariety,
     this.qualityGrade,
+    this.acceptedAt,
+    this.rejectedAt,
+    this.rejectionReason,
+    this.preparingAt,
+    this.shippedAt,
+    this.collectedAt,
+    this.inTransitAt,
+    this.deliveredAt,
+    this.completedAt,
   });
 
   Map<String, dynamic> toMap() {
@@ -52,6 +72,15 @@ class OrderModel {
       if (notes != null) 'notes': notes,
       if (seedVariety != null) 'seedVariety': seedVariety,
       if (qualityGrade != null) 'qualityGrade': qualityGrade,
+      if (acceptedAt != null) 'acceptedAt': Timestamp.fromDate(acceptedAt!),
+      if (rejectedAt != null) 'rejectedAt': Timestamp.fromDate(rejectedAt!),
+      if (rejectionReason != null) 'rejectionReason': rejectionReason,
+      if (preparingAt != null) 'preparingAt': Timestamp.fromDate(preparingAt!),
+      if (shippedAt != null) 'shippedAt': Timestamp.fromDate(shippedAt!),
+      if (collectedAt != null) 'collectedAt': Timestamp.fromDate(collectedAt!),
+      if (inTransitAt != null) 'inTransitAt': Timestamp.fromDate(inTransitAt!),
+      if (deliveredAt != null) 'deliveredAt': Timestamp.fromDate(deliveredAt!),
+      if (completedAt != null) 'completedAt': Timestamp.fromDate(completedAt!),
     };
   }
 
@@ -73,6 +102,15 @@ class OrderModel {
       notes: data['notes'],
       seedVariety: data['seedVariety'],
       qualityGrade: data['qualityGrade'],
+      acceptedAt: data['acceptedAt'] != null ? (data['acceptedAt'] as Timestamp).toDate() : null,
+      rejectedAt: data['rejectedAt'] != null ? (data['rejectedAt'] as Timestamp).toDate() : null,
+      rejectionReason: data['rejectionReason'],
+      preparingAt: data['preparingAt'] != null ? (data['preparingAt'] as Timestamp).toDate() : null,
+      shippedAt: data['shippedAt'] != null ? (data['shippedAt'] as Timestamp).toDate() : null,
+      collectedAt: data['collectedAt'] != null ? (data['collectedAt'] as Timestamp).toDate() : null,
+      inTransitAt: data['inTransitAt'] != null ? (data['inTransitAt'] as Timestamp).toDate() : null,
+      deliveredAt: data['deliveredAt'] != null ? (data['deliveredAt'] as Timestamp).toDate() : null,
+      completedAt: data['completedAt'] != null ? (data['completedAt'] as Timestamp).toDate() : null,
     );
   }
 
@@ -92,6 +130,15 @@ class OrderModel {
     String? notes,
     String? seedVariety,
     String? qualityGrade,
+    DateTime? acceptedAt,
+    DateTime? rejectedAt,
+    String? rejectionReason,
+    DateTime? preparingAt,
+    DateTime? shippedAt,
+    DateTime? collectedAt,
+    DateTime? inTransitAt,
+    DateTime? deliveredAt,
+    DateTime? completedAt,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -109,6 +156,15 @@ class OrderModel {
       notes: notes ?? this.notes,
       seedVariety: seedVariety ?? this.seedVariety,
       qualityGrade: qualityGrade ?? this.qualityGrade,
+      acceptedAt: acceptedAt ?? this.acceptedAt,
+      rejectedAt: rejectedAt ?? this.rejectedAt,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+      preparingAt: preparingAt ?? this.preparingAt,
+      shippedAt: shippedAt ?? this.shippedAt,
+      collectedAt: collectedAt ?? this.collectedAt,
+      inTransitAt: inTransitAt ?? this.inTransitAt,
+      deliveredAt: deliveredAt ?? this.deliveredAt,
+      completedAt: completedAt ?? this.completedAt,
     );
   }
 }

@@ -329,10 +329,43 @@ class FirestoreService {
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {
+    final Map<String, dynamic> updateData = {
+      'status': status,
+      'updatedAt': Timestamp.now(),
+    };
+
+    // Add timestamp for specific status
+    switch (status) {
+      case 'accepted':
+        updateData['acceptedAt'] = Timestamp.now();
+        break;
+      case 'rejected':
+        updateData['rejectedAt'] = Timestamp.now();
+        break;
+      case 'preparing':
+        updateData['preparingAt'] = Timestamp.now();
+        break;
+      case 'shipped':
+        updateData['shippedAt'] = Timestamp.now();
+        break;
+      case 'collected':
+        updateData['collectedAt'] = Timestamp.now();
+        break;
+      case 'in_transit':
+        updateData['inTransitAt'] = Timestamp.now();
+        break;
+      case 'delivered':
+        updateData['deliveredAt'] = Timestamp.now();
+        break;
+      case 'completed':
+        updateData['completedAt'] = Timestamp.now();
+        break;
+    }
+
     await _firestore
         .collection(AppConstants.ordersCollection)
         .doc(orderId)
-        .update({'status': status});
+        .update(updateData);
   }
 
   Stream<List<OrderModel>> getUserOrders(String userId, {bool isBuyer = true}) {

@@ -119,6 +119,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   String _getStatusLabel(String status) {
     switch (status) {
+      case 'accepted':
+        return 'Accepted';
+      case 'preparing':
+        return 'Preparing';
+      case 'shipped':
+        return 'Shipped';
       case 'collected':
         return 'Collected';
       case 'in_transit':
@@ -128,16 +134,64 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       case 'completed':
         return 'Completed';
       default:
-        return status;
+        return status.toUpperCase();
     }
   }
 
   List<Widget> _getActionButtons() {
     final List<Widget> buttons = [];
 
-    // Buyer (Aggregator) actions
-    if (widget.isBuyer) {
+    // Seller (Farmer/Cooperative) actions
+    if (!widget.isBuyer) {
       if (widget.order.status == 'accepted') {
+        // Seller can start preparing the order
+        buttons.add(
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: _isProcessing ? null : () => _updateOrderStatus('preparing'),
+              icon: const Icon(Icons.soup_kitchen),
+              label: const Text('Start Preparing'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+              ),
+            ),
+          ),
+        );
+      } else if (widget.order.status == 'preparing') {
+        // Seller can mark as ready for pickup/shipping
+        buttons.add(
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: _isProcessing ? null : () => _updateOrderStatus('shipped'),
+              icon: const Icon(Icons.local_shipping),
+              label: const Text('Mark as Shipped'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+              ),
+            ),
+          ),
+        );
+      } else if (widget.order.status == 'delivered') {
+        // Seller confirms completion after delivery
+        buttons.add(
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: _isProcessing ? null : () => _updateOrderStatus('completed'),
+              icon: const Icon(Icons.check_circle),
+              label: const Text('Confirm Complete'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.successColor,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    // Buyer (Aggregator/Institution) actions
+    if (widget.isBuyer) {
+      if (widget.order.status == 'shipped') {
+        // Buyer collects the order
         buttons.add(
           Expanded(
             child: ElevatedButton.icon(
@@ -148,6 +202,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ),
         );
       } else if (widget.order.status == 'collected') {
+        // Buyer transports the order
         buttons.add(
           Expanded(
             child: ElevatedButton.icon(
@@ -158,30 +213,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ),
         );
       } else if (widget.order.status == 'in_transit') {
+        // Buyer marks as delivered to final destination
         buttons.add(
           Expanded(
             child: ElevatedButton.icon(
               onPressed: _isProcessing ? null : () => _updateOrderStatus('delivered'),
               icon: const Icon(Icons.done),
               label: const Text('Mark Delivered'),
-            ),
-          ),
-        );
-      }
-    }
-
-    // Seller (Farmer) actions
-    if (!widget.isBuyer) {
-      if (widget.order.status == 'delivered') {
-        buttons.add(
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: _isProcessing ? null : () => _updateOrderStatus('completed'),
-              icon: const Icon(Icons.check_circle),
-              label: const Text('Confirm Complete'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.successColor,
-              ),
             ),
           ),
         );
@@ -381,11 +419,54 @@ class _OrderTimeline extends StatelessWidget {
 
   const _OrderTimeline({required this.order});
 
+  String _formatTimestamp(DateTime? timestamp) {
+    if (timestamp == null) return '';
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inHours < 1) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inDays < 1) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else {
+      return '${timestamp.day}/${timestamp.month}/${timestamp.year}';
+    }
+  }
+
+  DateTime? _getTimestampForStatus(String status) {
+    switch (status) {
+      case 'pending':
+        return order.requestDate;
+      case 'accepted':
+        return order.acceptedAt;
+      case 'preparing':
+        return order.preparingAt;
+      case 'shipped':
+        return order.shippedAt;
+      case 'collected':
+        return order.collectedAt;
+      case 'in_transit':
+        return order.inTransitAt;
+      case 'delivered':
+        return order.deliveredAt;
+      case 'completed':
+        return order.completedAt;
+      default:
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final statuses = [
       {'status': 'pending', 'label': 'Pending', 'icon': Icons.schedule},
       {'status': 'accepted', 'label': 'Accepted', 'icon': Icons.check_circle},
+      {'status': 'preparing', 'label': 'Preparing', 'icon': Icons.soup_kitchen},
+      {'status': 'shipped', 'label': 'Shipped', 'icon': Icons.local_shipping},
       {'status': 'collected', 'label': 'Collected', 'icon': Icons.inventory_2},
       {'status': 'in_transit', 'label': 'In Transit', 'icon': Icons.local_shipping},
       {'status': 'delivered', 'label': 'Delivered', 'icon': Icons.done},
@@ -436,13 +517,27 @@ class _OrderTimeline extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                status['label'] as String,
-                                style: TextStyle(
-                                  fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                                  fontSize: isCurrent ? 16 : 14,
-                                  color: isActive ? Colors.black : Colors.grey,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    status['label'] as String,
+                                    style: TextStyle(
+                                      fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                                      fontSize: isCurrent ? 16 : 14,
+                                      color: isActive ? Colors.black : Colors.grey,
+                                    ),
+                                  ),
+                                  if (isActive)
+                                    Text(
+                                      _formatTimestamp(_getTimestampForStatus(status['status'] as String)),
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey[600],
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                ],
                               ),
                               if (isCurrent)
                                 Container(
