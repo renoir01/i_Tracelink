@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,6 +19,7 @@ import 'utils/app_theme.dart';
 import 'utils/constants.dart';
 import 'utils/app_localizations.dart';
 import 'utils/material_localizations_rw.dart';
+import 'widgets/protected_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// DEBUG: List all documents in admins collection
@@ -62,7 +65,23 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     debugPrint('✅ Firebase initialized successfully');
-    
+
+    // Initialize Firebase Crashlytics
+    // This catches and reports all Flutter framework errors
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      debugPrint('❌ Flutter Error: ${errorDetails.exception}');
+    };
+
+    // This catches errors outside the Flutter framework (async errors)
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      debugPrint('❌ Platform Error: $error');
+      return true;
+    };
+
+    debugPrint('✅ Firebase Crashlytics initialized successfully');
+
     // DEBUG: List all admin documents
     // await _debugListAdminDocuments();
   } catch (e) {
@@ -145,8 +164,12 @@ class iTraceLinkApp extends StatelessWidget {
             initialRoute: '/',
             routes: {
               '/': (context) => const SplashScreen(),
-              '/dashboard': (context) => const DashboardScreen(),
-              '/admin': (context) => const AdminPanelScreen(),
+              '/dashboard': (context) => ProtectedRoute(
+                    child: const DashboardScreen(),
+                  ),
+              '/admin': (context) => AdminOnlyRoute(
+                    child: const AdminPanelScreen(),
+                  ),
               '/admin-login': (context) => const AdminLoginScreen(),
             },
           );

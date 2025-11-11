@@ -48,6 +48,12 @@ firestore-debug.log
 .env
 .env.local
 
+# Keystore files (NEVER commit these!)
+*.jks
+*.keystore
+android/app/keystore/
+android/key.properties
+
 # IDEs
 .vscode/
 .idea/
