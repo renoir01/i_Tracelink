@@ -12,6 +12,7 @@ class SeedBatchModel {
   final String certificationNumber;
   final String status; // active, expired, depleted
   final DateTime createdAt;
+  final double? ironContent; // Iron content in mg per 100g (optional)
 
   SeedBatchModel({
     required this.id,
@@ -25,6 +26,7 @@ class SeedBatchModel {
     required this.certificationNumber,
     required this.status,
     required this.createdAt,
+    this.ironContent,
   });
 
   // Convert to Map for Firestore
@@ -40,6 +42,7 @@ class SeedBatchModel {
       'certificationNumber': certificationNumber,
       'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
+      'ironContent': ironContent,
     };
   }
 
@@ -57,7 +60,14 @@ class SeedBatchModel {
       certificationNumber: data['certificationNumber'] ?? '',
       status: data['status'] ?? 'active',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      ironContent: data['ironContent']?.toDouble(),
     );
+  }
+
+  // Create from Firestore DocumentSnapshot
+  factory SeedBatchModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return SeedBatchModel.fromMap(doc.id, data);
   }
 
   // Create a copy with updated fields
@@ -73,6 +83,7 @@ class SeedBatchModel {
     String? certificationNumber,
     String? status,
     DateTime? createdAt,
+    double? ironContent,
   }) {
     return SeedBatchModel(
       id: id ?? this.id,
@@ -86,6 +97,7 @@ class SeedBatchModel {
       certificationNumber: certificationNumber ?? this.certificationNumber,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      ironContent: ironContent ?? this.ironContent,
     );
   }
 

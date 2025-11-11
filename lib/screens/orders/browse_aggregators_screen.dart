@@ -213,7 +213,7 @@ class _AggregatorCard extends StatelessWidget {
           .where('buyerId', isEqualTo: aggregator.userId)
           .where('orderType', isEqualTo: 'aggregator_to_farmer')
           .where('status', whereIn: ['accepted', 'delivered'])
-          .orderBy('orderDate', descending: true)
+          .orderBy('requestDate', descending: true)
           .limit(5)
           .get();
 
@@ -786,7 +786,7 @@ class _AggregatorCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                DateFormat('MMM dd, yyyy').format(order.orderDate),
+                DateFormat('MMM dd, yyyy').format(order.requestDate),
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
