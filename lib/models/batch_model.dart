@@ -14,6 +14,8 @@ class BatchModel {
   final double? landSize; // in hectares
   final String? seedSource; // Agro-dealer ID or name
   final String? seedBatchNumber;
+  final String? seedBatchId; // FK to seed_batches collection
+  final String? agroDealerId; // FK to agro_dealers collection
   final String quality; // A, B, C or not_graded
   final double? pricePerKg;
   final bool availableForSale;
@@ -37,6 +39,8 @@ class BatchModel {
     this.landSize,
     this.seedSource,
     this.seedBatchNumber,
+    this.seedBatchId,
+    this.agroDealerId,
     this.quality = 'not_graded',
     this.pricePerKg,
     this.availableForSale = false,
@@ -61,6 +65,8 @@ class BatchModel {
       'landSize': landSize,
       'seedSource': seedSource,
       'seedBatchNumber': seedBatchNumber,
+      'seedBatchId': seedBatchId,
+      'agroDealerId': agroDealerId,
       'quality': quality,
       'pricePerKg': pricePerKg,
       'availableForSale': availableForSale,
@@ -92,6 +98,8 @@ class BatchModel {
       landSize: data['landSize']?.toDouble(),
       seedSource: data['seedSource'],
       seedBatchNumber: data['seedBatchNumber'],
+      seedBatchId: data['seedBatchId'],
+      agroDealerId: data['agroDealerId'],
       quality: data['quality'] ?? 'not_graded',
       pricePerKg: data['pricePerKg']?.toDouble(),
       availableForSale: data['availableForSale'] ?? false,
@@ -117,6 +125,8 @@ class BatchModel {
     double? landSize,
     String? seedSource,
     String? seedBatchNumber,
+    String? seedBatchId,
+    String? agroDealerId,
     String? quality,
     double? pricePerKg,
     bool? availableForSale,
@@ -140,6 +150,8 @@ class BatchModel {
       landSize: landSize ?? this.landSize,
       seedSource: seedSource ?? this.seedSource,
       seedBatchNumber: seedBatchNumber ?? this.seedBatchNumber,
+      seedBatchId: seedBatchId ?? this.seedBatchId,
+      agroDealerId: agroDealerId ?? this.agroDealerId,
       quality: quality ?? this.quality,
       pricePerKg: pricePerKg ?? this.pricePerKg,
       availableForSale: availableForSale ?? this.availableForSale,
