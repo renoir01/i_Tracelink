@@ -78,12 +78,16 @@ class CooperativeModel {
 class AgroDealerPurchase {
   final String dealerName;
   final String seedBatch;
+  final String? dealerId; // FK to agro_dealers collection
+  final String? seedBatchId; // FK to seed_batches collection
   final double quantity;
   final DateTime purchaseDate;
 
   AgroDealerPurchase({
     required this.dealerName,
     required this.seedBatch,
+    this.dealerId,
+    this.seedBatchId,
     required this.quantity,
     required this.purchaseDate,
   });
@@ -92,6 +96,8 @@ class AgroDealerPurchase {
     return {
       'dealerName': dealerName,
       'seedBatch': seedBatch,
+      if (dealerId != null) 'dealerId': dealerId,
+      if (seedBatchId != null) 'seedBatchId': seedBatchId,
       'quantity': quantity,
       'purchaseDate': Timestamp.fromDate(purchaseDate),
     };
@@ -101,6 +107,8 @@ class AgroDealerPurchase {
     return AgroDealerPurchase(
       dealerName: map['dealerName'] ?? '',
       seedBatch: map['seedBatch'] ?? '',
+      dealerId: map['dealerId'],
+      seedBatchId: map['seedBatchId'],
       quantity: map['quantity']?.toDouble() ?? 0.0,
       purchaseDate: (map['purchaseDate'] as Timestamp).toDate(),
     );

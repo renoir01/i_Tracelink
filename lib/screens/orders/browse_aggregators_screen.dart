@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../../models/aggregator_model.dart';
+import '../../models/order_model.dart';
+import '../../models/cooperative_model.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/app_theme.dart';
 import 'place_institution_order_screen.dart';
@@ -201,12 +205,68 @@ class _AggregatorCard extends StatelessWidget {
     required this.onPlaceOrder,
   });
 
+  Future<Map<String, dynamic>> _getSupplyChainInfo() async {
+    try {
+      // Get recent orders from this aggregator to farmers
+      final ordersSnapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('buyerId', isEqualTo: aggregator.userId)
+          .where('orderType', isEqualTo: 'aggregator_to_farmer')
+          .where('status', whereIn: ['accepted', 'delivered'])
+          .orderBy('orderDate', descending: true)
+          .limit(5)
+          .get();
+
+      final orders = ordersSnapshot.docs
+          .map((doc) => OrderModel.fromFirestore(doc))
+          .toList();
+
+      // Get unique farmer IDs
+      final farmerIds = orders.map((o) => o.sellerId).toSet().toList();
+
+      // Get farmer cooperative details
+      final farmers = <CooperativeModel>[];
+      for (var farmerId in farmerIds.take(3)) {
+        try {
+          final coopDoc = await FirebaseFirestore.instance
+              .collection('cooperatives')
+              .where('userId', isEqualTo: farmerId)
+              .limit(1)
+              .get();
+
+          if (coopDoc.docs.isNotEmpty) {
+            farmers.add(CooperativeModel.fromFirestore(coopDoc.docs.first));
+          }
+        } catch (e) {
+          debugPrint('Error loading farmer: $e');
+        }
+      }
+
+      double totalQuantity = orders.fold(0, (sum, order) => sum + order.quantity);
+
+      return {
+        'orders': orders,
+        'farmers': farmers,
+        'totalQuantity': totalQuantity,
+        'farmerCount': farmerIds.length,
+      };
+    } catch (e) {
+      debugPrint('Error loading supply chain info: $e');
+      return {
+        'orders': <OrderModel>[],
+        'farmers': <CooperativeModel>[],
+        'totalQuantity': 0.0,
+        'farmerCount': 0,
+      };
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: onPlaceOrder,
+        onTap: () => _showSupplyChainDetails(context),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -266,7 +326,7 @@ class _AggregatorCard extends StatelessWidget {
                 ],
               ),
               const Divider(height: 24),
-              
+
               // Details
               Row(
                 children: [
@@ -295,7 +355,93 @@ class _AggregatorCard extends StatelessWidget {
                     ),
                 ],
               ),
-              
+
+              // Supply Chain Preview
+              FutureBuilder<Map<String, dynamic>>(
+                future: _getSupplyChainInfo(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (!snapshot.hasData) return const SizedBox.shrink();
+
+                  final data = snapshot.data!;
+                  final farmers = data['farmers'] as List<CooperativeModel>;
+                  final farmerCount = data['farmerCount'] as int;
+
+                  if (farmers.isEmpty) return const SizedBox.shrink();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.green.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.agriculture, size: 16, color: Colors.green.shade700),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Farmer Suppliers ($farmerCount cooperatives)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green.shade700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            ...farmers.take(2).map((farmer) => Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.groups, size: 12, color: Colors.grey),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      '${farmer.cooperativeName} - ${farmer.location.district}',
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
+                            if (farmers.length > 2)
+                              Text(
+                                '+${farmers.length - 2} more suppliers',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey[600],
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+
               // Service areas chips
               if (aggregator.serviceAreas.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -323,23 +469,382 @@ class _AggregatorCard extends StatelessWidget {
                     ),
                   ),
               ],
-              
+
               const SizedBox(height: 16),
-              
-              // Action button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: onPlaceOrder,
-                  icon: const Icon(Icons.shopping_cart),
-                  label: const Text('Place Order'),
-                ),
+
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _showSupplyChainDetails(context),
+                      icon: const Icon(Icons.info_outline, size: 18),
+                      label: const Text('Supply Chain'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton.icon(
+                      onPressed: onPlaceOrder,
+                      icon: const Icon(Icons.shopping_cart, size: 18),
+                      label: const Text('Place Order'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _showSupplyChainDetails(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) => FutureBuilder<Map<String, dynamic>>(
+          future: _getSupplyChainInfo(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final data = snapshot.data ?? {};
+            final farmers = data['farmers'] as List<CooperativeModel>? ?? [];
+            final orders = data['orders'] as List<OrderModel>? ?? [];
+            final totalQuantity = data['totalQuantity'] as double? ?? 0.0;
+            final farmerCount = data['farmerCount'] as int? ?? 0;
+
+            return SingleChildScrollView(
+              controller: scrollController,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Handle bar
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+
+                    // Title
+                    Text(
+                      aggregator.businessName,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${aggregator.location.district}, ${aggregator.location.sector}',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 32),
+
+                    // Supply Chain Overview
+                    _buildSectionTitle('Supply Chain Overview', Icons.link),
+                    const SizedBox(height: 12),
+                    _buildInfoCard([
+                      _buildDetailRow('Total Suppliers', '$farmerCount cooperatives'),
+                      _buildDetailRow('Recent Volume', '${totalQuantity.toStringAsFixed(0)} kg'),
+                      _buildDetailRow('Active Orders', '${orders.length}'),
+                    ]),
+                    const SizedBox(height: 20),
+
+                    // Farmer Suppliers
+                    if (farmers.isNotEmpty) ...[
+                      _buildSectionTitle('Farmer Suppliers', Icons.agriculture),
+                      const SizedBox(height: 12),
+                      ...farmers.map((farmer) => _buildFarmerCard(farmer)),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // Recent Orders
+                    if (orders.isNotEmpty) ...[
+                      _buildSectionTitle('Recent Orders', Icons.receipt_long),
+                      const SizedBox(height: 12),
+                      ...orders.take(3).map((order) => _buildOrderCard(order)),
+                    ],
+
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onPlaceOrder();
+                        },
+                        icon: const Icon(Icons.shopping_cart),
+                        label: const Text('Place Order'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: AppTheme.primaryColor),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primaryColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoCard(List<Widget> children) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFarmerCard(CooperativeModel farmer) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.groups, size: 16, color: AppTheme.primaryColor),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  farmer.cooperativeName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
+              const SizedBox(width: 4),
+              Text(
+                '${farmer.location.district}, ${farmer.location.sector}',
+                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.people, size: 14, color: Colors.grey[600]),
+              const SizedBox(width: 4),
+              Text(
+                '${farmer.numberOfMembers} members',
+                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              ),
+            ],
+          ),
+          if (farmer.agroDealerPurchase != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.eco, size: 12, color: Colors.blue.shade700),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Seed Source',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Dealer: ${farmer.agroDealerPurchase!.dealerName}',
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                  Text(
+                    'Batch: ${farmer.agroDealerPurchase!.seedBatch}',
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderCard(OrderModel order) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                DateFormat('MMM dd, yyyy').format(order.orderDate),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(order.status).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  order.status.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: _getStatusColor(order.status),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.scale, size: 14, color: Colors.grey[600]),
+              const SizedBox(width: 4),
+              Text(
+                '${order.quantity} kg',
+                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              ),
+              const Spacer(),
+              Text(
+                'RWF ${order.totalAmount.toStringAsFixed(0)}',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        return Colors.green;
+      case 'accepted':
+        return Colors.blue;
+      case 'pending':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
   }
 }
 
