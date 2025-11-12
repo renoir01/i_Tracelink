@@ -7,6 +7,7 @@ import '../../utils/app_theme.dart';
 import '../../utils/app_localizations.dart';
 import '../notifications_screen.dart';
 import '../orders/farmer_orders_screen.dart';
+import '../qr/qr_scanner_screen.dart';
 import 'register_planting_screen.dart';
 import 'harvest_management_screen.dart';
 import 'batch_tracking_screen.dart';
@@ -80,6 +81,18 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
             },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const QrScannerScreen(),
+            ),
+          );
+        },
+        backgroundColor: AppTheme.primaryColor,
+        icon: const Icon(Icons.qr_code_scanner),
+        label: const Text('Scan QR'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

@@ -9,10 +9,12 @@ import '../screens/profile/agro_dealer_profile_screen.dart';
 import '../screens/profile/cooperative_profile_screen.dart';
 import '../screens/profile/aggregator_profile_screen.dart';
 import '../screens/profile/institution_profile_screen.dart';
-import '../screens/aggregator_dashboard_screen.dart';
-import '../screens/institution_dashboard_screen.dart';
+import '../screens/aggregator/aggregator_dashboard_screen.dart';
+import '../screens/institution/institution_dashboard_screen.dart';
 import '../screens/seed_producer_dashboard_screen.dart';
-import '../screens/agro_dealer_dashboard_screen.dart';
+import '../screens/agro_dealer/agro_dealer_dashboard_screen.dart';
+import '../screens/farmer/farmer_dashboard_enhanced_screen.dart';
+import '../screens/consumer/consumer_dashboard_screen.dart';
 import 'language_selection_screen.dart';
 import 'login_screen.dart';
 
@@ -98,17 +100,28 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       } else {
         // Profile exists, go to appropriate dashboard
         Widget? dashboardScreen;
-        
-        if (userModel.userType == AppConstants.aggregatorType) {
-          dashboardScreen = const AggregatorDashboardScreen();
-        } else if (userModel.userType == AppConstants.institutionType) {
-          dashboardScreen = const InstitutionDashboardScreen();
-        } else if (userModel.userType == AppConstants.seedProducerType) {
-          dashboardScreen = const SeedProducerDashboardScreen();
-        } else if (userModel.userType == AppConstants.agroDealerType) {
-          dashboardScreen = const AgroDealerDashboardScreen();
+
+        switch (userModel.userType) {
+          case AppConstants.aggregatorType:
+            dashboardScreen = const AggregatorDashboardScreen();
+            break;
+          case AppConstants.institutionType:
+            dashboardScreen = const InstitutionDashboardScreen();
+            break;
+          case AppConstants.seedProducerType:
+            dashboardScreen = const SeedProducerDashboardScreen();
+            break;
+          case AppConstants.agroDealerType:
+            dashboardScreen = const AgroDealerDashboardScreen();
+            break;
+          case AppConstants.farmerType:
+            dashboardScreen = const FarmerDashboardEnhancedScreen();
+            break;
+          case AppConstants.consumerType:
+            dashboardScreen = const ConsumerDashboardScreen();
+            break;
         }
-        
+
         if (dashboardScreen != null) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => dashboardScreen!),

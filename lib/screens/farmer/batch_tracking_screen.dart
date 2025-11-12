@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/qr_code_service.dart';
 import '../../utils/app_theme.dart';
 
 class BatchTrackingScreen extends StatelessWidget {
@@ -245,45 +245,14 @@ class BatchTrackingScreen extends StatelessWidget {
   }
 
   void _showQRCode(BuildContext context, String batchId, Map<String, dynamic> data) {
-    showDialog(
+    final qrService = QrCodeService();
+    final qrData = qrService.generateBatchQrData(batchId);
+
+    qrService.showQrCodeDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(data['batchNumber'] ?? 'Batch QR Code'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.primaryColor),
-              ),
-              child: QrImageView(
-                data: batchId,
-                version: QrVersions.auto,
-                size: 200,
-                backgroundColor: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Scan this code to verify batch authenticity',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
+      data: qrData,
+      title: data['batchNumber'] ?? 'Batch QR Code',
+      subtitle: 'Scan this code to verify batch authenticity',
     );
   }
 

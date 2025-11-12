@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/firestore_service.dart';
+import '../../services/notification_service.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
+import '../../models/aggregator_model.dart';
+import '../notifications_screen.dart';
 import '../qr/qr_scanner_screen.dart';
-import 'purchase_history_screen.dart';
-import 'request_purchase_screen.dart';
-import 'trusted_sellers_screen.dart';
-import 'nutritional_tracking_screen.dart';
-import 'education_center_screen.dart';
+import 'aggregator_orders_screen.dart';
+import 'aggregator_place_order_screen.dart';
+import '../profile/aggregator_profile_screen.dart';
 
-class ConsumerDashboardScreen extends StatelessWidget {
-  const ConsumerDashboardScreen({super.key});
+class AggregatorDashboardScreen extends StatelessWidget {
+  const AggregatorDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +24,51 @@ class ConsumerDashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Consumer Dashboard'),
+        title: const Text('Aggregator Dashboard'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              // Navigate to notifications
+          StreamBuilder<int>(
+            stream: NotificationService().getUnreadCount(userId),
+            builder: (context, snapshot) {
+              final unreadCount = snapshot.data ?? 0;
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Text(
+                          unreadCount > 99 ? '99+' : '$unreadCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
             },
           ),
           IconButton(
@@ -53,50 +94,85 @@ class ConsumerDashboardScreen extends StatelessWidget {
         icon: const Icon(Icons.qr_code_scanner),
         label: const Text('Scan QR'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome Card
-            _buildWelcomeCard(context, userModel?.email ?? 'Consumer'),
-            const SizedBox(height: 16),
+      body: FutureBuilder<AggregatorModel?>(
+        future: FirestoreService().getAggregatorByUserId(userId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            // Stats Overview
-            _buildStatsOverview(context, userId),
-            const SizedBox(height: 24),
+          final aggregator = snapshot.data;
+          if (aggregator == null) {
+            return _buildNoDataView();
+          }
 
-            // Large Scan Button
-            _buildScanButton(context),
-            const SizedBox(height: 24),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Welcome Card
+                _buildWelcomeCard(context, aggregator),
+                const SizedBox(height: 16),
 
-            // Quick Actions
-            Text(
-              'Quick Actions',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                // Overview Statistics
+                _buildOverviewStats(context, userId),
+                const SizedBox(height: 24),
+
+                // Place Order Button
+                _buildPlaceOrderButton(context),
+                const SizedBox(height: 24),
+
+                // Quick Actions
+                Text(
+                  'Quick Actions',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                _buildQuickActions(context),
+                const SizedBox(height: 24),
+
+                // Recent Orders
+                Text(
+                  'Recent Orders',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                _buildRecentOrders(context, userId),
+              ],
             ),
-            const SizedBox(height: 12),
-            _buildQuickActions(context),
-            const SizedBox(height: 24),
-
-            // Recent Scans
-            Text(
-              'Recent Scans',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            _buildRecentScans(context, userId),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildWelcomeCard(BuildContext context, String email) {
+  Widget _buildNoDataView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.business, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No aggregator profile found',
+            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Please contact support',
+            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomeCard(BuildContext context, AggregatorModel aggregator) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -110,7 +186,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: const Icon(
-                Icons.person,
+                Icons.business,
                 color: AppTheme.primaryColor,
                 size: 32,
               ),
@@ -127,7 +203,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
                         ),
                   ),
                   Text(
-                    email,
+                    aggregator.businessName,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -145,7 +221,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
                         Icon(Icons.verified, size: 14, color: Colors.green),
                         SizedBox(width: 4),
                         Text(
-                          'Verified Consumer',
+                          'Verified Aggregator',
                           style: TextStyle(fontSize: 11, color: Colors.green),
                         ),
                       ],
@@ -160,51 +236,50 @@ class ConsumerDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsOverview(BuildContext context, String userId) {
+  Widget _buildOverviewStats(BuildContext context, String userId) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection(AppConstants.consumerPurchasesCollection)
-          .where('consumerId', isEqualTo: userId)
+          .collection(AppConstants.ordersCollection)
+          .where('buyerId', isEqualTo: userId)
           .snapshots(),
       builder: (context, snapshot) {
-        final purchases = snapshot.data?.docs ?? [];
-        final totalScans = purchases.length;
-        final verifiedProducts = purchases.where((p) {
-          final data = p.data() as Map<String, dynamic>;
-          return data['wasVerified'] == true;
+        final orders = snapshot.data?.docs ?? [];
+        final totalOrders = orders.length;
+        final pendingOrders = orders.where((o) {
+          final data = o.data() as Map<String, dynamic>;
+          return data['status'] == 'pending';
         }).length;
-
-        final uniqueSellers = purchases.map((p) {
-          final data = p.data() as Map<String, dynamic>;
-          return data['sellerId'] ?? '';
-        }).toSet().length;
+        final completedOrders = orders.where((o) {
+          final data = o.data() as Map<String, dynamic>;
+          return data['status'] == 'fulfilled';
+        }).length;
 
         return Row(
           children: [
             Expanded(
               child: _buildStatCard(
-                'Total Scans',
-                '$totalScans',
-                Icons.qr_code_scanner,
+                'Total Orders',
+                '$totalOrders',
+                Icons.shopping_cart,
                 Colors.blue,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildStatCard(
-                'Verified',
-                '$verifiedProducts',
-                Icons.verified,
-                Colors.green,
+                'Pending',
+                '$pendingOrders',
+                Icons.pending,
+                Colors.orange,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildStatCard(
-                'Sellers',
-                '$uniqueSellers',
-                Icons.store,
-                Colors.orange,
+                'Completed',
+                '$completedOrders',
+                Icons.check_circle,
+                Colors.green,
               ),
             ),
           ],
@@ -243,7 +318,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildScanButton(BuildContext context) {
+  Widget _buildPlaceOrderButton(BuildContext context) {
     return Card(
       elevation: 4,
       color: AppTheme.primaryColor,
@@ -251,7 +326,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const QrScannerScreen(),
+              builder: (context) => const AggregatorPlaceOrderScreen(),
             ),
           );
         },
@@ -266,7 +341,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
-                  Icons.qr_code_scanner,
+                  Icons.add_shopping_cart,
                   color: Colors.white,
                   size: 40,
                 ),
@@ -277,7 +352,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Scan Product',
+                      'Place Order',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -286,7 +361,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Verify authenticity and trace supply chain',
+                      'Order beans from farmers and cooperatives',
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
@@ -315,89 +390,29 @@ class ConsumerDashboardScreen extends StatelessWidget {
             Expanded(
               child: _buildActionCard(
                 context,
-                'Request Purchase',
-                Icons.shopping_cart,
-                Colors.red,
-                () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const RequestPurchaseScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                context,
-                'Purchase History',
-                Icons.history,
+                'My Orders',
+                Icons.receipt_long,
                 Colors.blue,
                 () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const PurchaseHistoryScreen(),
+                      builder: (context) => const AggregatorOrdersScreen(),
                     ),
                   );
                 },
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
+            const SizedBox(width: 12),
             Expanded(
               child: _buildActionCard(
                 context,
-                'Trusted Sellers',
-                Icons.store_outlined,
+                'Profile',
+                Icons.account_circle,
                 Colors.green,
                 () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const TrustedSellersScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Container(), // Placeholder for even spacing
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionCard(
-                context,
-                'Nutrition',
-                Icons.health_and_safety,
-                Colors.purple,
-                () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const NutritionalTrackingScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionCard(
-                context,
-                'Learn More',
-                Icons.school,
-                Colors.orange,
-                () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const EducationCenterScreen(),
+                      builder: (context) => const AggregatorProfileScreen(),
                     ),
                   );
                 },
@@ -448,12 +463,12 @@ class ConsumerDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentScans(BuildContext context, String userId) {
+  Widget _buildRecentOrders(BuildContext context, String userId) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection(AppConstants.consumerPurchasesCollection)
-          .where('consumerId', isEqualTo: userId)
-          .orderBy('scanDate', descending: true)
+          .collection(AppConstants.ordersCollection)
+          .where('buyerId', isEqualTo: userId)
+          .orderBy('requestDate', descending: true)
           .limit(5)
           .snapshots(),
       builder: (context, snapshot) {
@@ -461,24 +476,24 @@ class ConsumerDashboardScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final scans = snapshot.data?.docs ?? [];
+        final orders = snapshot.data?.docs ?? [];
 
-        if (scans.isEmpty) {
+        if (orders.isEmpty) {
           return Card(
             child: Padding(
               padding: const EdgeInsets.all(32),
               child: Center(
                 child: Column(
                   children: [
-                    Icon(Icons.qr_code_2, size: 48, color: Colors.grey[400]),
+                    Icon(Icons.shopping_cart_outlined, size: 48, color: Colors.grey[400]),
                     const SizedBox(height: 8),
                     Text(
-                      'No scans yet',
+                      'No orders yet',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Start scanning products to see history',
+                      'Start ordering from farmers',
                       style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
@@ -489,10 +504,10 @@ class ConsumerDashboardScreen extends StatelessWidget {
         }
 
         return Column(
-          children: scans.map((doc) {
+          children: orders.map((doc) {
             final data = doc.data() as Map<String, dynamic>;
-            final scanDate = (data['scanDate'] as Timestamp?)?.toDate();
-            final wasVerified = data['wasVerified'] ?? false;
+            final requestDate = (data['requestDate'] as Timestamp?)?.toDate();
+            final status = data['status'] ?? 'pending';
 
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
@@ -500,43 +515,38 @@ class ConsumerDashboardScreen extends StatelessWidget {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: wasVerified
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.red.withOpacity(0.1),
+                    color: _getStatusColor(status).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
-                    wasVerified ? Icons.verified : Icons.warning,
-                    color: wasVerified ? Colors.green : Colors.red,
+                    _getStatusIcon(status),
+                    color: _getStatusColor(status),
                   ),
                 ),
                 title: Text(
-                  data['sellerName'] ?? 'Unknown Seller',
+                  '${data['quantity']?.toStringAsFixed(0) ?? '0'}kg Order',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  scanDate != null
-                      ? '${scanDate.day}/${scanDate.month}/${scanDate.year}'
+                  requestDate != null
+                      ? '${requestDate.day}/${requestDate.month}/${requestDate.year}'
                       : 'No date',
                   style: const TextStyle(fontSize: 12),
                 ),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      wasVerified ? 'Verified' : 'Suspicious',
-                      style: TextStyle(
-                        color: wasVerified ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(status).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    status.toUpperCase(),
+                    style: TextStyle(
+                      color: _getStatusColor(status),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
                     ),
-                    Text(
-                      data['sellerType']?.toString().toUpperCase() ?? 'TRADER',
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -544,5 +554,35 @@ class ConsumerDashboardScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'pending':
+        return Colors.orange;
+      case 'accepted':
+        return Colors.blue;
+      case 'fulfilled':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'pending':
+        return Icons.pending;
+      case 'accepted':
+        return Icons.check_circle_outline;
+      case 'fulfilled':
+        return Icons.check_circle;
+      case 'rejected':
+        return Icons.cancel;
+      default:
+        return Icons.info;
+    }
   }
 }
