@@ -7,6 +7,7 @@ import '../../services/firestore_service.dart';
 import '../../services/sms_service.dart';
 import '../../services/notification_service.dart';
 import '../../utils/app_theme.dart';
+import '../payment_screen.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final OrderModel order;
@@ -138,8 +139,42 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     }
   }
 
+  void _navigateToPayment() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentScreen(order: widget.order),
+      ),
+    );
+  }
+
   List<Widget> _getActionButtons() {
     final List<Widget> buttons = [];
+
+    // Buyer Payment Button (if payment is pending and order is accepted)
+    if (widget.isBuyer &&
+        widget.order.status == 'accepted' &&
+        (widget.order.paymentStatus == 'pending' || widget.order.paymentStatus == 'unpaid')) {
+      buttons.add(
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _isProcessing ? null : _navigateToPayment,
+            icon: const Icon(Icons.payment),
+            label: const Text('Pay Now'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+        ),
+      );
+      // Add spacing if there are other buttons
+      if (buttons.length < 2) {
+        return buttons;
+      }
+      buttons.add(const SizedBox(width: 12));
+    }
 
     // Seller (Farmer/Cooperative) actions
     if (!widget.isBuyer) {
