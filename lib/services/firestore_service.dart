@@ -120,9 +120,8 @@ class FirestoreService {
     try {
       final snapshot = await _firestore
           .collection(AppConstants.cooperativesCollection)
-          .where('isVerified', isEqualTo: true)
           .get();
-      
+
       return snapshot.docs
           .map((doc) => CooperativeModel.fromFirestore(doc))
           .toList();
@@ -135,9 +134,9 @@ class FirestoreService {
     try {
       final snapshot = await _firestore
           .collection(AppConstants.aggregatorsCollection)
-          .where('isVerified', isEqualTo: true)
+          .where('isActive', isEqualTo: true)
           .get();
-      
+
       return snapshot.docs
           .map((doc) => AggregatorModel.fromFirestore(doc))
           .toList();
