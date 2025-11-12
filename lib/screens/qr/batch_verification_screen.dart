@@ -376,8 +376,8 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                         '${batch.ironContent!.toStringAsFixed(1)} mg/100g',
                       ),
                     _buildDetailRow(
-                      'Harvest Date',
-                      '${batch.harvestDate.day}/${batch.harvestDate.month}/${batch.harvestDate.year}',
+                      'Production Date',
+                      '${batch.productionDate.day}/${batch.productionDate.month}/${batch.productionDate.year}',
                     ),
                   ],
                 ),
@@ -394,14 +394,10 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                       Icons.check_circle,
                       Colors.green,
                     ),
-                    if (batch.certificationDetails != null &&
-                        batch.certificationDetails!.isNotEmpty)
-                      ...batch.certificationDetails!.entries.map(
-                        (entry) => _buildCertificationBadge(
-                          entry.key,
-                          Icons.verified,
-                          AppTheme.primaryColor,
-                        ),
+                    if (batch.certificationNumber.isNotEmpty)
+                      _buildDetailRow(
+                        'Certification Number',
+                        batch.certificationNumber,
                       ),
                   ],
                 ),

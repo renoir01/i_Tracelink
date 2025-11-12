@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
@@ -15,36 +15,24 @@ class ConsumerScanVerifyScreen extends StatefulWidget {
 }
 
 class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
+  MobileScannerController controller = MobileScannerController();
   String? scannedCode;
   bool isProcessing = false;
 
-  @override
-  void reassemble() {
-    super.reassemble();
-    if (controller != null) {
-      controller!.pauseCamera();
-      controller!.resumeCamera();
-    }
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) async {
-      if (!isProcessing && scanData.code != null) {
+  void _onDetect(BarcodeCapture capture) async {
+    final List<Barcode> barcodes = capture.barcodes;
+    for (final barcode in barcodes) {
+      if (!isProcessing && barcode.rawValue != null) {
         setState(() {
           isProcessing = true;
-          scannedCode = scanData.code;
+          scannedCode = barcode.rawValue;
         });
 
-        // Pause camera
-        await controller.pauseCamera();
-
         // Verify the product
-        await _verifyProduct(scanData.code!);
+        await _verifyProduct(barcode.rawValue!);
+        break;
       }
-    });
+    }
   }
 
   Future<void> _verifyProduct(String batchId) async {
@@ -197,7 +185,6 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
                 Navigator.pop(context);
               } else {
                 setState(() => isProcessing = false);
-                controller?.resumeCamera();
               }
             },
             child: Text(isVerified ? 'View Details' : 'Scan Again'),
@@ -260,16 +247,9 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
           // QR Scanner
           Expanded(
             flex: 5,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-                borderColor: AppTheme.primaryColor,
-                borderRadius: 10,
-                borderLength: 30,
-                borderWidth: 10,
-                cutOutSize: 250,
-              ),
+            child: MobileScanner(
+              controller: controller,
+              onDetect: _onDetect,
             ),
           ),
 
