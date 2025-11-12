@@ -66,6 +66,9 @@ dependencies:
   mobile_scanner: ^5.2.3  # Modern QR scanner with better animations
   share_plus: ^10.0.3  # Share QR codes and files
 
+  # Charts
+  fl_chart: ^0.69.0
+
   # PDF
   pdf: ^3.11.1
   printing: ^5.13.2

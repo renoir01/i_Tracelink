@@ -186,7 +186,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Icon(
-                institution.type == 'school' ? Icons.school : Icons.local_hospital,
+                institution.institutionType == 'school' ? Icons.school : Icons.local_hospital,
                 color: AppTheme.primaryColor,
                 size: 32,
               ),
@@ -203,7 +203,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                         ),
                   ),
                   Text(
-                    institution.name,
+                    institution.institutionName,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -221,7 +221,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                         const Icon(Icons.verified, size: 14, color: Colors.green),
                         const SizedBox(width: 4),
                         Text(
-                          institution.type == 'school' ? 'School' : 'Hospital',
+                          institution.institutionType == 'school' ? 'School' : 'Hospital',
                           style: const TextStyle(fontSize: 11, color: Colors.green),
                         ),
                       ],

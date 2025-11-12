@@ -525,6 +525,15 @@ class _OrderDialogState extends State<_OrderDialog> {
       final quantity = double.parse(_quantityController.text);
       final pricePerKg = double.parse(_priceController.text);
 
+      // Get institution location for delivery
+      final institution = await FirestoreService().getInstitutionByUserId(userId);
+      final deliveryLocation = institution?.location ?? LocationModel(
+        district: 'Unknown',
+        sector: 'Unknown',
+        cell: 'Unknown',
+        village: 'Unknown',
+      );
+
       final order = OrderModel(
         id: '',
         orderType: 'institution_to_${widget.sellerType}',
@@ -536,6 +545,7 @@ class _OrderDialogState extends State<_OrderDialog> {
         requestDate: DateTime.now(),
         expectedDeliveryDate: _selectedDeliveryDate,
         status: 'pending',
+        deliveryLocation: deliveryLocation,
         paymentStatus: 'pending',
         notes: _notesController.text.isNotEmpty ? _notesController.text : null,
       );
@@ -544,11 +554,10 @@ class _OrderDialogState extends State<_OrderDialog> {
 
       // Notify seller
       try {
-        final institution = await FirestoreService().getInstitutionByUserId(userId);
         if (institution != null) {
           await NotificationService().notifyOrderPlaced(
             userId: widget.sellerId,
-            aggregatorName: institution.name,
+            aggregatorName: institution.institutionName,
             orderId: order.id,
             quantity: quantity,
           );
