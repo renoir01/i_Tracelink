@@ -63,8 +63,9 @@ dependencies:
   
   # QR Code
   qr_flutter: ^4.1.0
-  qr_code_scanner: ^1.0.1
-  
+  mobile_scanner: ^5.2.3  # Modern QR scanner with better animations
+  share_plus: ^10.0.3  # Share QR codes and files
+
   # PDF
   pdf: ^3.11.1
   printing: ^5.13.2

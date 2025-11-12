@@ -4,8 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
-import '../qr_scanner_screen.dart';
-import 'consumer_scan_verify_screen.dart';
+import '../qr/qr_scanner_screen.dart';
 import 'purchase_history_screen.dart';
 import 'request_purchase_screen.dart';
 import 'trusted_sellers_screen.dart';
@@ -41,6 +40,18 @@ class ConsumerDashboardScreen extends StatelessWidget {
             },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const QrScannerScreen(),
+            ),
+          );
+        },
+        backgroundColor: AppTheme.primaryColor,
+        icon: const Icon(Icons.qr_code_scanner),
+        label: const Text('Scan QR'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -240,7 +251,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const ConsumerScanVerifyScreen(),
+              builder: (context) => const QrScannerScreen(),
             ),
           );
         },
