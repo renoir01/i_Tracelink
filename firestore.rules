@@ -26,6 +26,64 @@ service cloud.firestore {
           || orderData.sellerId == request.auth.uid);
     }
 
+    // Client-side order changes are limited to explicit lifecycle transitions.
+    // Financial terms and payment status remain immutable for mobile clients.
+    function orderChangedKeysAreOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function isValidSellerOrderTransition() {
+      return resource.data.sellerId == request.auth.uid
+        && (
+          (resource.data.status == 'pending'
+            && request.resource.data.status == 'accepted'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'acceptedAt']))
+          || (resource.data.status == 'pending'
+            && request.resource.data.status == 'rejected'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'rejectedAt', 'rejectionReason']))
+          || (resource.data.status == 'accepted'
+            && request.resource.data.status == 'preparing'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'preparingAt']))
+          || (resource.data.status == 'preparing'
+            && request.resource.data.status == 'shipped'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'shippedAt']))
+          || (resource.data.status == 'shipped'
+            && request.resource.data.status == 'in_transit'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'inTransitAt']))
+          || (resource.data.status == 'in_transit'
+            && request.resource.data.status == 'delivered'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'deliveredAt']))
+        );
+    }
+
+    function isValidBuyerOrderTransition() {
+      return resource.data.buyerId == request.auth.uid
+        && (
+          (resource.data.status == 'pending'
+            && request.resource.data.status == 'cancelled'
+            && orderChangedKeysAreOnly(['status', 'updatedAt']))
+          || (resource.data.status == 'delivered'
+            && request.resource.data.status == 'collected'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'collectedAt']))
+          || ((resource.data.status == 'delivered' || resource.data.status == 'collected')
+            && request.resource.data.status == 'completed'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'completedAt']))
+        );
+    }
+
+    function isValidOrderStatusUpdate() {
+      return isAuthenticated()
+        && request.resource.data.status is string
+        && request.resource.data.status != resource.data.status
+        && request.resource.data.buyerId == resource.data.buyerId
+        && request.resource.data.sellerId == resource.data.sellerId
+        && request.resource.data.paymentStatus == resource.data.paymentStatus
+        && (
+          isValidSellerOrderTransition()
+          || isValidBuyerOrderTransition()
+        );
+    }
+
     function isAllowedPublicUserType(userType) {
       return userType in [
         'seed_producer',
@@ -43,8 +101,10 @@ service cloud.firestore {
     // ==================== USERS COLLECTION ====================
 
     match /users/{userId} {
-      // Authenticated users can view profiles for supply-chain interactions.
-      allow read: if isAuthenticated();
+      // Profile documents contain email and phone details. Keep them private
+      // to the profile owner and active admins; public discovery uses role-specific
+      // business collections rather than private account profiles.
+      allow read: if isOwner(userId) || isAdmin();
 
       // Public registration can create only a non-admin account and a known
       // set of profile fields. Admin privileges are managed separately.
@@ -117,13 +177,10 @@ service cloud.firestore {
         && request.resource.data.sellerId is string
         && request.resource.data.sellerId != request.auth.uid;
 
-      // Keep the buyer and seller immutable so an order cannot be reassigned
-      // after creation. Status transitions and editable fields still need a
-      // workflow-specific review before production deployment.
-      allow update: if isAuthenticated()
-        && isOrderParticipant(resource.data)
-        && request.resource.data.buyerId == resource.data.buyerId
-        && request.resource.data.sellerId == resource.data.sellerId;
+      // Participants may advance an order only through permitted lifecycle
+      // transitions. Financial terms and paymentStatus cannot be changed by
+      // mobile clients. Trusted server code can update payment-related state.
+      allow update: if isValidOrderStatusUpdate();
       allow delete: if isAdmin();
     }
 
@@ -260,16 +317,37 @@ service cloud.firestore {
           || resource.data.payeeId == request.auth.uid
           || isAdmin());
 
-      // The payment initiator must be the authenticated payer. Payment status
-      // changes should be made by a trusted backend, not by client apps.
+      // A client may create only a pending payment linked to a real order where
+      // they are the buyer. Amount and payee must match that order. Provider
+      // results and terminal statuses are trusted-backend-only.
       allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'orderId', 'payerId', 'payeeId', 'amount', 'currency',
+          'paymentMethod', 'status', 'transactionId',
+          'externalTransactionId', 'phoneNumber', 'paymentDetails',
+          'createdAt', 'completedAt', 'failureReason', 'webhookData'
+        ])
         && request.resource.data.payerId == request.auth.uid
+        && request.resource.data.orderId is string
+        && exists(/databases/$(database)/documents/orders/$(request.resource.data.orderId))
+        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.buyerId == request.auth.uid
+        && request.resource.data.payeeId == get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.sellerId
         && request.resource.data.amount is number
         && request.resource.data.amount > 0
-        && request.resource.data.orderId is string;
+        && request.resource.data.amount == get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.totalAmount
+        && request.resource.data.currency is string
+        && request.resource.data.paymentMethod in ['PaymentMethod.mtnMomo', 'PaymentMethod.airtelMoney']
+        && request.resource.data.status == 'PaymentStatus.pending'
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.transactionId == null
+        && request.resource.data.externalTransactionId == null
+        && request.resource.data.completedAt == null
+        && request.resource.data.failureReason == null
+        && request.resource.data.webhookData == null;
 
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      // Payment state is never changed by a client, including a signed-in
+      // admin. Trusted server code using the Admin SDK handles provider callbacks.
+      allow update, delete: if false;
     }
 
     // ==================== CERTIFICATIONS ====================
