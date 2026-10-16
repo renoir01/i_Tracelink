@@ -31,3 +31,13 @@ iTraceLink is a Flutter client backed by Firebase. Treat every value compiled in
 ## Important compatibility note
 
 Payment/email services currently read configuration through `flutter_dotenv`. With `.env` no longer bundled, those credentials will not be available in the mobile app. This is intentional until the integrations are moved to a trusted backend; do not re-add secrets as Flutter assets to restore them.
+
+## Additional collection audit
+
+- Seed batches must be created by the authenticated seed producer who is recorded as owner. Client edits are limited to decreasing stock or changing the batch lifecycle; certification metadata is immutable and batch deletion is admin-only.
+- Seed distribution records bind to the authenticated producer and protect recipient/quantity fields; lifecycle updates are constrained.
+- Agro-dealer sales validate dealer ownership and arithmetic and cannot be rewritten by clients after creation.
+- Transaction rules now match the Dart model's `sellerId`/`buyerId` schema, validate arithmetic, require an initial pending state, and prohibit client edits.
+- Certification submissions must start pending and only an active admin may review or delete them. Applicants cannot self-approve.
+- Consumer scan records are private to the consumer and seller; a client scan cannot assert product authenticity. Consumer purchase model defaults were changed to `wasVerified: false` to match this rule.
+- Emulator tests cover the new authorization and integrity checks. These restrictions should be exercised in the app's actual role workflows before production deployment.
