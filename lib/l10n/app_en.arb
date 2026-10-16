@@ -181,5 +181,7 @@
   "traderErrorRecordingSale": "Error recording sale",
   "traderFavoriteComingSoon": "Favorite feature coming soon!",
   "traderContactComingSoon": "Contact feature coming soon!",
-  "traderRevenueMargin": "{margin}% margin"
+  "traderRevenueMargin": "{margin}% margin",
+  "traderNoSupplierPhone": "No phone number is available for this supplier.",
+  "traderPhoneLaunchFailed": "Could not open the phone dialer."
 }
