@@ -22,6 +22,7 @@ class InventoryManagementScreen extends StatelessWidget {
             .collection('inventory')
             .where('traderId', isEqualTo: userId)
             .orderBy('purchaseDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
