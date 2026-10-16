@@ -414,7 +414,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                         title: 'Produced By',
                         icon: Icons.person,
                         children: [
-                          _buildDetailRow('Producer', producer.name ?? producer.email),
+                          _buildDetailRow('Producer', producer.displayName),
                           if (producer.phoneNumber != null)
                             _buildDetailRow('Phone', producer.phoneNumber!),
                           if (producer.location != null)
