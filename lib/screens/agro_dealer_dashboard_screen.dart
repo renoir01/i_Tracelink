@@ -313,9 +313,32 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             subtitle: const Text('Get assistance with the app'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              // TODO: Navigate to help
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Help & Support coming soon!')),
+              showDialog<void>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('Help & Support'),
+                  content: const SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Inventory: use Manage Inventory to review and update your stock.'),
+                        SizedBox(height: 10),
+                        Text('Sales: use Sales Tracking to review recent sales and record a sale.'),
+                        SizedBox(height: 10),
+                        Text('Account verification: your account must be verified before restricted actions become available.'),
+                        SizedBox(height: 10),
+                        Text('If data does not load, check your internet connection and tap Refresh where available.'),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
               );
             },
           ),
