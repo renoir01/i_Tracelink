@@ -205,4 +205,4 @@ test('clients cannot change or delete payment records', async () => {
     status: 'PaymentStatus.completed',
   }));
   await assertFails(deleteDoc(doc(buyerDb, 'payments/payment-1')));
-}
+});
