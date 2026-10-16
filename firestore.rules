@@ -55,6 +55,7 @@ service cloud.firestore {
         ])
         && request.resource.data.userType is string
         && isAllowedPublicUserType(request.resource.data.userType)
+        && request.resource.data.email == request.auth.token.email
         && request.resource.data.isVerified == false;
 
       // Users may edit profile details only. Verification and role fields are
@@ -116,9 +117,13 @@ service cloud.firestore {
         && request.resource.data.sellerId is string
         && request.resource.data.sellerId != request.auth.uid;
 
-      // TODO: constrain mutable fields and valid status transitions after
-      // reconciling every order workflow in the app.
-      allow update: if isAuthenticated() && isOrderParticipant(resource.data);
+      // Keep the buyer and seller immutable so an order cannot be reassigned
+      // after creation. Status transitions and editable fields still need a
+      // workflow-specific review before production deployment.
+      allow update: if isAuthenticated()
+        && isOrderParticipant(resource.data)
+        && request.resource.data.buyerId == resource.data.buyerId
+        && request.resource.data.sellerId == resource.data.sellerId;
       allow delete: if isAdmin();
     }
 
