@@ -22,6 +22,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection(AppConstants.transactionsCollection)
             .where('sellerId', isEqualTo: userId)
+            .limit(100)
             .snapshots(),
         builder: (context, salesSnapshot) {
           return StreamBuilder<QuerySnapshot>(
@@ -29,12 +30,14 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
                 .collection(AppConstants.transactionsCollection)
                 .where('buyerId', isEqualTo: userId)
                 .where('type', isEqualTo: 'purchase')
+                .limit(100)
                 .snapshots(),
             builder: (context, purchaseSnapshot) {
               return StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('inventory')
                     .where('traderId', isEqualTo: userId)
+                    .limit(100)
                     .snapshots(),
                 builder: (context, inventorySnapshot) {
                   // Calculate financial metrics
