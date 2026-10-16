@@ -420,7 +420,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                           if (producer.location != null)
                             _buildDetailRow(
                               'Location',
-                              '${producer.location!.district}, ${producer.location!.sector}',
+                              '${producer.location!['district'] ?? 'Unknown'}, ${producer.location!['sector'] ?? 'Unknown'}',
                             ),
                         ],
                       );
