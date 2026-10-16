@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/payment_model.dart';
@@ -12,8 +11,22 @@ class PaymentService {
   PaymentService._internal();
 
   // Payment Configurations
-  late final PaymentConfig _mtnConfig;
-  late final PaymentConfig _airtelConfig;
+  PaymentConfig _mtnConfig = const PaymentConfig(
+    apiKey: '',
+    apiSecret: '',
+    baseUrl: 'https://sandbox.momodeveloper.mtn.com',
+    callbackUrl: '',
+    collectionAccount: '',
+    currency: 'EUR',
+  );
+  PaymentConfig _airtelConfig = const PaymentConfig(
+    apiKey: '',
+    apiSecret: '',
+    baseUrl: 'https://openapiuat.airtel.africa',
+    callbackUrl: '',
+    collectionAccount: '',
+    currency: 'RWF',
+  );
   
   // Firestore instance
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -33,28 +46,10 @@ class PaymentService {
     }
   }
 
-  // Initialize configurations from environment variables
-  void initialize() {
-    _mtnConfig = PaymentConfig(
-      apiKey: dotenv.env['MTN_MOMO_API_KEY'] ?? '',
-      apiSecret: dotenv.env['MTN_MOMO_API_SECRET'] ?? '',
-      baseUrl: dotenv.env['MTN_MOMO_BASE_URL'] ?? 'https://sandbox.momodeveloper.mtn.com',
-      callbackUrl: dotenv.env['MTN_MOMO_CALLBACK_URL'] ??
-      'https://itracelink.web.app/api/payments/mtn/callback',
-      collectionAccount: dotenv.env['MTN_COLLECTION_ACCOUNT'] ?? '',
-      currency: 'EUR', // MTN uses EUR in sandbox
-    );
-
-    _airtelConfig = PaymentConfig(
-      apiKey: dotenv.env['AIRTEL_API_KEY'] ?? '',
-      apiSecret: dotenv.env['AIRTEL_API_SECRET'] ?? '',
-      baseUrl: dotenv.env['AIRTEL_BASE_URL'] ?? 'https://openapiuat.airtel.africa',
-      callbackUrl: dotenv.env['AIRTEL_CALLBACK_URL'] ??
-      'https://itracelink.web.app/api/payments/airtel/callback',
-      collectionAccount: dotenv.env['AIRTEL_COLLECTION_ACCOUNT'] ?? '',
-      currency: 'RWF',
-    );
-  }
+  // Provider credentials must be stored on a trusted backend, not in the app.
+  // Keep this method for API compatibility while client-side payment calls
+  // remain disabled until secure backend endpoints are available.
+  void initialize() {}
 
   // Get access token for MTN MoMo
   Future<String?> _getMtnAccessToken() async {
