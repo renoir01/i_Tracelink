@@ -143,7 +143,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatCard(
-                      'Pending Verification',
+                      'Loaded Pending Verification',
                       _pendingUsers.length.toString(),
                       Icons.pending,
                       Colors.orange,
@@ -152,7 +152,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatCard(
-                      'Verified Users',
+                      'Loaded Verified Users',
                       _verifiedUsers.length.toString(),
                       Icons.verified,
                       Colors.green,
@@ -161,7 +161,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatCard(
-                      'Rejected',
+                      'Loaded Rejected',
                       _rejectedUsers.length.toString(),
                       Icons.cancel,
                       Colors.red,
@@ -180,19 +180,19 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             controller: _tabController,
             tabs: [
               Tab(
-                text: 'All Users (${_allUsers.length})',
+                text: 'Loaded Users (${_allUsers.length})',
                 icon: const Icon(Icons.people),
               ),
               Tab(
-                text: 'Pending (${_pendingUsers.length})',
+                text: 'Pending loaded (${_pendingUsers.length})',
                 icon: const Icon(Icons.pending),
               ),
               Tab(
-                text: 'Verified (${_verifiedUsers.length})',
+                text: 'Verified loaded (${_verifiedUsers.length})',
                 icon: const Icon(Icons.verified),
               ),
               Tab(
-                text: 'Rejected (${_rejectedUsers.length})',
+                text: 'Rejected loaded (${_rejectedUsers.length})',
                 icon: const Icon(Icons.cancel),
               ),
             ],
