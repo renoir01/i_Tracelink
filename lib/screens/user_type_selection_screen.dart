@@ -50,6 +50,12 @@ class UserTypeSelectionScreen extends StatelessWidget {
               userType: AppConstants.aggregatorType,
             ),
             _UserTypeCard(
+              icon: Icons.storefront,
+              titleKey: 'trader',
+              descriptionKey: 'traderDesc',
+              userType: AppConstants.traderType,
+            ),
+            _UserTypeCard(
               icon: Icons.business,
               titleKey: 'institution',
               descriptionKey: 'institutionDesc',
