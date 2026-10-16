@@ -503,6 +503,7 @@ class ProductInformationScreen extends StatelessWidget {
   }
 
   void _showRatingDialog(BuildContext context) {
+    final thisContext = context;
     int rating = 5;
     showDialog(
       context: context,
@@ -537,11 +538,35 @@ class ProductInformationScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Rated $rating stars!')),
-              );
+            onPressed: () async {
+              final userId =
+                  Provider.of<AuthProvider>(context, listen: false).userModel?.id;
+              if (userId == null || userId.isEmpty) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(thisContext).showSnackBar(
+                  const SnackBar(content: Text('Sign in to submit a rating.')),
+                );
+                return;
+              }
+              try {
+                await FirebaseFirestore.instance.collection('product_ratings').add({
+                  'userId': userId,
+                  'batchId': batchId,
+                  'rating': rating,
+                  'createdAt': Timestamp.now(),
+                });
+                if (!context.mounted) return;
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(thisContext).showSnackBar(
+                  const SnackBar(content: Text('Thank you. Your rating was saved.')),
+                );
+              } catch (error) {
+                if (!context.mounted) return;
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(thisContext).showSnackBar(
+                  SnackBar(content: Text('Could not save rating: $error')),
+                );
+              }
             },
             child: const Text('Submit'),
           ),
