@@ -410,7 +410,6 @@ class ProductInformationScreen extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () {
-                  // TODO: Rate product
                   _showRatingDialog(context);
                 },
                 icon: const Icon(Icons.star),
