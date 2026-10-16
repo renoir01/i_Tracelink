@@ -3,7 +3,7 @@ import 'package:itracelink/models/user_model.dart';
 
 void main() {
   group('UserModel', () {
-    test('stores a registered user's profile fields', () {
+    test("stores a registered user's profile fields", () {
       final user = UserModel(
         id: 'user-123',
         userType: 'farmer',
