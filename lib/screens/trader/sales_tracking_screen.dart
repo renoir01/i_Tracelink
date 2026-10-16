@@ -360,7 +360,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                     return DropdownButtonFormField<String>(
                       value: _selectedInventoryId,
                       decoration: const InputDecoration(
-                        labelText: 'Select Batch',
+                        labelText: AppLocalizations.of(context)!.translate('traderSelectBatch'),
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.inventory_2),
                       ),
@@ -389,7 +389,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 TextFormField(
                   controller: _buyerNameController,
                   decoration: const InputDecoration(
-                    labelText: 'Buyer Name',
+                    labelText: AppLocalizations.of(context)!.translate('traderBuyerName'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
                   ),
@@ -406,7 +406,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 TextFormField(
                   controller: _quantityController,
                   decoration: const InputDecoration(
-                    labelText: 'Quantity (kg)',
+                    labelText: AppLocalizations.of(context)!.translate('traderQuantityKg'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.scale),
                     suffixText: 'kg',
@@ -429,7 +429,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 TextFormField(
                   controller: _priceController,
                   decoration: const InputDecoration(
-                    labelText: 'Price per kg (RWF)',
+                    labelText: AppLocalizations.of(context)!.translate('traderPricePerKg'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.attach_money),
                     suffixText: 'RWF',
@@ -452,7 +452,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 DropdownButtonFormField<String>(
                   value: _paymentStatus,
                   decoration: const InputDecoration(
-                    labelText: 'Payment Status',
+                    labelText: AppLocalizations.of(context)!.translate('traderPaymentStatus'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.payment),
                   ),
@@ -558,7 +558,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error recording sale: $e'),
+            content: Text('${AppLocalizations.of(context)!.translate('traderErrorRecordingSale')}: $e'),
             backgroundColor: Colors.red,
           ),
         );
