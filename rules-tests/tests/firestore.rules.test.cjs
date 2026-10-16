@@ -207,3 +207,94 @@ test('clients cannot change or delete payment records', async () => {
   }));
   await assertFails(deleteDoc(doc(buyerDb, 'payments/payment-1')));
 });
+
+
+test('order lifecycle allows only the designated buyer and seller transitions', async () => {
+  await seedOrder('pending');
+  const sellerDb = testEnv.authenticatedContext('seller-1', {
+    email: 'seller@example.com',
+  }).firestore();
+  const buyerDb = testEnv.authenticatedContext('buyer-1', {
+    email: 'buyer@example.com',
+  }).firestore();
+
+  await assertSucceeds(updateDoc(doc(sellerDb, 'orders/order-1'), {
+    status: 'accepted', updatedAt: stamp(), acceptedAt: stamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(sellerDb, 'orders/order-1'), {
+    status: 'preparing', updatedAt: stamp(), preparingAt: stamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(sellerDb, 'orders/order-1'), {
+    status: 'shipped', updatedAt: stamp(), shippedAt: stamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(buyerDb, 'orders/order-1'), {
+    status: 'collected', updatedAt: stamp(), collectedAt: stamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(buyerDb, 'orders/order-1'), {
+    status: 'in_transit', updatedAt: stamp(), inTransitAt: stamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(buyerDb, 'orders/order-1'), {
+    status: 'delivered', updatedAt: stamp(), deliveredAt: stamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(sellerDb, 'orders/order-1'), {
+    status: 'completed', updatedAt: stamp(), completedAt: stamp(),
+  }));
+  await assertFails(updateDoc(doc(sellerDb, 'orders/order-1'), {
+    status: 'accepted', updatedAt: stamp(), acceptedAt: stamp(),
+  }));
+});
+
+test('seller rejection and buyer cancellation are permitted only from pending', async () => {
+  const sellerDb = testEnv.authenticatedContext('seller-1', {
+    email: 'seller@example.com',
+  }).firestore();
+  const buyerDb = testEnv.authenticatedContext('buyer-1', {
+    email: 'buyer@example.com',
+  }).firestore();
+
+  await seedOrder('pending');
+  await assertSucceeds(updateDoc(doc(sellerDb, 'orders/order-1'), {
+    status: 'rejected', updatedAt: stamp(), rejectedAt: stamp(),
+    rejectionReason: 'Out of stock',
+  }));
+
+  await seedOrder('pending');
+  await assertSucceeds(updateDoc(doc(buyerDb, 'orders/order-1'), {
+    status: 'cancelled', updatedAt: stamp(),
+  }));
+
+  await seedOrder('accepted');
+  await assertFails(updateDoc(doc(buyerDb, 'orders/order-1'), {
+    status: 'cancelled', updatedAt: stamp(),
+  }));
+});
+
+test('notifications cannot be created for another user or rewritten after creation', async () => {
+  const ownerDb = testEnv.authenticatedContext('user-1', {
+    email: 'user@example.com',
+  }).firestore();
+  const otherDb = testEnv.authenticatedContext('user-2', {
+    email: 'other@example.com',
+  }).firestore();
+
+  const notification = {
+    userId: 'user-1',
+    title: 'Order update',
+    body: 'Your order was updated',
+    type: 'order',
+    relatedId: 'order-1',
+    createdAt: stamp(),
+    isRead: false,
+  };
+
+  await assertSucceeds(setDoc(doc(ownerDb, 'notifications/own'), notification));
+  await assertFails(setDoc(doc(otherDb, 'notifications/spoofed'), notification));
+  await assertSucceeds(updateDoc(doc(ownerDb, 'notifications/own'), { isRead: true }));
+  await assertFails(updateDoc(doc(ownerDb, 'notifications/own'), {
+    title: 'Fake payment received',
+  }));
+  await assertFails(updateDoc(doc(ownerDb, 'notifications/own'), {
+    userId: 'user-2', isRead: true,
+  }));
+  await assertFails(updateDoc(doc(ownerDb, 'notifications/own'), { isRead: false }));
+});
