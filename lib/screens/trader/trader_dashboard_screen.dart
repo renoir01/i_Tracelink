@@ -51,7 +51,7 @@ class TraderDashboardScreen extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 6),
-                        Text(user.name.isNotEmpty ? user.name : user.email),
+                        Text(user.displayName),
                         const SizedBox(height: 10),
                         Chip(
                           avatar: const Icon(Icons.storefront, size: 18),
