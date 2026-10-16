@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../utils/app_theme.dart';
 import 'traceability/traceability_chain_screen.dart';
 
@@ -11,49 +11,30 @@ class QRScannerScreen extends StatefulWidget {
 }
 
 class _QRScannerScreenState extends State<QRScannerScreen> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
-  String? scannedCode;
-  bool isProcessing = false;
+  final MobileScannerController _controller = MobileScannerController();
+  bool _isProcessing = false;
 
-  @override
-  void reassemble() {
-    super.reassemble();
-    if (controller != null) {
-      controller!.pauseCamera();
-      controller!.resumeCamera();
+  void _onDetect(BarcodeCapture capture) {
+    if (_isProcessing) return;
+
+    for (final barcode in capture.barcodes) {
+      final value = barcode.rawValue?.trim();
+      if (value == null || value.isEmpty) continue;
+
+      setState(() => _isProcessing = true);
+      _controller.stop();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => TraceabilityChainScreen(orderId: value),
+        ),
+      );
+      return;
     }
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) async {
-      if (!isProcessing && scanData.code != null) {
-        setState(() {
-          isProcessing = true;
-          scannedCode = scanData.code;
-        });
-
-        // Pause camera
-        await controller.pauseCamera();
-
-        // Navigate to traceability screen
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => TraceabilityChainScreen(
-                orderId: scanData.code!,
-              ),
-            ),
-          );
-        }
-      }
-    });
   }
 
   @override
   void dispose() {
-    controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -64,56 +45,29 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         title: const Text('Scan QR Code'),
         centerTitle: true,
         backgroundColor: AppTheme.primaryColor,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 4,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-                borderColor: AppTheme.primaryColor,
-                borderRadius: 10,
-                borderLength: 30,
-                borderWidth: 10,
-                cutOutSize: 300,
-              ),
-            ),
+        actions: [
+          IconButton(
+            tooltip: 'Toggle flashlight',
+            onPressed: () => _controller.toggleTorch(),
+            icon: const Icon(Icons.flash_on),
           ),
-          Expanded(
-            flex: 1,
+        ],
+      ),
+      body: Stack(
+        children: [
+          MobileScanner(controller: _controller, onDetect: _onDetect),
+          Align(
+            alignment: Alignment.bottomCenter,
             child: Container(
-              color: Colors.black.withOpacity(0.8),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.qr_code_scanner,
-                      color: Colors.white,
-                      size: 48,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      scannedCode != null
-                          ? 'Processing...'
-                          : 'Position the QR code in the frame',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    if (isProcessing)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: CircularProgressIndicator(
-                          color: AppTheme.primaryColor,
-                        ),
-                      ),
-                  ],
-                ),
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              color: Colors.black.withOpacity(0.65),
+              child: Text(
+                _isProcessing
+                    ? 'Code detected. Opening traceability…'
+                    : 'Position the QR code inside the camera view.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ),
