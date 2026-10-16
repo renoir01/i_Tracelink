@@ -55,6 +55,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         
         // Keep the response generic so the login screen does not reveal
         // whether a particular email has an administrator record.
+        if (!mounted) return;
         setState(() {
           _errorMessage = 'Access denied. Check your credentials or contact an administrator.';
           _isLoading = false;
@@ -71,14 +72,17 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
           ),
         ),
       );
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
+      if (!mounted) return;
       setState(() {
-        _errorMessage = e.message ?? 'Login failed';
+        // Avoid exposing provider-specific account enumeration details.
+        _errorMessage = 'Unable to sign in. Check your credentials and try again.';
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _errorMessage = 'An error occurred. Please try again.';
+        _errorMessage = 'Unable to sign in right now. Please try again.';
         _isLoading = false;
       });
     }
