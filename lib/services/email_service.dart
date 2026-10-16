@@ -113,6 +113,10 @@ class EmailService {
 
   // Main send method
   Future<bool> sendEmail(EmailMessage message) async {
+    // Provider API keys must not be shipped in a mobile app. Until sending is
+    // routed through a trusted backend, fail closed when no key is configured.
+    if (_apiKey.trim().isEmpty) return false;
+
     switch (_provider) {
       case EmailProvider.sendgrid:
         return _sendViaSendGrid(message);
