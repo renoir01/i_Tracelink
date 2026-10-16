@@ -15,6 +15,7 @@ import '../screens/seed_producer_dashboard_screen.dart';
 import '../screens/agro_dealer/agro_dealer_dashboard_screen.dart';
 import '../screens/farmer/farmer_dashboard_enhanced_screen.dart';
 import '../screens/consumer/consumer_dashboard_screen.dart';
+import '../screens/trader/trader_dashboard_screen.dart';
 import 'language_selection_screen.dart';
 import 'login_screen.dart';
 
@@ -63,6 +64,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         return;
       }
       
+      if (userModel.userType == AppConstants.traderType) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const TraderDashboardScreen()),
+        );
+        return;
+      }
+
       final hasProfile = await FirestoreService()
           .hasCompletedProfile(userModel.id, userModel.userType);
       
