@@ -39,6 +39,8 @@
   "agroDealer": "Agro-Dealer",
   "farmerCooperative": "Farmer Cooperative",
   "aggregator": "Aggregator",
+  "trader": "Trader",
+  "traderDesc": "Buy, track, manage inventory, and sell traceable beans",
   "institution": "School/Hospital",
   
   "seedProducerDesc": "Research institutions, seed companies that produce certified iron-biofortified bean seeds",
