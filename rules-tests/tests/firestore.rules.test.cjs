@@ -419,6 +419,136 @@ test('transactions use the model schema, validate totals, and are immutable', as
   }));
 });
 
+
+test('batch creation binds ownership and batch updates cannot change ownership or protected fields', async () => {
+  await seed('users/farmer-1', { userType: 'farmer', email: 'farmer@example.com' });
+  const farmerDb = testEnv.authenticatedContext('farmer-1', {
+    email: 'farmer@example.com',
+  }).firestore();
+  const batch = {
+    farmerId: 'farmer-1',
+    cooperativeName: 'Farmer One',
+    batchNumber: 'BATCH-001',
+    beanVariety: 'Iron bean',
+    quantity: 100,
+    status: 'growing',
+    registrationDate: stamp(),
+    harvestDate: null,
+    plantingDate: stamp(),
+    landSize: 0.5,
+    seedSource: null,
+    seedBatchNumber: null,
+    seedBatchId: null,
+    agroDealerId: null,
+    quality: 'not_graded',
+    pricePerKg: null,
+    availableForSale: false,
+    storageLocation: null,
+    photos: [],
+    ironContent: 80,
+    notes: null,
+    location: null,
+  };
+
+  await assertSucceeds(setDoc(doc(farmerDb, 'batches/batch-1'), batch));
+  await assertFails(setDoc(doc(farmerDb, 'batches/forged'), {
+    ...batch, farmerId: 'someone-else',
+  }));
+  await assertFails(updateDoc(doc(farmerDb, 'batches/batch-1'), {
+    farmerId: 'someone-else',
+  }));
+  await assertFails(updateDoc(doc(farmerDb, 'batches/batch-1'), {
+    ironContent: 999,
+  }));
+  await assertSucceeds(updateDoc(doc(farmerDb, 'batches/batch-1'), {
+    status: 'available', availableForSale: true,
+  }));
+  await assertFails(deleteDoc(doc(farmerDb, 'batches/batch-1')));
+});
+
+test('aggregator inventory must reference a real batch and preserve stock limits and provenance', async () => {
+  await seed('users/trader-1', { userType: 'aggregator', email: 'trader@example.com' });
+  await seed('batches/batch-1', {
+    farmerId: 'farmer-1', batchNumber: 'B-1', beanVariety: 'Iron bean',
+    quantity: 100, status: 'available', registrationDate: stamp(),
+    availableForSale: true, ironContent: 80,
+  });
+  const traderDb = testEnv.authenticatedContext('trader-1', {
+    email: 'trader@example.com',
+  }).firestore();
+  const inventory = {
+    traderId: 'trader-1',
+    batchId: 'batch-1',
+    batchNumber: 'B-1',
+    beanVariety: 'Iron bean',
+    quantityAvailable: 10,
+    quantityPurchased: 10,
+    quantitySold: 0,
+    purchasePricePerKg: 100,
+    sellingPricePerKg: null,
+    purchaseDate: stamp(),
+    supplierId: 'farmer-1',
+    supplierName: 'Farmer One',
+    storageLocation: 'Store A',
+    status: 'in_stock',
+    quality: 'A',
+    expiryDate: null,
+    ironContent: 80,
+    notes: null,
+  };
+
+  await assertSucceeds(setDoc(doc(traderDb, 'inventory/inv-1'), inventory));
+  await assertFails(setDoc(doc(traderDb, 'inventory/forged-owner'), {
+    ...inventory, traderId: 'another-trader',
+  }));
+  await assertFails(setDoc(doc(traderDb, 'inventory/forged-supplier'), {
+    ...inventory, supplierId: 'someone-else',
+  }));
+  await assertFails(setDoc(doc(traderDb, 'inventory/no-batch'), {
+    ...inventory, batchId: 'missing-batch',
+  }));
+  await assertSucceeds(updateDoc(doc(traderDb, 'inventory/inv-1'), {
+    quantityAvailable: 7, quantitySold: 3,
+  }));
+  await assertFails(updateDoc(doc(traderDb, 'inventory/inv-1'), {
+    quantityPurchased: 100,
+  }));
+  await assertFails(updateDoc(doc(traderDb, 'inventory/inv-1'), {
+    quantityAvailable: 9, quantitySold: 3,
+  }));
+});
+
+test('agro-dealer inventory validates owner and stock values', async () => {
+  await seed('users/dealer-1', { userType: 'agro_dealer', email: 'dealer@example.com' });
+  const dealerDb = testEnv.authenticatedContext('dealer-1', {
+    email: 'dealer@example.com',
+  }).firestore();
+  const item = {
+    agroDealerId: 'dealer-1',
+    seedVariety: 'Iron bean',
+    quantity: 25,
+    pricePerKg: 1000,
+    quality: 'certified',
+    ironContent: 80,
+    addedDate: stamp(),
+  };
+
+  await assertSucceeds(setDoc(doc(dealerDb, 'agro_dealer_inventory/item-1'), item));
+  await assertFails(setDoc(doc(dealerDb, 'agro_dealer_inventory/forged'), {
+    ...item, agroDealerId: 'someone-else',
+  }));
+  await assertFails(setDoc(doc(dealerDb, 'agro_dealer_inventory/negative'), {
+    ...item, quantity: -1,
+  }));
+  await assertSucceeds(updateDoc(doc(dealerDb, 'agro_dealer_inventory/item-1'), {
+    quantity: 20, lastUpdated: stamp(),
+  }));
+  await assertFails(updateDoc(doc(dealerDb, 'agro_dealer_inventory/item-1'), {
+    certificationNumber: 'FAKE-CERT',
+  }));
+  await assertFails(deleteDoc(doc(dealerDb, 'agro_dealer_inventory/item-1')));
+});
+
 test('certification applicants cannot approve their own submissions', async () => {
   const producerDb = testEnv.authenticatedContext('producer-1').firestore();
   const certification = {
