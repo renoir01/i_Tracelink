@@ -205,9 +205,31 @@ service cloud.firestore {
     // ==================== NOTIFICATIONS ====================
 
     match /notifications/{notificationId} {
+      // Notifications are private to their recipient. Until cross-user
+      // notifications are issued by a trusted backend, clients may create
+      // only their own initial notification records.
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'userId', 'title', 'body', 'type', 'relatedId', 'createdAt', 'isRead'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.body is string
+        && request.resource.data.type in ['order', 'harvest', 'payment', 'account', 'general']
+        && (request.resource.data.relatedId == null || request.resource.data.relatedId is string)
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.isRead == false;
+
+      // Recipients may mark an unread notification as read, but cannot rewrite
+      // its sender/content, retarget it, or reset its read state.
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && resource.data.isRead == false
+        && request.resource.data.isRead == true
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+
       allow delete: if isAuthenticated()
         && (resource.data.userId == request.auth.uid || isAdmin());
     }
