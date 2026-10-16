@@ -436,11 +436,10 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TraceabilityChainScreen(
-                            batchId: batch.id,
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Batch-level traceability view is not available yet.',
                           ),
                         ),
                       );
