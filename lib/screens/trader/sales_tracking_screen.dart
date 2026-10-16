@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 import '../../utils/constants.dart';
 
 class SalesTrackingScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class SalesTrackingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sales Tracking'),
+        title: Text(AppLocalizations.of(context)!.translate('traderSalesTitle')),
         centerTitle: true,
         actions: [
           IconButton(
@@ -134,7 +135,7 @@ class SalesTrackingScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showRecordSaleDialog(context, userId),
         icon: const Icon(Icons.add),
-        label: const Text('Record Sale'),
+        label: Text(AppLocalizations.of(context)!.translate('traderRecordSale')),
         backgroundColor: AppTheme.primaryColor,
       ),
     );
@@ -456,8 +457,8 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                     prefixIcon: Icon(Icons.payment),
                   ),
                   items: const [
-                    DropdownMenuItem(value: 'completed', child: Text('Completed')),
-                    DropdownMenuItem(value: 'pending', child: Text('Pending')),
+                    DropdownMenuItem(value: 'completed', child: Text(AppLocalizations.of(context)!.translate('traderCompleted'))),
+                    DropdownMenuItem(value: 'pending', child: Text(AppLocalizations.of(context)!.translate('traderPending'))),
                   ],
                   onChanged: (value) {
                     setState(() => _paymentStatus = value!);
@@ -471,7 +472,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-                        child: const Text('Cancel'),
+                        child: Text(AppLocalizations.of(context)!.translate('commonCancel')),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -484,7 +485,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('Record'),
+                            : Text(AppLocalizations.of(context)!.translate('commonRecord')),
                       ),
                     ),
                   ],
@@ -548,7 +549,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Sale recorded successfully!'),
+            content: Text(AppLocalizations.of(context)!.translate('traderSaleRecorded')),
             backgroundColor: Colors.green,
           ),
         );
