@@ -22,6 +22,7 @@ class EarningsDashboardScreen extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('transactions')
             .where('sellerId', isEqualTo: userId)
+            .limit(100)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -102,6 +103,7 @@ class EarningsDashboardScreen extends StatelessWidget {
                       .collection('batches')
                       .where('farmerId', isEqualTo: userId)
                       .where('status', isEqualTo: 'sold')
+                      .limit(100)
                       .snapshots(),
                   builder: (context, batchSnapshot) {
                     final batches = batchSnapshot.data?.docs ?? [];
@@ -131,7 +133,7 @@ class EarningsDashboardScreen extends StatelessWidget {
 
                 // Transaction History
                 Text(
-                  'Recent Transactions',
+                  'Recent Transactions (up to 100)',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
