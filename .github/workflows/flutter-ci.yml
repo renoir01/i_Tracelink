@@ -27,3 +27,19 @@ jobs:
         run: flutter analyze --no-pub
       - name: Run tests
         run: flutter test --no-pub
+
+  firestore-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install rules-test dependencies
+        working-directory: rules-tests
+        run: npm install --no-audit --no-fund
+      - name: Test Firestore rules in the emulator
+        working-directory: rules-tests
+        run: npx firebase emulators:exec --config ../firebase.json --project demo-itracelink-rules --only firestore "npm run test:rules"
