@@ -173,9 +173,26 @@ service cloud.firestore {
       // The authenticated user must be the buyer; cannot place an order as
       // another user or create an order addressed to themselves.
       allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'orderType', 'buyerId', 'sellerId', 'quantity', 'pricePerKg',
+          'totalAmount', 'requestDate', 'expectedDeliveryDate', 'status',
+          'deliveryLocation', 'paymentStatus', 'notes', 'seedVariety',
+          'qualityGrade'
+        ])
         && request.resource.data.buyerId == request.auth.uid
         && request.resource.data.sellerId is string
-        && request.resource.data.sellerId != request.auth.uid;
+        && request.resource.data.sellerId != request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.totalAmount is number
+        && request.resource.data.totalAmount == request.resource.data.quantity * request.resource.data.pricePerKg
+        && request.resource.data.status == 'pending'
+        && request.resource.data.paymentStatus == 'pending'
+        && request.resource.data.requestDate is timestamp
+        && request.resource.data.expectedDeliveryDate is timestamp
+        && request.resource.data.deliveryLocation is map;
 
       // Participants may advance an order only through permitted lifecycle
       // transitions. Financial terms and paymentStatus cannot be changed by
