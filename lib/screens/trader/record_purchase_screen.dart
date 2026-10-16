@@ -316,7 +316,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error recording purchase: $e'),
+            content: Text('${AppLocalizations.of(context)!.translate('traderErrorRecordingPurchase')}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -387,7 +387,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               TextFormField(
                 controller: _quantityController,
                 decoration: InputDecoration(
-                  labelText: 'Quantity (kg)',
+                  labelText: AppLocalizations.of(context)!.translate('traderQuantityKg'),
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.scale),
                   suffixText: 'kg',
@@ -414,7 +414,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               TextFormField(
                 controller: _priceController,
                 decoration: const InputDecoration(
-                  labelText: 'Price per kg (RWF)',
+                  labelText: AppLocalizations.of(context)!.translate('traderPricePerKg'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.attach_money),
                   suffixText: 'RWF',
@@ -437,14 +437,14 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               DropdownButtonFormField<String>(
                 value: _selectedQuality,
                 decoration: const InputDecoration(
-                  labelText: 'Quality Grade',
+                  labelText: AppLocalizations.of(context)!.translate('traderQualityGrade'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.star),
                 ),
                 items: ['A', 'B', 'C'].map((quality) {
                   return DropdownMenuItem(
                     value: quality,
-                    child: Text('Grade $quality'),
+                    child: Text('${AppLocalizations.of(context)!.translate('traderQualityGrade')} $quality'),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -457,10 +457,10 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               TextFormField(
                 controller: _storageController,
                 decoration: const InputDecoration(
-                  labelText: 'Storage Location',
+                  labelText: AppLocalizations.of(context)!.translate('traderStorageLocation'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.warehouse),
-                  hintText: 'e.g., Warehouse A, Section 3',
+                  hintText: AppLocalizations.of(context)!.translate('traderStorageLocationHint'),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -475,10 +475,10 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               TextFormField(
                 controller: _notesController,
                 decoration: const InputDecoration(
-                  labelText: 'Notes (Optional)',
+                  labelText: AppLocalizations.of(context)!.translate('traderOptionalNotes'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.note),
-                  hintText: 'Additional details...',
+                  hintText: AppLocalizations.of(context)!.translate('traderAdditionalDetailsHint'),
                 ),
                 maxLines: 3,
               ),
