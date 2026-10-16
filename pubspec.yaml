@@ -102,7 +102,6 @@ flutter:
     - assets/icons/
     - assets/translations/
     - lib/l10n/
-    - .env
 
 # Internationalization
 flutter_intl:
