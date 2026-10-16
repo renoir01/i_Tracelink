@@ -7,6 +7,7 @@ import '../../models/cooperative_model.dart';
 import '../../models/aggregator_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
+import '../../services/notification_service.dart';
 import '../orders/order_details_screen.dart';
 
 class PendingOrdersScreen extends StatefulWidget {
@@ -596,8 +597,16 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
         'updatedAt': Timestamp.now(),
       });
 
-      // TODO: Send notification to buyer (implement in notification service)
-      // await NotificationService().sendOrderAcceptedNotification(order);
+      final sellerName = Provider.of<AuthProvider>(context, listen: false)
+              .userModel?.displayName ??
+          'The seller';
+      if (order.buyerId.isNotEmpty) {
+        await NotificationService().notifyOrderAccepted(
+          userId: order.buyerId,
+          cooperativeName: sellerName,
+          orderId: order.id,
+        );
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -640,8 +649,16 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
         'updatedAt': Timestamp.now(),
       });
 
-      // TODO: Send notification to buyer (implement in notification service)
-      // await NotificationService().sendOrderRejectedNotification(order, reason);
+      final sellerName = Provider.of<AuthProvider>(context, listen: false)
+              .userModel?.displayName ??
+          'The seller';
+      if (order.buyerId.isNotEmpty) {
+        await NotificationService().notifyOrderRejected(
+          userId: order.buyerId,
+          cooperativeName: sellerName,
+          orderId: order.id,
+        );
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
