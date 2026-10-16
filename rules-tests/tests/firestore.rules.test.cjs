@@ -454,3 +454,28 @@ test('consumer scans cannot claim a product is verified and purchase records are
     rating: 5, review: 'Good quality',
   }));
 });
+
+
+test('business profile owners cannot self-verify at creation or through status metadata', async () => {
+  await seed('users/user-1', {
+    userType: 'cooperative', email: 'owner@example.com', isVerified: false,
+  });
+  const ownerDb = testEnv.authenticatedContext('user-1', {
+    email: 'owner@example.com',
+  }).firestore();
+
+  await assertFails(setDoc(doc(ownerDb, 'cooperatives/falsely-verified'), {
+    userId: 'user-1', cooperativeName: 'Fake verified cooperative',
+    isVerified: true, isActive: true,
+  }));
+  await assertSucceeds(setDoc(doc(ownerDb, 'cooperatives/pending'), {
+    userId: 'user-1', cooperativeName: 'Pending cooperative',
+    isVerified: false, isActive: true,
+  }));
+  await assertFails(updateDoc(doc(ownerDb, 'cooperatives/pending'), {
+    status: 'active',
+  }));
+  await assertFails(updateDoc(doc(ownerDb, 'cooperatives/pending'), {
+    verifiedAt: stamp(),
+  }));
+});
