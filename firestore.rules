@@ -147,8 +147,14 @@ service cloud.firestore {
 
     match /cooperatives/{coopId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'cooperative';
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'cooperative'
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.isVerified == resource.data.isVerified
+        && request.resource.data.isActive == resource.data.isActive;
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -239,8 +245,13 @@ service cloud.firestore {
     match /seed_producers/{producerId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer';
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer'
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.isVerified == resource.data.isVerified
+        && request.resource.data.isActive == resource.data.isActive;
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -249,8 +260,13 @@ service cloud.firestore {
     match /agro_dealers/{dealerId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer';
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer'
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.isVerified == resource.data.isVerified
+        && request.resource.data.isActive == resource.data.isActive;
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -316,8 +332,13 @@ service cloud.firestore {
     match /aggregators/{aggregatorId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator';
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator'
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.isVerified == resource.data.isVerified
+        && request.resource.data.isActive == resource.data.isActive;
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -326,8 +347,13 @@ service cloud.firestore {
     match /institutions/{institutionId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['institution', 'school', 'hospital'];
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['institution', 'school', 'hospital']
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.isVerified == resource.data.isVerified
+        && request.resource.data.isActive == resource.data.isActive;
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
