@@ -91,6 +91,7 @@ service cloud.firestore {
         'cooperative',
         'farmer',
         'aggregator',
+        'trader',
         'institution',
         'school',
         'hospital',
@@ -466,7 +467,7 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       // Aggregator stock must link to a real batch and its recorded supplier.
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['aggregator', 'trader']
         && request.resource.data.keys().hasOnly([
           'traderId', 'batchId', 'batchNumber', 'beanVariety', 'quantityAvailable',
           'quantityPurchased', 'quantitySold', 'purchasePricePerKg', 'sellingPricePerKg',
