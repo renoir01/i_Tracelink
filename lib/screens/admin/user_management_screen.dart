@@ -18,6 +18,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = true;
+  bool _isLoadingMore = false;
+  bool _hasMoreUsers = false;
+  final Map<String, DocumentSnapshot<Map<String, dynamic>>> _userCursors = {};
   List<UserModel> _allUsers = [];
   List<UserModel> _pendingUsers = [];
   List<UserModel> _verifiedUsers = [];
@@ -36,26 +39,45 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     super.dispose();
   }
 
-  Future<void> _loadUsers() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadUsers({bool loadMore = false}) async {
+    if (loadMore) {
+      if (_isLoadingMore || !_hasMoreUsers) return;
+      setState(() => _isLoadingMore = true);
+    } else {
+      _userCursors.clear();
+      setState(() {
+        _isLoading = true;
+        _hasMoreUsers = false;
+      });
+    }
 
     try {
-      final users = await FirestoreService().getAllUsers();
+      final page = await FirestoreService().getAllUsersPage(
+        pageSizePerCollection: 10,
+        cursors: Map<String, DocumentSnapshot<Map<String, dynamic>>>.from(_userCursors),
+      );
+      if (!mounted) return;
 
+      _userCursors.addAll(page.cursors);
+      final users = loadMore ? [..._allUsers, ...page.users] : page.users;
       setState(() {
         _allUsers = users;
         _pendingUsers = users.where((u) => !u.isVerified).toList();
         _verifiedUsers = users.where((u) => u.isVerified).toList();
         _rejectedUsers = users.where((u) => u.status == 'rejected').toList();
+        _hasMoreUsers = page.hasMore;
         _isLoading = false;
+        _isLoadingMore = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading users: $e')),
-        );
-      }
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _isLoadingMore = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading users: $e')),
+      );
     }
   }
 
@@ -98,7 +120,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: _loadUsers,
+                    onPressed: () => _loadUsers(),
                     icon: const Icon(Icons.refresh),
                     label: const Text('Refresh'),
                   ),
@@ -111,7 +133,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      'Total Users',
+                      'Loaded Users',
                       _allUsers.length.toString(),
                       Icons.people,
                       Colors.blue,
@@ -254,8 +276,26 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
-      itemCount: users.length,
+      itemCount: users.length + (_hasMoreUsers ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index >= users.length) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: TextButton.icon(
+                onPressed: _isLoadingMore ? null : () => _loadUsers(loadMore: true),
+                icon: _isLoadingMore
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.expand_more),
+                label: Text(_isLoadingMore ? 'Loading more users…' : 'Load more users'),
+              ),
+            ),
+          );
+        }
         final user = users[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 8),
