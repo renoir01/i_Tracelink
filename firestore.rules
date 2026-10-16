@@ -291,6 +291,26 @@ service cloud.firestore {
         && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
+    // ==================== FRAUD REPORTS ====================
+
+    // Any authenticated user may submit a report for review. Reports are
+    // private to active admins so users cannot inspect or alter other reports.
+    match /fraud_reports/{reportId} {
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'reporterId', 'scannedCode', 'reason', 'details',
+          'createdAt', 'status'
+        ])
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.scannedCode is string
+        && request.resource.data.scannedCode.size() > 0
+        && request.resource.data.reason is string
+        && request.resource.data.details is string
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.status == 'pending';
+      allow read, update, delete: if isAdmin();
+    }
+
     // ==================== SEED PRODUCERS ====================
 
     match /seed_producers/{producerId} {
