@@ -181,5 +181,7 @@
   "traderErrorRecordingSale": "Habaye ikibazo mu kwandika ibyo wagurishije",
   "traderFavoriteComingSoon": "Gushyira mu byo ukunda bizaboneka nyuma.",
   "traderContactComingSoon": "Kuvugana bizaboneka nyuma.",
-  "traderRevenueMargin": "Inyungu ya {margin}%"
+  "traderRevenueMargin": "Inyungu ya {margin}%",
+  "traderNoSupplierPhone": "Nta nimero ya telefoni y'uyu muguzi ihari.",
+  "traderPhoneLaunchFailed": "Ntibishobotse gufungura telefoni."
 }
