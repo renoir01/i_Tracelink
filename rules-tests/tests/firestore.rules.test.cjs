@@ -10,6 +10,7 @@ const {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   Timestamp,
 } = require('firebase/firestore');
 
@@ -203,12 +204,5 @@ test('clients cannot change or delete payment records', async () => {
   await assertFails(updateDoc(doc(buyerDb, 'payments/payment-1'), {
     status: 'PaymentStatus.completed',
   }));
-  await assertFails(testEnv.authenticatedContext('buyer-1', {
-    email: 'buyer@example.com',
-  }).firestore() && importDeletePayment(buyerDb));
-});
-
-async function importDeletePayment(db) {
-  const { deleteDoc } = require('firebase/firestore');
-  return deleteDoc(doc(db, 'payments/payment-1'));
+  await assertFails(deleteDoc(doc(buyerDb, 'payments/payment-1')));
 }
