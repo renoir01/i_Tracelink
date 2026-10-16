@@ -232,7 +232,7 @@ class SupplierManagementScreen extends StatelessWidget {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Favorite feature coming soon!'),
+                          content: Text(AppLocalizations.of(context)!.translate('traderFavoriteComingSoon')),
                         ),
                       );
                     },
@@ -447,7 +447,7 @@ class SupplierManagementScreen extends StatelessWidget {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Contact feature coming soon!'),
+                            content: Text(AppLocalizations.of(context)!.translate('traderContactComingSoon')),
                           ),
                         );
                       },
