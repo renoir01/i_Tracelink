@@ -136,6 +136,7 @@ class FirestoreService {
     try {
       final snapshot = await _firestore
           .collection(AppConstants.cooperativesCollection)
+          .limit(100)
           .get();
 
       return snapshot.docs
@@ -151,6 +152,7 @@ class FirestoreService {
       final snapshot = await _firestore
           .collection(AppConstants.aggregatorsCollection)
           .where('isActive', isEqualTo: true)
+          .limit(100)
           .get();
 
       return snapshot.docs
@@ -781,9 +783,8 @@ class FirestoreService {
       List<UserModel> allUsers = [];
 
       for (String collection in collections) {
-        final snapshot = await _firestore.collection(collection).get();
+        final snapshot = await _firestore.collection(collection).limit(50).get();
         for (var doc in snapshot.docs) {
-          final data = doc.data();
           final userModel = UserModel.fromFirestore(doc);
           allUsers.add(userModel);
         }
