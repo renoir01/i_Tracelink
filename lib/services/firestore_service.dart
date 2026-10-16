@@ -110,6 +110,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.agroDealersCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => AgroDealerModel.fromFirestore(doc))
@@ -271,6 +272,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.aggregatorsCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => AggregatorModel.fromFirestore(doc))
@@ -315,6 +317,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.institutionsCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => InstitutionModel.fromFirestore(doc))
