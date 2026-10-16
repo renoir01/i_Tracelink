@@ -21,6 +21,7 @@ class SupplierManagementScreen extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('inventory')
             .where('traderId', isEqualTo: userId)
+            .limit(100)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
