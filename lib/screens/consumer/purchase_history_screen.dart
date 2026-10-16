@@ -24,6 +24,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
             .collection(AppConstants.consumerPurchasesCollection)
             .where('consumerId', isEqualTo: userId)
             .orderBy('scanDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

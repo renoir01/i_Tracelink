@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
@@ -18,6 +19,9 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = true;
+  bool _isLoadingMore = false;
+  bool _hasMoreUsers = false;
+  final Map<String, DocumentSnapshot<Map<String, dynamic>>> _userCursors = {};
   List<UserModel> _allUsers = [];
   List<UserModel> _pendingUsers = [];
   List<UserModel> _verifiedUsers = [];
@@ -36,26 +40,45 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     super.dispose();
   }
 
-  Future<void> _loadUsers() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadUsers({bool loadMore = false}) async {
+    if (loadMore) {
+      if (_isLoadingMore || !_hasMoreUsers) return;
+      setState(() => _isLoadingMore = true);
+    } else {
+      _userCursors.clear();
+      setState(() {
+        _isLoading = true;
+        _hasMoreUsers = false;
+      });
+    }
 
     try {
-      final users = await FirestoreService().getAllUsers();
+      final page = await FirestoreService().getAllUsersPage(
+        pageSizePerCollection: 10,
+        cursors: Map<String, DocumentSnapshot<Map<String, dynamic>>>.from(_userCursors),
+      );
+      if (!mounted) return;
 
+      _userCursors.addAll(page.cursors);
+      final users = loadMore ? [..._allUsers, ...page.users] : page.users;
       setState(() {
         _allUsers = users;
         _pendingUsers = users.where((u) => !u.isVerified).toList();
         _verifiedUsers = users.where((u) => u.isVerified).toList();
         _rejectedUsers = users.where((u) => u.status == 'rejected').toList();
+        _hasMoreUsers = page.hasMore;
         _isLoading = false;
+        _isLoadingMore = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading users: $e')),
-        );
-      }
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _isLoadingMore = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading users: $e')),
+      );
     }
   }
 
@@ -98,7 +121,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: _loadUsers,
+                    onPressed: () => _loadUsers(),
                     icon: const Icon(Icons.refresh),
                     label: const Text('Refresh'),
                   ),
@@ -111,7 +134,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      'Total Users',
+                      'Loaded Users',
                       _allUsers.length.toString(),
                       Icons.people,
                       Colors.blue,
@@ -120,7 +143,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatCard(
-                      'Pending Verification',
+                      'Loaded Pending Verification',
                       _pendingUsers.length.toString(),
                       Icons.pending,
                       Colors.orange,
@@ -129,7 +152,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatCard(
-                      'Verified Users',
+                      'Loaded Verified Users',
                       _verifiedUsers.length.toString(),
                       Icons.verified,
                       Colors.green,
@@ -138,7 +161,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatCard(
-                      'Rejected',
+                      'Loaded Rejected',
                       _rejectedUsers.length.toString(),
                       Icons.cancel,
                       Colors.red,
@@ -157,19 +180,19 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             controller: _tabController,
             tabs: [
               Tab(
-                text: 'All Users (${_allUsers.length})',
+                text: 'Loaded Users (${_allUsers.length})',
                 icon: const Icon(Icons.people),
               ),
               Tab(
-                text: 'Pending (${_pendingUsers.length})',
+                text: 'Pending loaded (${_pendingUsers.length})',
                 icon: const Icon(Icons.pending),
               ),
               Tab(
-                text: 'Verified (${_verifiedUsers.length})',
+                text: 'Verified loaded (${_verifiedUsers.length})',
                 icon: const Icon(Icons.verified),
               ),
               Tab(
-                text: 'Rejected (${_rejectedUsers.length})',
+                text: 'Rejected loaded (${_rejectedUsers.length})',
                 icon: const Icon(Icons.cancel),
               ),
             ],
@@ -254,8 +277,26 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
-      itemCount: users.length,
+      itemCount: users.length + (_hasMoreUsers ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index >= users.length) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: TextButton.icon(
+                onPressed: _isLoadingMore ? null : () => _loadUsers(loadMore: true),
+                icon: _isLoadingMore
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.expand_more),
+                label: Text(_isLoadingMore ? 'Loading more users…' : 'Load more users'),
+              ),
+            ),
+          );
+        }
         final user = users[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 8),
@@ -527,11 +568,83 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     );
   }
 
-  void _editUser(UserModel user) {
-    // TODO: Implement user editing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('User editing coming soon!')),
+  Future<void> _editUser(UserModel user) async {
+    final nameController = TextEditingController(text: user.name ?? '');
+    final phoneController = TextEditingController(text: user.phone);
+    final formKey = GlobalKey<FormState>();
+
+    final values = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Edit User Profile'),
+        content: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name / Organization'),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter a name.'
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'Phone number'),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter a phone number.'
+                      : null,
+                ),
+                const SizedBox(height: 8),
+                Text('Email and account role are read-only in this form: ${user.email}'),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (!formKey.currentState!.validate()) return;
+              Navigator.of(dialogContext).pop({
+                'name': nameController.text.trim(),
+                'phone': phoneController.text.trim(),
+              });
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
+    nameController.dispose();
+    phoneController.dispose();
+    if (values == null) return;
+
+    try {
+      await FirestoreService().updateUserProfile(
+        userId: user.id,
+        name: values['name']!,
+        phone: values['phone']!,
+      );
+      if (!mounted) return;
+      await _loadUsers();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile updated for ${user.email}.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not update profile: $error')),
+      );
+    }
   }
 }
 

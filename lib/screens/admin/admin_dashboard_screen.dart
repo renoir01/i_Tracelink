@@ -130,6 +130,7 @@ class PendingUsersTab extends StatelessWidget {
                 .collection('users')
                 .where('isVerified', isEqualTo: false)
                 .orderBy('createdAt', descending: true)
+                .limit(50)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
@@ -193,7 +194,7 @@ class VerifiedUsersTab extends StatelessWidget {
               const Icon(Icons.verified_user, color: AppTheme.successColor),
               const SizedBox(width: 8),
               Text(
-                'Verified Users',
+                'Recent Verified Users',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -208,6 +209,7 @@ class VerifiedUsersTab extends StatelessWidget {
                 .collection('users')
                 .where('isVerified', isEqualTo: true)
                 .orderBy('createdAt', descending: true)
+                .limit(50)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {

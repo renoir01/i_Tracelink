@@ -299,10 +299,93 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
   }
 
   Future<void> _editSeedBatch(SeedBatchModel batch) async {
-    // TODO: Implement edit functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit functionality coming soon!')),
+    final quantityController =
+        TextEditingController(text: batch.quantity.toString());
+    var selectedStatus = batch.status;
+    final formKey = GlobalKey<FormState>();
+
+    final updates = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text('Update batch ${batch.batchNumber}'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: quantityController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Remaining quantity (kg)',
+                    helperText: 'Quantity can only be reduced from the recorded amount.',
+                  ),
+                  validator: (value) {
+                    final quantity = double.tryParse(value?.trim() ?? '');
+                    if (quantity == null || quantity < 0) {
+                      return 'Enter a valid quantity of 0 or more.';
+                    }
+                    if (quantity > batch.quantity) {
+                      return 'Quantity cannot exceed ${batch.quantity} kg.';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: selectedStatus,
+                  decoration: const InputDecoration(labelText: 'Batch status'),
+                  items: const [
+                    DropdownMenuItem(value: 'active', child: Text('Active')),
+                    DropdownMenuItem(value: 'expired', child: Text('Expired')),
+                    DropdownMenuItem(value: 'depleted', child: Text('Depleted')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setDialogState(() => selectedStatus = value);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (!formKey.currentState!.validate()) return;
+                Navigator.of(dialogContext).pop({
+                  'quantity': double.parse(quantityController.text.trim()),
+                  'status': selectedStatus,
+                });
+              },
+              child: const Text('Save changes'),
+            ),
+          ],
+        ),
+      ),
     );
+    quantityController.dispose();
+
+    if (updates == null) return;
+    try {
+      await FirestoreService().updateSeedBatch(batch.id, updates);
+      if (!mounted) return;
+      await _loadSeedInventory();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seed batch updated successfully.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not update seed batch: $e')),
+      );
+    }
   }
 
   Future<void> _deleteSeedBatch(SeedBatchModel batch) async {

@@ -23,6 +23,7 @@ class BatchTrackingScreen extends StatelessWidget {
             .collection('batches')
             .where('farmerId', isEqualTo: userId)
             .orderBy('registrationDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

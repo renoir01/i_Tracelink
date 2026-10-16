@@ -241,6 +241,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection(AppConstants.ordersCollection)
           .where('buyerId', isEqualTo: userId)
+          .limit(100)
           .snapshots(),
       builder: (context, snapshot) {
         final orders = snapshot.data?.docs ?? [];

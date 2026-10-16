@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/order_model.dart';
 import '../../models/cooperative_model.dart';
@@ -79,11 +80,19 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
           if (_order != null)
             IconButton(
               icon: const Icon(Icons.share),
-              onPressed: () {
-                // TODO: Share functionality
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Share feature coming soon!')),
-                );
+              onPressed: () async {
+                final order = _order!;
+                final report = [
+                  'iTraceLink Traceability Chain',
+                  'Order ID: ${order.id}',
+                  'Order type: ${order.orderType}',
+                  'Buyer ID: ${order.buyerId}',
+                  'Seller ID: ${order.sellerId}',
+                  'Quantity: ${order.quantity} kg',
+                  'Status: ${order.status}',
+                  'Requested: ${order.requestDate.toIso8601String()}',
+                ].join('\\n');
+                await Share.share(report, subject: 'iTraceLink Traceability Chain');
               },
             ),
         ],

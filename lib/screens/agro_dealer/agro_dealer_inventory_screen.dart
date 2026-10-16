@@ -29,6 +29,7 @@ class AgroDealerInventoryScreen extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('agro_dealer_inventory')
             .where('agroDealerId', isEqualTo: userId)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
