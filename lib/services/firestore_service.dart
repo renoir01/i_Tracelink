@@ -693,7 +693,18 @@ class FirestoreService {
   // ========== USER MANAGEMENT METHODS ==========
 
   // Get all users for admin panel
-  Future<List<UserModel>> getAllUsers() async {
+  /// Loads a bounded number of profile documents from each user-type collection.
+  /// The admin screen paginates this bounded result locally so opening it never
+  /// triggers an unbounded read across every profile in Firestore.
+  Future<List<UserModel>> getAllUsers({int limitPerCollection = 50}) async {
+    if (limitPerCollection < 1 || limitPerCollection > 100) {
+      throw ArgumentError.value(
+        limitPerCollection,
+        'limitPerCollection',
+        'Must be between 1 and 100',
+      );
+    }
+
     try {
       final collections = [
         AppConstants.seedProducersCollection,
@@ -703,24 +714,20 @@ class FirestoreService {
         AppConstants.institutionsCollection,
       ];
 
-      List<UserModel> allUsers = [];
-
-      for (String collection in collections) {
-        final snapshot = await _firestore.collection(collection).get();
-        for (var doc in snapshot.docs) {
-          final data = doc.data();
-          final userModel = UserModel.fromFirestore(doc);
-          allUsers.add(userModel);
-        }
+      final allUsers = <UserModel>[];
+      for (final collection in collections) {
+        final snapshot = await _firestore
+            .collection(collection)
+            .limit(limitPerCollection)
+            .get();
+        allUsers.addAll(snapshot.docs.map(UserModel.fromFirestore));
       }
 
-      // Sort by creation date (newest first)
       allUsers.sort((a, b) {
-        final aDate = a.createdAt ?? DateTime.now();
-        final bDate = b.createdAt ?? DateTime.now();
+        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         return bDate.compareTo(aDate);
       });
-
       return allUsers;
     } catch (e) {
       throw Exception('Failed to get all users: $e');
