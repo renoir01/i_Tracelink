@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
 
@@ -392,12 +395,7 @@ class ProductInformationScreen extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Add to trusted sellers
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Added to trusted sellers!')),
-              );
-            },
+            onPressed: () => _addToTrustedSellers(context),
             icon: const Icon(Icons.favorite),
             label: const Text('Add Seller to Trusted List'),
             style: ElevatedButton.styleFrom(
@@ -422,11 +420,22 @@ class ProductInformationScreen extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: Contact seller
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Contact feature coming soon!')),
-                  );
+                onPressed: () async {
+                  final phone = batchData['sellerPhone'] ??
+                      batchData['phoneNumber'] ??
+                      batchData['phone'];
+                  if (phone == null || phone.toString().trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Seller contact information is not available.')),
+                    );
+                    return;
+                  }
+                  final uri = Uri(scheme: 'tel', path: phone.toString().trim());
+                  if (!await launchUrl(uri) && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Could not open the phone dialer.')),
+                    );
+                  }
                 },
                 icon: const Icon(Icons.phone),
                 label: const Text('Contact'),
@@ -436,6 +445,61 @@ class ProductInformationScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _addToTrustedSellers(BuildContext context) async {
+    final userId = Provider.of<AuthProvider>(context, listen: false).userModel?.id;
+    final sellerId = (batchData['farmerId'] ??
+            batchData['sellerId'] ??
+            batchData['producerId'] ??
+            '')
+        .toString()
+        .trim();
+    final sellerName = (batchData['cooperativeName'] ??
+            batchData['sellerName'] ??
+            batchData['farmerName'] ??
+            'Verified seller')
+        .toString();
+
+    if (userId == null || userId.isEmpty || sellerId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seller details are not available for this batch.')),
+      );
+      return;
+    }
+
+    final reference = FirebaseFirestore.instance
+        .collection('trusted_sellers')
+        .doc('${userId}_${sellerId}');
+    try {
+      final existing = await reference.get();
+      if (existing.exists) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('This seller is already in your trusted list.')),
+          );
+        }
+        return;
+      }
+      await reference.set({
+        'consumerId': userId,
+        'sellerId': sellerId,
+        'sellerName': sellerName,
+        'sellerType': (batchData['sellerType'] ?? 'farmer').toString(),
+        'createdAt': Timestamp.now(),
+      });
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Seller added to your trusted list.')),
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save trusted seller: $error')),
+        );
+      }
+    }
   }
 
   void _showRatingDialog(BuildContext context) {
