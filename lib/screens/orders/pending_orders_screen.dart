@@ -36,6 +36,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
             .where('sellerId', isEqualTo: userId)
             .where('status', isEqualTo: 'pending')
             .orderBy('requestDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
