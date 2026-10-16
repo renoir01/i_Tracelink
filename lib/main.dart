@@ -20,33 +20,6 @@ import 'utils/constants.dart';
 import 'utils/app_localizations.dart';
 import 'utils/material_localizations_rw.dart';
 import 'widgets/protected_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-/// DEBUG: List all documents in admins collection
-Future<void> _debugListAdminDocuments() async {
-  try {
-    debugPrint('\n🔍 ===== ADMIN DOCUMENTS DEBUG =====');
-    final snapshot = await FirebaseFirestore.instance
-        .collection('admins')
-        .get();
-    
-    debugPrint('📋 Total documents in admins collection: ${snapshot.docs.length}');
-    
-    if (snapshot.docs.isEmpty) {
-      debugPrint('⚠️  NO DOCUMENTS FOUND in admins collection!');
-      debugPrint('💡 You need to create a document in Firebase Console');
-    } else {
-      for (var doc in snapshot.docs) {
-        debugPrint('\n📄 Document ID: "${doc.id}"');
-        debugPrint('   Data: ${doc.data()}');
-        debugPrint('   isActive: ${doc.data()['isActive']}');
-      }
-    }
-    debugPrint('===== END DEBUG =====\n');
-  } catch (e) {
-    debugPrint('❌ Error listing admin documents: $e');
-  }
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,8 +55,6 @@ void main() async {
 
     debugPrint('✅ Firebase Crashlytics initialized successfully');
 
-    // DEBUG: List all admin documents
-    // await _debugListAdminDocuments();
   } catch (e) {
     debugPrint('⚠️ Firebase initialization error: $e');
   }
