@@ -153,8 +153,8 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == resource.data.userId
-        && request.resource.data.isVerified == resource.data.isVerified
-        && request.resource.data.isActive == resource.data.isActive;
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasNone(['isVerified', 'isActive']);
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -250,8 +250,8 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == resource.data.userId
-        && request.resource.data.isVerified == resource.data.isVerified
-        && request.resource.data.isActive == resource.data.isActive;
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasNone(['isVerified', 'isActive']);
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -265,8 +265,8 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == resource.data.userId
-        && request.resource.data.isVerified == resource.data.isVerified
-        && request.resource.data.isActive == resource.data.isActive;
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasNone(['isVerified', 'isActive']);
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -337,8 +337,8 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == resource.data.userId
-        && request.resource.data.isVerified == resource.data.isVerified
-        && request.resource.data.isActive == resource.data.isActive;
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasNone(['isVerified', 'isActive']);
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -352,8 +352,8 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == resource.data.userId
-        && request.resource.data.isVerified == resource.data.isVerified
-        && request.resource.data.isActive == resource.data.isActive;
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasNone(['isVerified', 'isActive']);
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
