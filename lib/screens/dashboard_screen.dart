@@ -235,8 +235,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.eco, color: Colors.green),
             ),
-            title: const Text('Register Planting'),
-            subtitle: const Text('Record new bean planting'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardRegisterPlanting')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardRegisterPlantingDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -257,8 +257,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.agriculture, color: Colors.orange),
             ),
-            title: const Text('Harvest Management'),
-            subtitle: const Text('Update harvest information'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardHarvestManagement')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardHarvestDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -279,8 +279,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.receipt_long, color: AppTheme.primaryColor),
             ),
-            title: const Text('My Orders'),
-            subtitle: const Text('View and respond to orders'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardMyOrders')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardOrdersDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -307,8 +307,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Icon(Icons.inventory, color: AppTheme.primaryColor),
             ),
-            title: const Text('Manage Seed Inventory'),
-            subtitle: const Text('Update seed stock and varieties'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardManageSeedInventory')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardSeedInventoryDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -329,8 +329,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.agriculture, color: Colors.teal),
             ),
-            title: const Text('Seed Distribution'),
-            subtitle: const Text('Track seed distributions to farmers'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardSeedDistribution')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardSeedDistributionDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -357,8 +357,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Icon(Icons.inventory_2, color: AppTheme.primaryColor),
             ),
-            title: const Text('Manage Inventory'),
-            subtitle: const Text('Update seed stock and varieties'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardManageInventory')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardSeedInventoryDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -380,7 +380,7 @@ class DashboardScreen extends StatelessWidget {
               child: const Icon(Icons.receipt_long, color: Colors.orange),
             ),
             title: const Text('Sales Tracking'),
-            subtitle: const Text('View and record seed sales'),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardAgroSalesDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -407,8 +407,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.history, color: Colors.orange),
             ),
-            title: const Text('Purchase History'),
-            subtitle: const Text('View your purchases'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardPurchaseHistory')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardPurchaseHistoryDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -429,8 +429,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.favorite, color: Colors.green),
             ),
-            title: const Text('Nutritional Tracking'),
-            subtitle: const Text('Track your iron intake'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardNutritionalTracking')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardNutritionalTrackingDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -451,8 +451,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.school, color: Colors.blue),
             ),
-            title: const Text('Education Center'),
-            subtitle: const Text('Learn about biofortified beans'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardEducationCenter')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardEducationCenterDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -479,7 +479,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
             ),
-            title: const Text('My Orders'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardMyOrders')),
             subtitle: const Text('View and place orders'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
@@ -501,8 +501,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.verified, color: Colors.green),
             ),
-            title: const Text('Verify Traceability'),
-            subtitle: const Text('Check product supply chain'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardVerifyTraceability')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardVerifyTraceabilityDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -528,8 +528,8 @@ class DashboardScreen extends StatelessWidget {
             ),
             child: Icon(Icons.qr_code_scanner, color: AppTheme.primaryColor),
           ),
-          title: const Text('Scan & Verify Product'),
-          subtitle: const Text('Scan QR code to verify authenticity'),
+          title: Text(AppLocalizations.of(context)!.translate('dashboardScanVerify')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('dashboardScanVerifyDesc')),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () {
             Navigator.of(context).push(
@@ -550,8 +550,8 @@ class DashboardScreen extends StatelessWidget {
             ),
             child: const Icon(Icons.account_circle, color: Colors.blue),
           ),
-          title: const Text('Profile'),
-          subtitle: const Text('View and edit your profile'),
+          title: Text(AppLocalizations.of(context)!.translate('dashboardProfile')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('dashboardProfileDesc')),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () {
             _navigateToProfile(context, userType);
@@ -568,7 +568,7 @@ class DashboardScreen extends StatelessWidget {
             ),
             child: const Icon(Icons.help, color: Colors.green),
           ),
-          title: const Text('Help & Support'),
+          title: Text(AppLocalizations.of(context)!.translate('dashboardHelpSupport')),
           subtitle: const Text('Call: 0780866714'),
           trailing: const Icon(Icons.phone, size: 16),
           onTap: () async {
@@ -579,7 +579,7 @@ class DashboardScreen extends StatelessWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Could not launch phone dialer. Please call 0780866714'),
+                    content: Text(AppLocalizations.of(context)!.translate('dashboardPhoneUnavailable')),
                   ),
                 );
               }
@@ -614,12 +614,12 @@ class DashboardScreen extends StatelessWidget {
       case AppConstants.consumerType:
         // For consumer, show a simple message or create a consumer profile screen
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Consumer profile coming soon!')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.translate('dashboardConsumerProfileComingSoon'))),
         );
         return;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile not available')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.translate('dashboardProfileUnavailable'))),
         );
         return;
     }
