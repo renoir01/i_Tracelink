@@ -819,6 +819,36 @@ class FirestoreService {
     }
   }
 
+  /// Update editable profile fields for a user in their role-specific profile.
+  Future<void> updateUserProfile({
+    required String userId,
+    required String name,
+    required String phone,
+  }) async {
+    final collections = [
+      AppConstants.seedProducersCollection,
+      AppConstants.agroDealersCollection,
+      AppConstants.cooperativesCollection,
+      AppConstants.aggregatorsCollection,
+      AppConstants.institutionsCollection,
+    ];
+
+    for (final collection in collections) {
+      final reference = _firestore.collection(collection).doc(userId);
+      final document = await reference.get();
+      if (document.exists) {
+        await reference.update({
+          'name': name.trim(),
+          'phone': phone.trim(),
+          'phoneNumber': phone.trim(),
+          'updatedAt': Timestamp.now(),
+        });
+        return;
+      }
+    }
+    throw Exception('No profile found for user $userId.');
+  }
+
   // Verify user account
   Future<void> verifyUser(String userId) async {
     try {
