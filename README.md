@@ -106,9 +106,12 @@ lib/
 - Firebase Analytics
 
 ### Integrations
-- Africa's Talking (SMS)
-- Google Maps API
-- Rwanda Mobile Money (Planned)
+- Firebase Authentication and Cloud Firestore
+- Google Maps API (configure public client restrictions and API quotas)
+- Rwanda Mobile Money (backend integration required before production)
+- Email/SMS provider integrations (backend integration required before production)
+
+**Security:** Never bundle `.env` or provider API secrets in the Flutter app. Mobile application assets and compiled values can be extracted. See [SECURITY.md](SECURITY.md) for the deployment checklist.
 
 ---
 
