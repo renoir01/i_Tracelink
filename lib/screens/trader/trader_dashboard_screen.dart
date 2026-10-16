@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 import 'inventory_management_screen.dart';
 import 'record_purchase_screen.dart';
 import 'sales_tracking_screen.dart';
