@@ -47,12 +47,9 @@ service cloud.firestore {
           || (resource.data.status == 'preparing'
             && request.resource.data.status == 'shipped'
             && orderChangedKeysAreOnly(['status', 'updatedAt', 'shippedAt']))
-          || (resource.data.status == 'shipped'
-            && request.resource.data.status == 'in_transit'
-            && orderChangedKeysAreOnly(['status', 'updatedAt', 'inTransitAt']))
-          || (resource.data.status == 'in_transit'
-            && request.resource.data.status == 'delivered'
-            && orderChangedKeysAreOnly(['status', 'updatedAt', 'deliveredAt']))
+          || (resource.data.status == 'delivered'
+            && request.resource.data.status == 'completed'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'completedAt']))
         );
     }
 
@@ -62,12 +59,15 @@ service cloud.firestore {
           (resource.data.status == 'pending'
             && request.resource.data.status == 'cancelled'
             && orderChangedKeysAreOnly(['status', 'updatedAt']))
-          || (resource.data.status == 'delivered'
+          || (resource.data.status == 'shipped'
             && request.resource.data.status == 'collected'
             && orderChangedKeysAreOnly(['status', 'updatedAt', 'collectedAt']))
-          || ((resource.data.status == 'delivered' || resource.data.status == 'collected')
-            && request.resource.data.status == 'completed'
-            && orderChangedKeysAreOnly(['status', 'updatedAt', 'completedAt']))
+          || (resource.data.status == 'collected'
+            && request.resource.data.status == 'in_transit'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'inTransitAt']))
+          || (resource.data.status == 'in_transit'
+            && request.resource.data.status == 'delivered'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'deliveredAt']))
         );
     }
 
@@ -187,7 +187,8 @@ service cloud.firestore {
         && request.resource.data.pricePerKg is number
         && request.resource.data.pricePerKg > 0
         && request.resource.data.totalAmount is number
-        && request.resource.data.totalAmount == request.resource.data.quantity * request.resource.data.pricePerKg
+        && request.resource.data.totalAmount >= (request.resource.data.quantity * request.resource.data.pricePerKg - 0.01)
+        && request.resource.data.totalAmount <= (request.resource.data.quantity * request.resource.data.pricePerKg + 0.01)
         && request.resource.data.status == 'pending'
         && request.resource.data.paymentStatus == 'pending'
         && request.resource.data.requestDate is timestamp
@@ -348,6 +349,8 @@ service cloud.firestore {
         && request.resource.data.orderId is string
         && exists(/databases/$(database)/documents/orders/$(request.resource.data.orderId))
         && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.buyerId == request.auth.uid
+        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.status == 'accepted'
+        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.paymentStatus in ['pending', 'unpaid']
         && request.resource.data.payeeId == get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.sellerId
         && request.resource.data.amount is number
         && request.resource.data.amount > 0
