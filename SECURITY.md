@@ -13,6 +13,7 @@ iTraceLink is a Flutter client backed by Firebase. Treat every value compiled in
 - Payment creation is allowed only for the authenticated buyer on an accepted order; the payee and amount must match that order and the new payment must be pending.
 - Payment documents cannot be updated or deleted by mobile clients, including signed-in admins. A trusted backend using the Firebase Admin SDK must verify provider callbacks and update payment/order state.
 - Transaction creation requires the authenticated account to be one of the named parties.
+- Notification reads are recipient-only; client creation is limited to the current user's own initial notification, and updates may only change unread to read. Cross-user order/payment notifications must move to a trusted backend to prevent recipient spoofing.
 - Admin login diagnostics no longer print administrator document contents or reveal whether an email has an admin record.
 - The default counter test that referenced a nonexistent `MyApp` widget has been replaced with model tests.
 - The tracked `.env` file is removed from this branch and is not declared as a Flutter asset. The file remains in Git history and must be treated as exposed until its credentials are rotated.
