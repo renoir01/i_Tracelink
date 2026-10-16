@@ -531,6 +531,7 @@ test('agro-dealer inventory validates owner and stock values', async () => {
     quality: 'certified',
     ironContent: 80,
     addedDate: stamp(),
+    status: 'in_stock',
   };
 
   await assertSucceeds(setDoc(doc(dealerDb, 'agro_dealer_inventory/item-1'), item));
