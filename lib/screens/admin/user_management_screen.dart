@@ -18,6 +18,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = true;
+  static const int _pageSize = 20;
+  int _visibleLimit = _pageSize;
   List<UserModel> _allUsers = [];
   List<UserModel> _pendingUsers = [];
   List<UserModel> _verifiedUsers = [];
@@ -40,10 +42,11 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     setState(() => _isLoading = true);
 
     try {
-      final users = await FirestoreService().getAllUsers();
+      final users = await FirestoreService().getAllUsers(limitPerCollection: 50);
 
       setState(() {
         _allUsers = users;
+        _visibleLimit = _pageSize;
         _pendingUsers = users.where((u) => !u.isVerified).toList();
         _verifiedUsers = users.where((u) => u.isVerified).toList();
         _rejectedUsers = users.where((u) => u.status == 'rejected').toList();
@@ -104,14 +107,19 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              Text(
+                'For performance, up to 50 profiles per user type are loaded at a time.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+              ),
+              const SizedBox(height: 16),
 
               // Stats Cards
               Row(
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      'Total Users',
+                      'Loaded Users',
                       _allUsers.length.toString(),
                       Icons.people,
                       Colors.blue,
@@ -252,11 +260,30 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       );
     }
 
+    final visibleUsers = users.take(_visibleLimit).toList();
+    final canShowMore = visibleUsers.length < users.length;
+
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
-      itemCount: users.length,
+      itemCount: visibleUsers.length + (canShowMore ? 1 : 0),
       itemBuilder: (context, index) {
-        final user = users[index];
+        if (index >= visibleUsers.length) {
+          final remaining = users.length - visibleUsers.length;
+          final count = remaining > _pageSize ? _pageSize : remaining;
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Center(
+              child: OutlinedButton.icon(
+                onPressed: () => setState(() {
+                  _visibleLimit = (_visibleLimit + _pageSize).clamp(0, users.length);
+                }),
+                icon: const Icon(Icons.expand_more),
+                label: Text('Load $count more'),
+              ),
+            ),
+          );
+        }
+        final user = visibleUsers[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
