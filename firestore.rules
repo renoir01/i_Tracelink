@@ -3,307 +3,303 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // ==================== HELPER FUNCTIONS ====================
 
-    // Check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Get the user's role from the users collection
-    function getUserRole() {
-      return isAuthenticated() ?
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType : null;
-    }
-
-    // Check if user is admin
+    // Admin privileges come from a separately managed, active admins/{email}
+    // document, never from a user-editable profile field.
     function isAdmin() {
-      return getUserRole() == 'admin';
+      return isAuthenticated()
+        && request.auth.token.email is string
+        && exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+        && get(/databases/$(database)/documents/admins/$(request.auth.token.email)).data.isActive == true;
     }
 
-    // Check if user owns the document (by userId field)
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Check if user is involved in an order (buyer or seller)
     function isOrderParticipant(orderData) {
-      return isAuthenticated() &&
-             (orderData.buyerId == request.auth.uid ||
-              orderData.sellerId == request.auth.uid);
+      return isAuthenticated()
+        && (orderData.buyerId == request.auth.uid
+          || orderData.sellerId == request.auth.uid);
+    }
+
+    function isAllowedPublicUserType(userType) {
+      return userType in [
+        'seed_producer',
+        'agro_dealer',
+        'cooperative',
+        'farmer',
+        'aggregator',
+        'institution',
+        'school',
+        'hospital',
+        'consumer'
+      ];
     }
 
     // ==================== USERS COLLECTION ====================
 
     match /users/{userId} {
-      // Anyone authenticated can read user profiles (for displaying names, etc.)
+      // Authenticated users can view profiles for supply-chain interactions.
       allow read: if isAuthenticated();
-      // Users can create their own profile during registration
-      allow create: if isAuthenticated() && request.auth.uid == userId;
-      // Users can only update their own profile
-      allow update: if isOwner(userId);
-      // Only admins can delete users
+
+      // Public registration can create only a non-admin account and a known
+      // set of profile fields. Admin privileges are managed separately.
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly([
+          'userType', 'name', 'email', 'phone', 'phoneNumber',
+          'language', 'createdAt', 'isVerified', 'location', 'status'
+        ])
+        && request.resource.data.userType is string
+        && isAllowedPublicUserType(request.resource.data.userType)
+        && request.resource.data.isVerified == false;
+
+      // Users may edit profile details only. Verification and role fields are
+      // protected; active admins may update verification metadata.
+      allow update: if (
+          isOwner(userId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'name', 'phone', 'phoneNumber', 'language', 'location'
+          ])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'verifiedAt', 'verifiedBy', 'status'
+          ])
+        );
+
       allow delete: if isAdmin();
+    }
+
+    // Admin records are maintained outside public registration. A user may
+    // read only their own email-keyed record to complete the admin login check.
+    match /admins/{adminId} {
+      allow get: if isAuthenticated() && request.auth.token.email == adminId;
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
     // ==================== COOPERATIVES/FARMERS ====================
 
     match /cooperatives/{coopId} {
-      // Anyone authenticated can read (for browsing available products)
       allow read: if isAuthenticated();
-      // Only cooperative users can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'cooperative';
-      // Only the owner can update their cooperative data
+      allow create: if isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'cooperative';
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Only admins or the owner can delete
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== BATCHES ====================
 
     match /batches/{batchId} {
-      // Anyone authenticated can read (for browsing)
       allow read: if isAuthenticated();
-      // Only farmers/cooperatives can create batches
-      allow create: if isAuthenticated() &&
-                      getUserRole() in ['cooperative', 'farmer'];
-      // Only the farmer who owns the batch can update it
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['cooperative', 'farmer'];
       allow update: if isAuthenticated() && resource.data.farmerId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.farmerId == request.auth.uid;
     }
 
     // ==================== ORDERS ====================
 
     match /orders/{orderId} {
-      // Only buyer, seller, or admin can read the order
-      allow read: if isAuthenticated() &&
-                     (resource.data.buyerId == request.auth.uid ||
-                      resource.data.sellerId == request.auth.uid ||
-                      isAdmin());
-      // Anyone authenticated can create an order (as buyer)
-      allow create: if isAuthenticated();
-      // Only buyer or seller can update (to change status, etc.)
+      allow read: if isAuthenticated()
+        && (resource.data.buyerId == request.auth.uid
+          || resource.data.sellerId == request.auth.uid
+          || isAdmin());
+
+      // The authenticated user must be the buyer; cannot place an order as
+      // another user or create an order addressed to themselves.
+      allow create: if isAuthenticated()
+        && request.resource.data.buyerId == request.auth.uid
+        && request.resource.data.sellerId is string
+        && request.resource.data.sellerId != request.auth.uid;
+
+      // TODO: constrain mutable fields and valid status transitions after
+      // reconciling every order workflow in the app.
       allow update: if isAuthenticated() && isOrderParticipant(resource.data);
-      // Only admin can delete orders
       allow delete: if isAdmin();
     }
 
     // ==================== NOTIFICATIONS ====================
 
     match /notifications/{notificationId} {
-      // Users can only read their own notifications
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // System/admin can create notifications for users
       allow create: if isAuthenticated();
-      // Users can update their own notifications (mark as read)
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Users can delete their own notifications
-      allow delete: if isAuthenticated() &&
-                       (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     // ==================== SEED PRODUCERS ====================
 
     match /seed_producers/{producerId} {
-      // Anyone can read (for browsing seed sources)
       allow read: if isAuthenticated();
-      // Only seed producer users can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'seed_producer';
-      // Only owner can update
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer';
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== AGRO DEALERS ====================
 
     match /agro_dealers/{dealerId} {
-      // Anyone can read (for browsing seed dealers)
       allow read: if isAuthenticated();
-      // Only agro dealer users can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'agro_dealer';
-      // Only owner can update
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer';
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== SEED BATCHES ====================
 
     match /seed_batches/{batchId} {
-      // Anyone can read (for traceability)
       allow read: if isAuthenticated();
-      // Seed producers and agro dealers can create seed batches
-      allow create: if isAuthenticated() &&
-                      getUserRole() in ['seed_producer', 'agro_dealer'];
-      // Only owner can update
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['seed_producer', 'agro_dealer'];
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== SEED DISTRIBUTIONS ====================
 
     match /seed_distributions/{distributionId} {
-      // Anyone can read (for traceability)
       allow read: if isAuthenticated();
-      // Seed producers can create distributions
-      allow create: if isAuthenticated() && getUserRole() == 'seed_producer';
-      // Seed producer or agro dealer involved can update
-      allow update: if isAuthenticated() &&
-                       (resource.data.producerId == request.auth.uid ||
-                        resource.data.dealerId == request.auth.uid);
-      // Admin only can delete
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer';
+      allow update: if isAuthenticated()
+        && (resource.data.producerId == request.auth.uid
+          || resource.data.dealerId == request.auth.uid);
       allow delete: if isAdmin();
     }
 
     // ==================== AGRO DEALER SALES ====================
 
     match /agro_dealer_sales/{saleId} {
-      // Buyer and seller can read
-      allow read: if isAuthenticated() &&
-                     (resource.data.dealerId == request.auth.uid ||
-                      resource.data.buyerId == request.auth.uid ||
-                      isAdmin());
-      // Agro dealers can create sales
-      allow create: if isAuthenticated() && getUserRole() == 'agro_dealer';
-      // Dealer or buyer can update
-      allow update: if isAuthenticated() &&
-                       (resource.data.dealerId == request.auth.uid ||
-                        resource.data.buyerId == request.auth.uid);
-      // Admin only can delete
+      allow read: if isAuthenticated()
+        && (resource.data.dealerId == request.auth.uid
+          || resource.data.buyerId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer';
+      allow update: if isAuthenticated()
+        && (resource.data.dealerId == request.auth.uid
+          || resource.data.buyerId == request.auth.uid);
       allow delete: if isAdmin();
     }
 
     // ==================== AGRO DEALER INVENTORY ====================
 
     match /agro_dealer_inventory/{inventoryId} {
-      // Anyone can read available inventory
       allow read: if isAuthenticated();
-      // Only agro dealers can create inventory
-      allow create: if isAuthenticated() && getUserRole() == 'agro_dealer';
-      // Only owner can update their inventory
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer';
       allow update: if isAuthenticated() && resource.data.dealerId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.dealerId == request.auth.uid;
     }
 
     // ==================== AGGREGATOR INVENTORY ====================
 
     match /inventory/{inventoryId} {
-      // Anyone can read (for browsing available products)
       allow read: if isAuthenticated();
-      // Only aggregators/traders can create inventory
-      allow create: if isAuthenticated() && getUserRole() == 'aggregator';
-      // Only trader who owns the inventory can update
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator';
       allow update: if isAuthenticated() && resource.data.traderId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.traderId == request.auth.uid;
     }
 
     // ==================== AGGREGATORS ====================
 
     match /aggregators/{aggregatorId} {
-      // Anyone can read (for browsing)
       allow read: if isAuthenticated();
-      // Only aggregators can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'aggregator';
-      // Only owner can update
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator';
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== INSTITUTIONS ====================
 
     match /institutions/{institutionId} {
-      // Anyone can read
       allow read: if isAuthenticated();
-      // Only institutions can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'institution';
-      // Only owner can update
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['institution', 'school', 'hospital'];
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== TRANSACTIONS ====================
 
     match /transactions/{transactionId} {
-      // Only parties involved or admin can read
-      allow read: if isAuthenticated() &&
-                     (resource.data.fromUserId == request.auth.uid ||
-                      resource.data.toUserId == request.auth.uid ||
-                      isAdmin());
-      // Anyone can create transactions
-      allow create: if isAuthenticated();
-      // No updates allowed to transactions (immutable)
+      allow read: if isAuthenticated()
+        && (resource.data.fromUserId == request.auth.uid
+          || resource.data.toUserId == request.auth.uid
+          || isAdmin());
+
+      // A user can create a transaction record only when they are one of its
+      // named parties, preventing arbitrary records attributed to others.
+      allow create: if isAuthenticated()
+        && (request.resource.data.fromUserId == request.auth.uid
+          || request.resource.data.toUserId == request.auth.uid);
+
       allow update: if false;
-      // Admin only can delete
       allow delete: if isAdmin();
     }
 
     // ==================== PAYMENTS ====================
 
     match /payments/{paymentId} {
-      // Only payer, payee, or admin can read
-      allow read: if isAuthenticated() &&
-                     (resource.data.userId == request.auth.uid ||
-                      resource.data.recipientId == request.auth.uid ||
-                      isAdmin());
-      // Anyone can create payments
-      allow create: if isAuthenticated();
-      // Only admin can update payments (to mark as completed, failed, etc.)
+      allow read: if isAuthenticated()
+        && (resource.data.payerId == request.auth.uid
+          || resource.data.payeeId == request.auth.uid
+          || isAdmin());
+
+      // The payment initiator must be the authenticated payer. Payment status
+      // changes should be made by a trusted backend, not by client apps.
+      allow create: if isAuthenticated()
+        && request.resource.data.payerId == request.auth.uid
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.orderId is string;
+
       allow update: if isAdmin();
-      // Admin only can delete
       allow delete: if isAdmin();
     }
 
     // ==================== CERTIFICATIONS ====================
 
     match /certifications/{certificationId} {
-      // Anyone can read (public certifications)
       allow read: if isAuthenticated();
-      // Only the certified entity can create their certification
-      allow create: if isAuthenticated();
-      // Owner or admin can update
-      allow update: if isAuthenticated() &&
-                       (resource.data.userId == request.auth.uid || isAdmin());
-      // Admin only can delete
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
 
     // ==================== CONSUMER PURCHASES ====================
 
     match /consumer_purchases/{purchaseId} {
-      // Anyone can read (for traceability verification)
       allow read: if isAuthenticated();
-      // Anyone can create consumer purchases (when scanning QR codes)
       allow create: if isAuthenticated();
-      // No updates allowed (immutable traceability record)
       allow update: if false;
-      // Admin only can delete
       allow delete: if isAdmin();
     }
 
     // ==================== ADMIN COLLECTIONS ====================
 
     match /admin_logs/{logId} {
-      // Only admins can read logs
-      allow read: if isAdmin();
-      // Only admins can write logs
-      allow write: if isAdmin();
+      allow read, write: if isAdmin();
     }
 
     match /system_settings/{settingId} {
-      // Anyone can read system settings
       allow read: if isAuthenticated();
-      // Only admins can modify settings
       allow write: if isAdmin();
     }
 
     // ==================== CATCH-ALL (DENY BY DEFAULT) ====================
 
-    // Deny access to any collection not explicitly defined above
     match /{document=**} {
       allow read, write: if false;
     }
