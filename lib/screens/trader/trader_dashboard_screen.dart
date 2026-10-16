@@ -22,7 +22,7 @@ class TraderDashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppLocalizations.of(context)!.translate('traderDashboard')),
+        title: Text(AppLocalizations.of(context)!.translate('traderDashboard')),
         actions: [
           IconButton(
             tooltip: AppLocalizations.of(context)!.translate('signOut'),
