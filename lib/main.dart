@@ -22,13 +22,15 @@ import 'widgets/protected_route.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+  var firebaseInitialized = false;
+
   // Initialize Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    debugPrint('✅ Firebase initialized successfully');
+    firebaseInitialized = true;
+    debugPrint('Firebase initialized successfully');
 
     // Initialize Firebase Crashlytics
     // This catches and reports all Flutter framework errors
@@ -46,8 +48,14 @@ void main() async {
 
     debugPrint('✅ Firebase Crashlytics initialized successfully');
 
-  } catch (e) {
-    debugPrint('⚠️ Firebase initialization error: $e');
+  } catch (e, stackTrace) {
+    debugPrint('Firebase initialization failed: $e');
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
+  if (!firebaseInitialized) {
+    runApp(const StartupErrorApp());
+    return;
   }
 
   // Initialize Payment Service
@@ -136,6 +144,46 @@ class iTraceLinkApp extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+
+/// Shown when Firebase cannot initialize. Avoid building screens that access
+/// Firebase singletons when the default Firebase app is unavailable.
+class StartupErrorApp extends StatelessWidget {
+  const StartupErrorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.cloud_off, size: 56),
+                  const SizedBox(height: 16),
+                  Text(
+                    'iTraceLink could not connect to its services.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Check your connection and try again. If the problem continues, contact support.',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
