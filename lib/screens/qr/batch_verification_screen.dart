@@ -25,7 +25,6 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
 
-  bool _isVerified = false;
 
   @override
   void initState() {
@@ -85,7 +84,6 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
           }
 
           final batch = snapshot.data!;
-          _isVerified = true;
 
           return _buildVerifiedState(batch);
         },
@@ -336,7 +334,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    '✓ Verified Authentic',
+                    '✓ Batch Record Found',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -383,6 +381,17 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                 ),
 
                 const SizedBox(height: 16),
+
+                // A stored batch record alone does not prove certification or authenticity.
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'This confirms that a batch record exists in iTraceLink. '
+                    'Certification and authenticity must be independently verified.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                  ),
+                ),
 
                 // Certification Card
                 _buildInfoCard(
