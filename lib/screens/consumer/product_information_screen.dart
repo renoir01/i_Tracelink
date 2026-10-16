@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
@@ -23,9 +24,16 @@ class ProductInformationScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
-              // TODO: Share functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Share feature coming soon!')),
+              final batchNumber = batchData['batchNumber'] ?? batchId;
+              final variety = batchData['beanVariety'] ?? batchData['variety'] ?? 'Not specified';
+              final status = batchData['status'] ?? 'Not specified';
+              Share.share(
+                'iTraceLink product information\n'
+                'Batch: $batchNumber\n'
+                'Variety: $variety\n'
+                'Status: $status\n'
+                'Traceability ID: $batchId',
+                subject: 'iTraceLink product $batchNumber',
               );
             },
           ),
