@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
@@ -14,33 +14,23 @@ class RecordPurchaseScreen extends StatefulWidget {
 }
 
 class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
+  final MobileScannerController controller = MobileScannerController();
   bool isProcessing = false;
   String? scannedBatchId;
 
-  @override
-  void reassemble() {
-    super.reassemble();
-    if (controller != null) {
-      controller!.pauseCamera();
-      controller!.resumeCamera();
+  void _onDetect(BarcodeCapture capture) {
+    if (isProcessing) return;
+    for (final barcode in capture.barcodes) {
+      final batchId = barcode.rawValue?.trim();
+      if (batchId == null || batchId.isEmpty) continue;
+      setState(() {
+        isProcessing = true;
+        scannedBatchId = batchId;
+      });
+      controller.stop();
+      _processBatch(batchId);
+      return;
     }
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) async {
-      if (!isProcessing && scanData.code != null) {
-        setState(() {
-          isProcessing = true;
-          scannedBatchId = scanData.code;
-        });
-
-        await controller.pauseCamera();
-        await _processBatch(scanData.code!);
-      }
-    });
   }
 
   Future<void> _processBatch(String batchId) async {
@@ -77,8 +67,8 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
         _showError('Error processing batch: $e');
       }
     } finally {
-      setState(() => isProcessing = false);
-      controller?.resumeCamera();
+      if (mounted) setState(() => isProcessing = false);
+      if (mounted) await controller.start();
     }
   }
 
@@ -109,8 +99,8 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              setState(() => isProcessing = false);
-              controller?.resumeCamera();
+              if (mounted) setState(() => isProcessing = false);
+              if (mounted) controller.start();
             },
             child: const Text('Try Again'),
           ),
@@ -121,7 +111,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -172,16 +162,9 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
           // QR Scanner
           Expanded(
             flex: 5,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-                borderColor: AppTheme.primaryColor,
-                borderRadius: 10,
-                borderLength: 30,
-                borderWidth: 10,
-                cutOutSize: 250,
-              ),
+            child: MobileScanner(
+              controller: controller,
+              onDetect: _onDetect,
             ),
           ),
 
