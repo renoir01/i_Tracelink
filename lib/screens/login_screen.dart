@@ -40,7 +40,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (success) {
-        Navigator.of(context).pushReplacementNamed('/dashboard');
+        // Let SplashScreen route the authenticated user to the dashboard for
+        // their actual role (including traders), rather than the generic one.
+        Navigator.of(context).pushReplacementNamed('/');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
