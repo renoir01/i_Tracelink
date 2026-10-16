@@ -14,6 +14,11 @@ import 'seed_producer/seed_distribution_screen.dart';
 import 'seed_inventory_screen.dart';
 import 'agro_dealer/agro_dealer_sales_screen.dart';
 import 'agro_dealer/agro_dealer_inventory_screen.dart';
+import 'trader/inventory_management_screen.dart';
+import 'trader/record_purchase_screen.dart';
+import 'trader/sales_tracking_screen.dart';
+import 'trader/supplier_management_screen.dart';
+import 'trader/trader_financial_dashboard_screen.dart';
 import 'consumer/consumer_scan_verify_screen.dart';
 import 'consumer/purchase_history_screen.dart';
 import 'consumer/nutritional_tracking_screen.dart';
@@ -394,6 +399,62 @@ class DashboardScreen extends StatelessWidget {
       ]);
     }
 
+    // Trader/Aggregator actions. Keep the trader module reachable from the main dashboard.
+    if (userType == AppConstants.aggregatorType) {
+      actions.addAll([
+        _buildActionCard(
+          context,
+          icon: Icons.qr_code_scanner,
+          color: AppTheme.primaryColor,
+          title: 'Record Purchase',
+          subtitle: 'Scan a batch QR code and record a purchase',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const RecordPurchaseScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.inventory_2,
+          color: Colors.blue,
+          title: 'Inventory Management',
+          subtitle: 'View available stock and inventory value',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const InventoryManagementScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.point_of_sale,
+          color: Colors.green,
+          title: 'Sales Tracking',
+          subtitle: 'Record sales and review sales history',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SalesTrackingScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.people,
+          color: Colors.orange,
+          title: 'Supplier Management',
+          subtitle: 'Review suppliers connected to your purchases',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SupplierManagementScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.account_balance_wallet,
+          color: Colors.purple,
+          title: 'Financial Dashboard',
+          subtitle: 'Review sales, costs, and stock value',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const TraderFinancialDashboardScreen(),
+          )),
+        ),
+      ]);
+    }
+
     // Consumer-specific actions
     if (userType == AppConstants.consumerType) {
       actions.addAll([
@@ -590,6 +651,32 @@ class DashboardScreen extends StatelessWidget {
     ]);
 
     return Column(children: actions);
+  }
+
+  Widget _buildActionCard(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
+      ),
+    );
   }
 
   void _navigateToProfile(BuildContext context, String userType) {
