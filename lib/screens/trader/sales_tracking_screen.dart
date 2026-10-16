@@ -31,6 +31,7 @@ class SalesTrackingScreen extends StatelessWidget {
             .where('sellerId', isEqualTo: userId)
             .where('type', isEqualTo: 'sale')
             .orderBy('transactionDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
