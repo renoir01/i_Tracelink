@@ -311,8 +311,8 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
     }
 
     final total = completed + pending;
-    final completedPercent = total > 0 ? (completed / total * 100) : 0;
-    final pendingPercent = total > 0 ? (pending / total * 100) : 0;
+    final double completedPercent = total > 0 ? (completed / total * 100) : 0.0;
+    final double pendingPercent = total > 0 ? (pending / total * 100) : 0.0;
 
     return Card(
       child: Padding(

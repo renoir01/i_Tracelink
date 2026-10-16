@@ -3,307 +3,705 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // ==================== HELPER FUNCTIONS ====================
 
-    // Check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Get the user's role from the users collection
-    function getUserRole() {
-      return isAuthenticated() ?
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType : null;
-    }
-
-    // Check if user is admin
+    // Admin privileges come from a separately managed, active admins/{email}
+    // document, never from a user-editable profile field.
     function isAdmin() {
-      return getUserRole() == 'admin';
+      return isAuthenticated()
+        && request.auth.token.email is string
+        && exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+        && get(/databases/$(database)/documents/admins/$(request.auth.token.email)).data.isActive == true;
     }
 
-    // Check if user owns the document (by userId field)
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Check if user is involved in an order (buyer or seller)
     function isOrderParticipant(orderData) {
-      return isAuthenticated() &&
-             (orderData.buyerId == request.auth.uid ||
-              orderData.sellerId == request.auth.uid);
+      return isAuthenticated()
+        && (orderData.buyerId == request.auth.uid
+          || orderData.sellerId == request.auth.uid);
+    }
+
+    // Client-side order changes are limited to explicit lifecycle transitions.
+    // Financial terms and payment status remain immutable for mobile clients.
+    function orderChangedKeysAreOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function isValidSellerOrderTransition() {
+      return resource.data.sellerId == request.auth.uid
+        && (
+          (resource.data.status == 'pending'
+            && request.resource.data.status == 'accepted'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'acceptedAt']))
+          || (resource.data.status == 'pending'
+            && request.resource.data.status == 'rejected'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'rejectedAt', 'rejectionReason']))
+          || (resource.data.status == 'accepted'
+            && request.resource.data.status == 'preparing'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'preparingAt']))
+          || (resource.data.status == 'preparing'
+            && request.resource.data.status == 'shipped'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'shippedAt']))
+          || (resource.data.status == 'delivered'
+            && request.resource.data.status == 'completed'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'completedAt']))
+        );
+    }
+
+    function isValidBuyerOrderTransition() {
+      return resource.data.buyerId == request.auth.uid
+        && (
+          (resource.data.status == 'pending'
+            && request.resource.data.status == 'cancelled'
+            && orderChangedKeysAreOnly(['status', 'updatedAt']))
+          || (resource.data.status == 'shipped'
+            && request.resource.data.status == 'collected'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'collectedAt']))
+          || (resource.data.status == 'collected'
+            && request.resource.data.status == 'in_transit'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'inTransitAt']))
+          || (resource.data.status == 'in_transit'
+            && request.resource.data.status == 'delivered'
+            && orderChangedKeysAreOnly(['status', 'updatedAt', 'deliveredAt']))
+        );
+    }
+
+    function isValidOrderStatusUpdate() {
+      return isAuthenticated()
+        && request.resource.data.status is string
+        && request.resource.data.status != resource.data.status
+        && request.resource.data.buyerId == resource.data.buyerId
+        && request.resource.data.sellerId == resource.data.sellerId
+        && request.resource.data.paymentStatus == resource.data.paymentStatus
+        && (
+          isValidSellerOrderTransition()
+          || isValidBuyerOrderTransition()
+        );
+    }
+
+    function isAllowedPublicUserType(userType) {
+      return userType in [
+        'seed_producer',
+        'agro_dealer',
+        'cooperative',
+        'farmer',
+        'aggregator',
+        'institution',
+        'school',
+        'hospital',
+        'consumer'
+      ];
     }
 
     // ==================== USERS COLLECTION ====================
 
     match /users/{userId} {
-      // Anyone authenticated can read user profiles (for displaying names, etc.)
-      allow read: if isAuthenticated();
-      // Users can create their own profile during registration
-      allow create: if isAuthenticated() && request.auth.uid == userId;
-      // Users can only update their own profile
-      allow update: if isOwner(userId);
-      // Only admins can delete users
+      // Profile documents contain email and phone details. Keep them private
+      // to the profile owner and active admins; public discovery uses role-specific
+      // business collections rather than private account profiles.
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Public registration can create only a non-admin account and a known
+      // set of profile fields. Admin privileges are managed separately.
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly([
+          'userType', 'name', 'email', 'phone', 'phoneNumber',
+          'language', 'createdAt', 'isVerified', 'location', 'status'
+        ])
+        && request.resource.data.userType is string
+        && isAllowedPublicUserType(request.resource.data.userType)
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.isVerified == false;
+
+      // Users may edit profile details only. Verification and role fields are
+      // protected; active admins may update verification metadata.
+      allow update: if (
+          isOwner(userId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'name', 'phone', 'phoneNumber', 'language', 'location'
+          ])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'verifiedAt', 'verifiedBy', 'status'
+          ])
+        );
+
       allow delete: if isAdmin();
+    }
+
+    // Admin records are maintained outside public registration. A user may
+    // read only their own email-keyed record to complete the admin login check.
+    match /admins/{adminId} {
+      allow get: if isAuthenticated() && request.auth.token.email == adminId;
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
     // ==================== COOPERATIVES/FARMERS ====================
 
     match /cooperatives/{coopId} {
-      // Anyone authenticated can read (for browsing available products)
       allow read: if isAuthenticated();
-      // Only cooperative users can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'cooperative';
-      // Only the owner can update their cooperative data
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Only admins or the owner can delete
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'cooperative'
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.isVerified == false;
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== BATCHES ====================
 
     match /batches/{batchId} {
-      // Anyone authenticated can read (for browsing)
+      // Batch records are traceability records; keep ownership immutable.
       allow read: if isAuthenticated();
-      // Only farmers/cooperatives can create batches
-      allow create: if isAuthenticated() &&
-                      getUserRole() in ['cooperative', 'farmer'];
-      // Only the farmer who owns the batch can update it
-      allow update: if isAuthenticated() && resource.data.farmerId == request.auth.uid;
-      // Admin or owner can delete
-      allow delete: if isAdmin() || resource.data.farmerId == request.auth.uid;
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['cooperative', 'farmer']
+        && request.resource.data.keys().hasOnly([
+          'farmerId', 'cooperativeName', 'batchNumber', 'beanVariety', 'quantity',
+          'status', 'registrationDate', 'harvestDate', 'plantingDate', 'landSize',
+          'seedSource', 'seedBatchNumber', 'seedBatchId', 'agroDealerId', 'quality',
+          'pricePerKg', 'availableForSale', 'storageLocation', 'photos', 'ironContent',
+          'notes', 'location'
+        ])
+        && request.resource.data.farmerId == request.auth.uid
+        && request.resource.data.batchNumber is string
+        && request.resource.data.batchNumber.size() > 0
+        && request.resource.data.beanVariety is string
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.status in ['growing', 'harvested', 'available']
+        && request.resource.data.registrationDate is timestamp
+        && request.resource.data.availableForSale is bool
+        && request.resource.data.availableForSale == (request.resource.data.status == 'available')
+        && request.resource.data.ironContent is number
+        && request.resource.data.ironContent >= 0
+        && (!('harvestDate' in request.resource.data) || request.resource.data.harvestDate == null || request.resource.data.harvestDate is timestamp)
+        && (!('plantingDate' in request.resource.data) || request.resource.data.plantingDate == null || request.resource.data.plantingDate is timestamp)
+        && (!('landSize' in request.resource.data) || request.resource.data.landSize == null || (request.resource.data.landSize is number && request.resource.data.landSize > 0))
+        && (!('pricePerKg' in request.resource.data) || request.resource.data.pricePerKg == null || (request.resource.data.pricePerKg is number && request.resource.data.pricePerKg > 0))
+        && (!('photos' in request.resource.data) || request.resource.data.photos is list)
+        && (!('location' in request.resource.data) || request.resource.data.location == null || request.resource.data.location is map);
+      allow update: if isAuthenticated()
+        && resource.data.farmerId == request.auth.uid
+        && request.resource.data.farmerId == resource.data.farmerId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'quantity', 'status', 'harvestDate', 'plantingDate', 'landSize',
+          'quality', 'pricePerKg', 'availableForSale', 'storageLocation',
+          'photos', 'notes', 'location'
+        ])
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.status in ['growing', 'harvested', 'available', 'sold']
+        && request.resource.data.availableForSale is bool
+        && request.resource.data.availableForSale == (request.resource.data.status == 'available')
+        && (!('pricePerKg' in request.resource.data) || request.resource.data.pricePerKg == null || (request.resource.data.pricePerKg is number && request.resource.data.pricePerKg > 0))
+        && (!('photos' in request.resource.data) || request.resource.data.photos is list);
+      // Keep traceability history; deletion is reserved for active admins.
+      allow delete: if isAdmin();
     }
 
     // ==================== ORDERS ====================
 
     match /orders/{orderId} {
-      // Only buyer, seller, or admin can read the order
-      allow read: if isAuthenticated() &&
-                     (resource.data.buyerId == request.auth.uid ||
-                      resource.data.sellerId == request.auth.uid ||
-                      isAdmin());
-      // Anyone authenticated can create an order (as buyer)
-      allow create: if isAuthenticated();
-      // Only buyer or seller can update (to change status, etc.)
-      allow update: if isAuthenticated() && isOrderParticipant(resource.data);
-      // Only admin can delete orders
+      allow read: if isAuthenticated()
+        && (resource.data.buyerId == request.auth.uid
+          || resource.data.sellerId == request.auth.uid
+          || isAdmin());
+
+      // The authenticated user must be the buyer; cannot place an order as
+      // another user or create an order addressed to themselves.
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'orderType', 'buyerId', 'sellerId', 'quantity', 'pricePerKg',
+          'totalAmount', 'requestDate', 'expectedDeliveryDate', 'status',
+          'deliveryLocation', 'paymentStatus', 'notes', 'seedVariety',
+          'qualityGrade'
+        ])
+        && request.resource.data.buyerId == request.auth.uid
+        && request.resource.data.sellerId is string
+        && request.resource.data.sellerId != request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.totalAmount is number
+        && request.resource.data.totalAmount >= (request.resource.data.quantity * request.resource.data.pricePerKg - 0.01)
+        && request.resource.data.totalAmount <= (request.resource.data.quantity * request.resource.data.pricePerKg + 0.01)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.paymentStatus == 'pending'
+        && request.resource.data.requestDate is timestamp
+        && request.resource.data.expectedDeliveryDate is timestamp
+        && request.resource.data.deliveryLocation is map;
+
+      // Participants may advance an order only through permitted lifecycle
+      // transitions. Financial terms and paymentStatus cannot be changed by
+      // mobile clients. Trusted server code can update payment-related state.
+      allow update: if isValidOrderStatusUpdate();
       allow delete: if isAdmin();
     }
 
     // ==================== NOTIFICATIONS ====================
 
     match /notifications/{notificationId} {
-      // Users can only read their own notifications
+      // Notifications are private to their recipient. Until cross-user
+      // notifications are issued by a trusted backend, clients may create
+      // only their own initial notification records.
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // System/admin can create notifications for users
-      allow create: if isAuthenticated();
-      // Users can update their own notifications (mark as read)
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Users can delete their own notifications
-      allow delete: if isAuthenticated() &&
-                       (resource.data.userId == request.auth.uid || isAdmin());
+
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'userId', 'title', 'body', 'type', 'relatedId', 'createdAt', 'isRead'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.body is string
+        && request.resource.data.type in ['order', 'harvest', 'payment', 'account', 'general']
+        && (request.resource.data.relatedId == null || request.resource.data.relatedId is string)
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.isRead == false;
+
+      // Recipients may mark an unread notification as read, but cannot rewrite
+      // its sender/content, retarget it, or reset its read state.
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && resource.data.isRead == false
+        && request.resource.data.isRead == true
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+
+      allow delete: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     // ==================== SEED PRODUCERS ====================
 
     match /seed_producers/{producerId} {
-      // Anyone can read (for browsing seed sources)
       allow read: if isAuthenticated();
-      // Only seed producer users can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'seed_producer';
-      // Only owner can update
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer'
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.isVerified == false;
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== AGRO DEALERS ====================
 
     match /agro_dealers/{dealerId} {
-      // Anyone can read (for browsing seed dealers)
       allow read: if isAuthenticated();
-      // Only agro dealer users can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'agro_dealer';
-      // Only owner can update
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer'
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.isVerified == false;
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== SEED BATCHES ====================
 
     match /seed_batches/{batchId} {
-      // Anyone can read (for traceability)
+      // Batch ownership and certification metadata must not be user-selectable.
       allow read: if isAuthenticated();
-      // Seed producers and agro dealers can create seed batches
-      allow create: if isAuthenticated() &&
-                      getUserRole() in ['seed_producer', 'agro_dealer'];
-      // Only owner can update
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
-      allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer'
+        && request.resource.data.producerId == request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.status == 'active'
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.productionDate is timestamp
+        && request.resource.data.expiryDate is timestamp;
+      allow update: if isAuthenticated()
+        && resource.data.producerId == request.auth.uid
+        && request.resource.data.producerId == resource.data.producerId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantity', 'status'])
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.quantity <= resource.data.quantity
+        && request.resource.data.status in ['active', 'expired', 'depleted'];
+      allow delete: if isAdmin();
     }
 
     // ==================== SEED DISTRIBUTIONS ====================
 
     match /seed_distributions/{distributionId} {
-      // Anyone can read (for traceability)
       allow read: if isAuthenticated();
-      // Seed producers can create distributions
-      allow create: if isAuthenticated() && getUserRole() == 'seed_producer';
-      // Seed producer or agro dealer involved can update
-      allow update: if isAuthenticated() &&
-                       (resource.data.producerId == request.auth.uid ||
-                        resource.data.dealerId == request.auth.uid);
-      // Admin only can delete
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer'
+        && request.resource.data.seedProducerId == request.auth.uid
+        && request.resource.data.recipientId is string
+        && request.resource.data.recipientId != request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.status == 'distributed'
+        && request.resource.data.distributionDate is timestamp;
+      allow update: if isAuthenticated()
+        && resource.data.seedProducerId == request.auth.uid
+        && request.resource.data.seedProducerId == resource.data.seedProducerId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'notes', 'followUpRequired', 'expectedPlantingDate', 'expectedHarvestDate'])
+        && (
+          (resource.data.status == 'distributed' && request.resource.data.status in ['distributed', 'planted'])
+          || (resource.data.status == 'planted' && request.resource.data.status in ['planted', 'harvested'])
+          || (resource.data.status == 'harvested' && request.resource.data.status == 'harvested')
+        );
       allow delete: if isAdmin();
     }
 
     // ==================== AGRO DEALER SALES ====================
 
     match /agro_dealer_sales/{saleId} {
-      // Buyer and seller can read
-      allow read: if isAuthenticated() &&
-                     (resource.data.dealerId == request.auth.uid ||
-                      resource.data.buyerId == request.auth.uid ||
-                      isAdmin());
-      // Agro dealers can create sales
-      allow create: if isAuthenticated() && getUserRole() == 'agro_dealer';
-      // Dealer or buyer can update
-      allow update: if isAuthenticated() &&
-                       (resource.data.dealerId == request.auth.uid ||
-                        resource.data.buyerId == request.auth.uid);
-      // Admin only can delete
+      allow read: if isAuthenticated()
+        && (resource.data.agroDealerId == request.auth.uid
+          || resource.data.customerId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer'
+        && request.resource.data.agroDealerId == request.auth.uid
+        && request.resource.data.customerId is string
+        && request.resource.data.customerId != request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.totalAmount is number
+        && request.resource.data.totalAmount >= request.resource.data.quantity * request.resource.data.pricePerKg - 0.01
+        && request.resource.data.totalAmount <= request.resource.data.quantity * request.resource.data.pricePerKg + 0.01
+        && request.resource.data.saleDate is timestamp
+        && request.resource.data.paymentStatus in ['pending', 'completed'];
+      // Sales are audit records. Correct mistakes through an authorized
+      // administrative workflow rather than rewriting financial history.
+      allow update: if false;
       allow delete: if isAdmin();
     }
 
     // ==================== AGRO DEALER INVENTORY ====================
 
     match /agro_dealer_inventory/{inventoryId} {
-      // Anyone can read available inventory
       allow read: if isAuthenticated();
-      // Only agro dealers can create inventory
-      allow create: if isAuthenticated() && getUserRole() == 'agro_dealer';
-      // Only owner can update their inventory
-      allow update: if isAuthenticated() && resource.data.dealerId == request.auth.uid;
-      // Admin or owner can delete
-      allow delete: if isAdmin() || resource.data.dealerId == request.auth.uid;
+      // Support the fields used by both manual stock entry and distribution records.
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer'
+        && request.resource.data.keys().hasOnly([
+          'agroDealerId', 'seedVariety', 'quantity', 'pricePerKg', 'quality',
+          'ironContent', 'addedDate', 'dateAdded', 'lastUpdated',
+          'certificationNumber', 'status'
+        ])
+        && request.resource.data.agroDealerId == request.auth.uid
+        && request.resource.data.seedVariety is string
+        && request.resource.data.seedVariety.size() > 0
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.quality is string
+        && (!('ironContent' in request.resource.data) || (request.resource.data.ironContent is number && request.resource.data.ironContent >= 0))
+        && (!('addedDate' in request.resource.data) || request.resource.data.addedDate is timestamp)
+        && (!('dateAdded' in request.resource.data) || request.resource.data.dateAdded is timestamp)
+        && (!('lastUpdated' in request.resource.data) || request.resource.data.lastUpdated is timestamp)
+        && (!('certificationNumber' in request.resource.data) || request.resource.data.certificationNumber is string)
+        && (!('status' in request.resource.data) || request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']);
+      // Owners can adjust stock details, but cannot reassign inventory or
+      // rewrite certification/creation metadata.
+      allow update: if isAuthenticated()
+        && resource.data.agroDealerId == request.auth.uid
+        && request.resource.data.agroDealerId == resource.data.agroDealerId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'quantity', 'pricePerKg', 'quality', 'lastUpdated', 'status'
+        ])
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.quality is string
+        && (!('lastUpdated' in request.resource.data) || request.resource.data.lastUpdated is timestamp)
+        && (!('status' in request.resource.data) || request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']);
+      allow delete: if isAdmin();
     }
 
     // ==================== AGGREGATOR INVENTORY ====================
 
     match /inventory/{inventoryId} {
-      // Anyone can read (for browsing available products)
       allow read: if isAuthenticated();
-      // Only aggregators/traders can create inventory
-      allow create: if isAuthenticated() && getUserRole() == 'aggregator';
-      // Only trader who owns the inventory can update
-      allow update: if isAuthenticated() && resource.data.traderId == request.auth.uid;
-      // Admin or owner can delete
-      allow delete: if isAdmin() || resource.data.traderId == request.auth.uid;
+      // Aggregator stock must link to a real batch and its recorded supplier.
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator'
+        && request.resource.data.keys().hasOnly([
+          'traderId', 'batchId', 'batchNumber', 'beanVariety', 'quantityAvailable',
+          'quantityPurchased', 'quantitySold', 'purchasePricePerKg', 'sellingPricePerKg',
+          'purchaseDate', 'supplierId', 'supplierName', 'storageLocation', 'status',
+          'quality', 'expiryDate', 'ironContent', 'notes'
+        ])
+        && request.resource.data.traderId == request.auth.uid
+        && request.resource.data.batchId is string
+        && exists(/databases/$(database)/documents/batches/$(request.resource.data.batchId))
+        && get(/databases/$(database)/documents/batches/$(request.resource.data.batchId)).data.farmerId == request.resource.data.supplierId
+        && request.resource.data.batchNumber is string
+        && request.resource.data.beanVariety is string
+        && request.resource.data.quantityAvailable is number
+        && request.resource.data.quantityAvailable > 0
+        && request.resource.data.quantityPurchased is number
+        && request.resource.data.quantityPurchased > 0
+        && request.resource.data.quantityAvailable <= request.resource.data.quantityPurchased
+        && request.resource.data.quantitySold is number
+        && request.resource.data.quantitySold >= 0
+        && request.resource.data.quantityAvailable + request.resource.data.quantitySold <= request.resource.data.quantityPurchased
+        && request.resource.data.purchasePricePerKg is number
+        && request.resource.data.purchasePricePerKg > 0
+        && request.resource.data.purchaseDate is timestamp
+        && request.resource.data.supplierId is string
+        && request.resource.data.supplierId != request.auth.uid
+        && request.resource.data.supplierName is string
+        && request.resource.data.storageLocation is string
+        && request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']
+        && request.resource.data.ironContent is number
+        && request.resource.data.ironContent >= 0
+        && (!('sellingPricePerKg' in request.resource.data) || request.resource.data.sellingPricePerKg == null || (request.resource.data.sellingPricePerKg is number && request.resource.data.sellingPricePerKg > 0))
+        && (!('expiryDate' in request.resource.data) || request.resource.data.expiryDate == null || request.resource.data.expiryDate is timestamp);
+      // Keep supplier, batch provenance, and purchased quantity immutable.
+      allow update: if isAuthenticated()
+        && resource.data.traderId == request.auth.uid
+        && request.resource.data.traderId == resource.data.traderId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'quantityAvailable', 'quantitySold', 'sellingPricePerKg',
+          'status', 'storageLocation', 'notes'
+        ])
+        && request.resource.data.quantityAvailable is number
+        && request.resource.data.quantityAvailable >= 0
+        && request.resource.data.quantitySold is number
+        && request.resource.data.quantitySold >= resource.data.quantitySold
+        && request.resource.data.quantityAvailable + request.resource.data.quantitySold <= resource.data.quantityPurchased
+        && request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']
+        && (!('sellingPricePerKg' in request.resource.data) || request.resource.data.sellingPricePerKg == null || (request.resource.data.sellingPricePerKg is number && request.resource.data.sellingPricePerKg > 0))
+        && request.resource.data.storageLocation is string;
+      allow delete: if isAdmin();
     }
 
     // ==================== AGGREGATORS ====================
 
     match /aggregators/{aggregatorId} {
-      // Anyone can read (for browsing)
       allow read: if isAuthenticated();
-      // Only aggregators can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'aggregator';
-      // Only owner can update
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator'
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.isVerified == false;
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== INSTITUTIONS ====================
 
     match /institutions/{institutionId} {
-      // Anyone can read
       allow read: if isAuthenticated();
-      // Only institutions can create their profile
-      allow create: if isAuthenticated() && getUserRole() == 'institution';
-      // Only owner can update
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      // Admin or owner can delete
+      allow create: if isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['institution', 'school', 'hospital']
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.isVerified == false;
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
     // ==================== TRANSACTIONS ====================
 
     match /transactions/{transactionId} {
-      // Only parties involved or admin can read
-      allow read: if isAuthenticated() &&
-                     (resource.data.fromUserId == request.auth.uid ||
-                      resource.data.toUserId == request.auth.uid ||
-                      isAdmin());
-      // Anyone can create transactions
-      allow create: if isAuthenticated();
-      // No updates allowed to transactions (immutable)
+      allow read: if isAuthenticated()
+        && (resource.data.sellerId == request.auth.uid
+          || resource.data.buyerId == request.auth.uid
+          || isAdmin());
+
+      // Match TransactionModel's actual schema and validate client-supplied
+      // totals. These records remain immutable after creation.
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'type', 'sellerId', 'sellerName', 'buyerId', 'buyerName',
+          'batchId', 'batchNumber', 'quantity', 'pricePerKg', 'totalAmount',
+          'transactionDate', 'paymentStatus', 'paymentMethod', 'receiptNumber',
+          'location', 'status', 'notes'
+        ])
+        && (request.resource.data.sellerId == request.auth.uid
+          || request.resource.data.buyerId == request.auth.uid)
+        && request.resource.data.sellerId is string
+        && request.resource.data.buyerId is string
+        && request.resource.data.sellerId != request.resource.data.buyerId
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.totalAmount is number
+        && request.resource.data.totalAmount >= request.resource.data.quantity * request.resource.data.pricePerKg - 0.01
+        && request.resource.data.totalAmount <= request.resource.data.quantity * request.resource.data.pricePerKg + 0.01
+        && request.resource.data.transactionDate is timestamp
+        && request.resource.data.paymentStatus == 'pending'
+        && request.resource.data.status == 'pending';
       allow update: if false;
-      // Admin only can delete
       allow delete: if isAdmin();
     }
 
     // ==================== PAYMENTS ====================
 
     match /payments/{paymentId} {
-      // Only payer, payee, or admin can read
-      allow read: if isAuthenticated() &&
-                     (resource.data.userId == request.auth.uid ||
-                      resource.data.recipientId == request.auth.uid ||
-                      isAdmin());
-      // Anyone can create payments
-      allow create: if isAuthenticated();
-      // Only admin can update payments (to mark as completed, failed, etc.)
-      allow update: if isAdmin();
-      // Admin only can delete
-      allow delete: if isAdmin();
+      allow read: if isAuthenticated()
+        && (resource.data.payerId == request.auth.uid
+          || resource.data.payeeId == request.auth.uid
+          || isAdmin());
+
+      // A client may create only a pending payment linked to a real order where
+      // they are the buyer. Amount and payee must match that order. Provider
+      // results and terminal statuses are trusted-backend-only.
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasOnly([
+          'orderId', 'payerId', 'payeeId', 'amount', 'currency',
+          'paymentMethod', 'status', 'transactionId',
+          'externalTransactionId', 'phoneNumber', 'paymentDetails',
+          'createdAt', 'completedAt', 'failureReason', 'webhookData'
+        ])
+        && request.resource.data.payerId == request.auth.uid
+        && request.resource.data.orderId is string
+        && exists(/databases/$(database)/documents/orders/$(request.resource.data.orderId))
+        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.buyerId == request.auth.uid
+        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.status == 'accepted'
+        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.paymentStatus in ['pending', 'unpaid']
+        && request.resource.data.payeeId == get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.sellerId
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.amount == get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.totalAmount
+        && request.resource.data.currency is string
+        && request.resource.data.paymentMethod in ['PaymentMethod.mtnMomo', 'PaymentMethod.airtelMoney']
+        && request.resource.data.status == 'PaymentStatus.pending'
+        && request.resource.data.createdAt is timestamp
+        && (request.resource.data.transactionId == null || request.resource.data.transactionId is string)
+        && request.resource.data.externalTransactionId == null
+        && request.resource.data.completedAt == null
+        && request.resource.data.failureReason == null
+        && request.resource.data.webhookData == null;
+
+      // Payment state is never changed by a client, including a signed-in
+      // admin. Trusted server code using the Admin SDK handles provider callbacks.
+      allow update, delete: if false;
     }
 
     // ==================== CERTIFICATIONS ====================
 
     match /certifications/{certificationId} {
-      // Anyone can read (public certifications)
+      // Certification status is an approval decision, never a client claim.
       allow read: if isAuthenticated();
-      // Only the certified entity can create their certification
-      allow create: if isAuthenticated();
-      // Owner or admin can update
-      allow update: if isAuthenticated() &&
-                       (resource.data.userId == request.auth.uid || isAdmin());
-      // Admin only can delete
-      allow delete: if isAdmin();
+      allow create: if isAuthenticated()
+        && request.resource.data.producerId == request.auth.uid
+        && request.resource.data.status == 'CertificationStatus.pending'
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.batchId is string;
+      allow update, delete: if isAdmin();
     }
 
     // ==================== CONSUMER PURCHASES ====================
 
     match /consumer_purchases/{purchaseId} {
-      // Anyone can read (for traceability verification)
-      allow read: if isAuthenticated();
-      // Anyone can create consumer purchases (when scanning QR codes)
-      allow create: if isAuthenticated();
-      // No updates allowed (immutable traceability record)
-      allow update: if false;
-      // Admin only can delete
+      allow read: if isAuthenticated()
+        && (resource.data.consumerId == request.auth.uid
+          || resource.data.sellerId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated()
+        && request.resource.data.consumerId == request.auth.uid
+        && request.resource.data.batchId is string
+        && request.resource.data.sellerId is string
+        && request.resource.data.scanDate is timestamp
+        // A client scan is not proof of certification or authenticity.
+        && request.resource.data.wasVerified == false
+        && request.resource.data.reportedFraud == false
+        && (!('rating' in request.resource.data) || request.resource.data.rating == null
+          || (request.resource.data.rating is int && request.resource.data.rating >= 1
+            && request.resource.data.rating <= 5));
+      allow update: if isAuthenticated()
+        && resource.data.consumerId == request.auth.uid
+        && request.resource.data.consumerId == resource.data.consumerId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['purchaseDate', 'quantityPurchased', 'pricePerKg', 'totalAmount',
+            'purchaseLocation', 'rating', 'review', 'photos', 'reportedFraud', 'fraudDetails'])
+        && request.resource.data.wasVerified == resource.data.wasVerified
+        && (!('rating' in request.resource.data) || request.resource.data.rating == null
+          || (request.resource.data.rating is int && request.resource.data.rating >= 1
+            && request.resource.data.rating <= 5));
       allow delete: if isAdmin();
     }
 
     // ==================== ADMIN COLLECTIONS ====================
 
     match /admin_logs/{logId} {
-      // Only admins can read logs
-      allow read: if isAdmin();
-      // Only admins can write logs
-      allow write: if isAdmin();
+      allow read, write: if isAdmin();
     }
 
     match /system_settings/{settingId} {
-      // Anyone can read system settings
       allow read: if isAuthenticated();
-      // Only admins can modify settings
       allow write: if isAdmin();
     }
 
     // ==================== CATCH-ALL (DENY BY DEFAULT) ====================
 
-    // Deny access to any collection not explicitly defined above
     match /{document=**} {
       allow read, write: if false;
     }

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/payment_model.dart';
@@ -12,34 +11,45 @@ class PaymentService {
   PaymentService._internal();
 
   // Payment Configurations
-  late final PaymentConfig _mtnConfig;
-  late final PaymentConfig _airtelConfig;
+  PaymentConfig _mtnConfig = const PaymentConfig(
+    apiKey: '',
+    apiSecret: '',
+    baseUrl: 'https://sandbox.momodeveloper.mtn.com',
+    callbackUrl: '',
+    collectionAccount: '',
+    currency: 'EUR',
+  );
+  PaymentConfig _airtelConfig = const PaymentConfig(
+    apiKey: '',
+    apiSecret: '',
+    baseUrl: 'https://openapiuat.airtel.africa',
+    callbackUrl: '',
+    collectionAccount: '',
+    currency: 'RWF',
+  );
   
   // Firestore instance
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Initialize configurations from environment variables
-  void initialize() {
-    _mtnConfig = PaymentConfig(
-      apiKey: dotenv.env['MTN_MOMO_API_KEY'] ?? '',
-      apiSecret: dotenv.env['MTN_MOMO_API_SECRET'] ?? '',
-      baseUrl: dotenv.env['MTN_MOMO_BASE_URL'] ?? 'https://sandbox.momodeveloper.mtn.com',
-      callbackUrl: dotenv.env['MTN_MOMO_CALLBACK_URL'] ??
-      'https://itracelink.web.app/api/payments/mtn/callback',
-      collectionAccount: dotenv.env['MTN_COLLECTION_ACCOUNT'] ?? '',
-      currency: 'EUR', // MTN uses EUR in sandbox
-    );
+  bool get _mtnConfigured =>
+      _mtnConfig.apiKey.isNotEmpty && _mtnConfig.apiSecret.isNotEmpty;
 
-    _airtelConfig = PaymentConfig(
-      apiKey: dotenv.env['AIRTEL_API_KEY'] ?? '',
-      apiSecret: dotenv.env['AIRTEL_API_SECRET'] ?? '',
-      baseUrl: dotenv.env['AIRTEL_BASE_URL'] ?? 'https://openapiuat.airtel.africa',
-      callbackUrl: dotenv.env['AIRTEL_CALLBACK_URL'] ??
-      'https://itracelink.web.app/api/payments/airtel/callback',
-      collectionAccount: dotenv.env['AIRTEL_COLLECTION_ACCOUNT'] ?? '',
-      currency: 'RWF',
-    );
+  bool get _airtelConfigured =>
+      _airtelConfig.apiKey.isNotEmpty && _airtelConfig.apiSecret.isNotEmpty;
+
+  bool _isConfigured(PaymentMethod method) {
+    switch (method) {
+      case PaymentMethod.mtnMomo:
+        return _mtnConfigured;
+      case PaymentMethod.airtelMoney:
+        return _airtelConfigured;
+    }
   }
+
+  // Provider credentials must be stored on a trusted backend, not in the app.
+  // Keep this method for API compatibility while client-side payment calls
+  // remain disabled until secure backend endpoints are available.
+  void initialize() {}
 
   // Get access token for MTN MoMo
   Future<String?> _getMtnAccessToken() async {
@@ -92,6 +102,11 @@ class PaymentService {
 
   // Request payment from MTN MoMo
   Future<PaymentResponse> requestMtnPayment(PaymentRequest request) async {
+    if (!_mtnConfigured) {
+      return PaymentResponse.failure(
+        'MTN MoMo is unavailable: payment credentials must be configured on a trusted backend.',
+      );
+    }
     try {
       final token = await _getMtnAccessToken();
       if (token == null) {
@@ -136,6 +151,11 @@ class PaymentService {
 
   // Request payment from Airtel Money
   Future<PaymentResponse> requestAirtelPayment(PaymentRequest request) async {
+    if (!_airtelConfigured) {
+      return PaymentResponse.failure(
+        'Airtel Money is unavailable: payment credentials must be configured on a trusted backend.',
+      );
+    }
     try {
       final token = await _getAirtelAccessToken();
       if (token == null) {
@@ -329,6 +349,14 @@ class PaymentService {
     String? description,
   }) async {
     try {
+      // Do not create orphaned payment records when provider credentials are
+      // absent. Real provider secrets must live on a trusted backend.
+      if (!_isConfigured(paymentMethod)) {
+        return PaymentResult.error(
+          'Payment is temporarily unavailable. Please contact support.',
+        );
+      }
+
       // 1. Validate inputs
       if (!isValidAmount(amount)) {
         return PaymentResult.error('Invalid payment amount');

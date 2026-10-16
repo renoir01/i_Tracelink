@@ -125,7 +125,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'Verified Iron-Biofortified Beans',
+                      'Iron-Biofortified Beans Traceability Record',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -153,7 +153,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                           Icon(Icons.check_circle, color: Colors.white, size: 16),
                           SizedBox(width: 4),
                           Text(
-                            'VERIFIED',
+                            'RECORD FOUND',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

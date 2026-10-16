@@ -243,7 +243,7 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
                 children: [
                   _buildQualityBadge(
                     label: sale.quality,
-                    icon: Icons.verified,
+                    icon: Icons.verified_user,
                     color: Colors.green,
                   ),
                   _buildQualityBadge(
@@ -254,7 +254,7 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
                   if (sale.certificationNumber != null)
                     _buildQualityBadge(
                       label: 'Certified',
-                      icon: Icons.certificate,
+                      icon: Icons.verified,
                       color: Colors.purple,
                     ),
                 ],

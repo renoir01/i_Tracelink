@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../utils/constants.dart';
 
 enum EmailProvider {
@@ -14,113 +11,14 @@ class EmailService {
   factory EmailService() => _instance;
   EmailService._internal();
 
-  late final EmailProvider _provider;
-  late final String _apiKey;
-  late final String _fromEmail;
-  late final String _fromName;
-  late final String _domain;
-
   void initialize() {
-    final provider = dotenv.env['EMAIL_SERVICE_PROVIDER'] ?? 'sendgrid';
-    _provider = _parseProvider(provider);
-    _apiKey = dotenv.env['EMAIL_API_KEY'] ?? '';
-    _fromEmail = dotenv.env['EMAIL_FROM_EMAIL'] ?? 'noreply@itracelink.rw';
-    _fromName = dotenv.env['EMAIL_FROM_NAME'] ?? 'iTraceLink';
-    _domain = dotenv.env['EMAIL_TEMPLATE_DOMAIN'] ?? 'mg.itracelink.rw';
+    // Email delivery is disabled in the mobile client. Provider credentials
+    // and sending requests must be handled by a trusted backend.
   }
 
-  EmailProvider _parseProvider(String provider) {
-    switch (provider.toLowerCase()) {
-      case 'mailgun':
-        return EmailProvider.mailgun;
-      case 'ses':
-        return EmailProvider.ses;
-      case 'sendgrid':
-      default:
-        return EmailProvider.sendgrid;
-    }
-  }
-
-  // Send email via SendGrid
-  Future<bool> _sendViaSendGrid(EmailMessage message) async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://api.sendgrid.com/v3/mail/send'),
-        headers: {
-          'Authorization': 'Bearer $_apiKey',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'personalizations': [
-            {
-              'to': [
-                {'email': message.toEmail, 'name': message.toName}
-              ],
-              'subject': message.subject,
-            }
-          ],
-          'from': {
-            'email': _fromEmail,
-            'name': _fromName,
-          },
-          'content': [
-            {
-              'type': 'text/html',
-              'value': message.htmlContent,
-            }
-          ],
-        }),
-      );
-
-      return response.statusCode == 202;
-    } catch (e) {
-      print('SendGrid Error: $e');
-      return false;
-    }
-  }
-
-  // Send email via Mailgun
-  Future<bool> _sendViaMailgun(EmailMessage message) async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://api.mailgun.net/v3/$_domain/messages'),
-        headers: {
-          'Authorization': 'Basic ${base64Encode(utf8.encode('api:$_apiKey'))}',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: {
-          'from': '$_fromName <$_fromEmail>',
-          'to': '${message.toName} <${message.toEmail}>',
-          'subject': message.subject,
-          'html': message.htmlContent,
-        },
-      );
-
-      return response.statusCode == 200;
-    } catch (e) {
-      print('Mailgun Error: $e');
-      return false;
-    }
-  }
-
-  // Send email via AWS SES (placeholder - would need AWS SDK)
-  Future<bool> _sendViaSES(EmailMessage message) async {
-    // AWS SES implementation would go here
-    // For now, return false
-    print('AWS SES not implemented yet');
-    return false;
-  }
-
-  // Main send method
   Future<bool> sendEmail(EmailMessage message) async {
-    switch (_provider) {
-      case EmailProvider.sendgrid:
-        return _sendViaSendGrid(message);
-      case EmailProvider.mailgun:
-        return _sendViaMailgun(message);
-      case EmailProvider.ses:
-        return _sendViaSES(message);
-    }
+    // Do not expose SendGrid/Mailgun/SES credentials in a distributed app.
+    return false;
   }
 
   // ========== EMAIL TEMPLATES ==========
@@ -310,7 +208,7 @@ class EmailService {
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${dotenv.env['BASE_URL'] ?? 'https://itracelink.rw'}"
+                <a href="https://itracelink.rw"
                    style="background-color: #2E7D32; color: #ffffff; padding: 12px 30px;
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     Get Started
@@ -506,7 +404,7 @@ class EmailService {
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${dotenv.env['BASE_URL'] ?? 'https://itracelink.rw'}/orders/$orderId"
+                <a href="https://itracelink.rw/orders/$orderId"
                    style="background-color: #4CAF50; color: #ffffff; padding: 12px 30px;
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     Track Order
@@ -558,7 +456,7 @@ class EmailService {
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${dotenv.env['BASE_URL'] ?? 'https://itracelink.rw'}/orders/$orderId"
+                <a href="https://itracelink.rw/orders/$orderId"
                    style="background-color: #2196F3; color: #ffffff; padding: 12px 30px;
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     View Order Details
@@ -642,7 +540,7 @@ class EmailService {
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${dotenv.env['BASE_URL'] ?? 'https://itracelink.rw'}/orders/$orderId"
+                <a href="https://itracelink.rw/orders/$orderId"
                    style="background-color: #4CAF50; color: #ffffff; padding: 12px 30px;
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     View Order
@@ -721,7 +619,7 @@ class EmailService {
             ''' : ''}
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${dotenv.env['BASE_URL'] ?? 'https://itracelink.rw'}/certifications"
+                <a href="https://itracelink.rw/certifications"
                    style="background-color: #FF9800; color: #ffffff; padding: 12px 30px;
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     View Certifications
@@ -781,7 +679,7 @@ class EmailService {
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${dotenv.env['BASE_URL'] ?? 'https://itracelink.rw'}/dashboard"
+                <a href="https://itracelink.rw/dashboard"
                    style="background-color: #9C27B0; color: #ffffff; padding: 12px 30px;
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     View Full Dashboard

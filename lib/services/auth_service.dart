@@ -10,11 +10,14 @@ class AuthService {
   User? get currentUser => _auth.currentUser;
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // Keep email handling consistent across registration, login, and password reset.
+  String _normalizeEmail(String email) => email.trim().toLowerCase();
+
   // Sign in with email and password
   Future<UserCredential?> signInWithEmailPassword(String email, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
-        email: email,
+        email: _normalizeEmail(email),
         password: password,
       );
       return credential;
@@ -27,7 +30,7 @@ class AuthService {
   Future<UserCredential?> registerWithEmailPassword(String email, String password) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
-        email: email,
+        email: _normalizeEmail(email),
         password: password,
       );
       return credential;
@@ -80,7 +83,7 @@ class AuthService {
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     try {
-      await _auth.sendPasswordResetEmail(email: email);
+      await _auth.sendPasswordResetEmail(email: _normalizeEmail(email));
     } catch (e) {
       throw Exception('Failed to send reset email: ${e.toString()}');
     }

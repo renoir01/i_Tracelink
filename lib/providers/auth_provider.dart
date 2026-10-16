@@ -77,13 +77,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final credential = await _authService.registerWithEmailPassword(email, password);
+      final normalizedEmail = email.trim().toLowerCase();
+      final credential = await _authService.registerWithEmailPassword(normalizedEmail, password);
       if (credential != null && credential.user != null) {
         final user = UserModel(
           id: credential.user!.uid,
-          name: name,
-          email: email,
-          phone: phone,
+          name: name.trim(),
+          email: normalizedEmail,
+          phone: phone.trim(),
           userType: userType,
           language: language,
           createdAt: DateTime.now(),
@@ -96,8 +97,8 @@ class AuthProvider extends ChangeNotifier {
         // Send welcome email
         try {
           await EmailService().sendWelcomeEmail(
-            toEmail: email,
-            userName: email.split('@')[0], // Use email prefix as name for now
+            toEmail: normalizedEmail,
+            userName: name.trim(),
             userType: userType,
           );
         } catch (e) {

@@ -42,34 +42,22 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
       // Check if user is an admin
       final email = _emailController.text.trim();
-      debugPrint('🔍 Looking for admin document: $email');
       
       final adminDoc = await FirebaseFirestore.instance
           .collection('admins')
           .doc(email)
           .get();
 
-      debugPrint('📄 Document exists: ${adminDoc.exists}');
-      if (adminDoc.exists) {
-        debugPrint('📊 Document data: ${adminDoc.data()}');
-        debugPrint('✅ isActive value: ${adminDoc.data()?['isActive']}');
-      }
 
       if (!adminDoc.exists || adminDoc.data()?['isActive'] != true) {
         // Not an admin - sign out
         await FirebaseAuth.instance.signOut();
         
-        String detailedError = 'Access denied. ';
-        if (!adminDoc.exists) {
-          detailedError += 'Admin document not found for: $email';
-        } else if (adminDoc.data()?['isActive'] != true) {
-          detailedError += 'Account is not active (isActive=${adminDoc.data()?['isActive']})';
-        }
-        
-        debugPrint('❌ Login failed: $detailedError');
-        
+        // Keep the response generic so the login screen does not reveal
+        // whether a particular email has an administrator record.
+        if (!mounted) return;
         setState(() {
-          _errorMessage = detailedError;
+          _errorMessage = 'Access denied. Check your credentials or contact an administrator.';
           _isLoading = false;
         });
         return;
@@ -84,14 +72,17 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
           ),
         ),
       );
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
+      if (!mounted) return;
       setState(() {
-        _errorMessage = e.message ?? 'Login failed';
+        // Avoid exposing provider-specific account enumeration details.
+        _errorMessage = 'Unable to sign in. Check your credentials and try again.';
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _errorMessage = 'An error occurred. Please try again.';
+        _errorMessage = 'Unable to sign in right now. Please try again.';
         _isLoading = false;
       });
     }

@@ -27,7 +27,7 @@ dependencies:
   provider: ^6.1.2
   
   # Internationalization
-  intl: ^0.19.0
+  intl: ^0.20.3
   
   # UI & Navigation
   cupertino_icons: ^1.0.8
@@ -102,7 +102,6 @@ flutter:
     - assets/icons/
     - assets/translations/
     - lib/l10n/
-    - .env
 
 # Internationalization
 flutter_intl:

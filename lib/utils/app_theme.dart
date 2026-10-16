@@ -18,7 +18,6 @@ class AppTheme {
   // Light Theme
   static ThemeData get lightTheme {
     // Use Google Fonts if available, otherwise fallback to default
-    final textTheme = GoogleFonts.robotoTextTheme();
     
     return ThemeData(
       useMaterial3: true,
@@ -181,7 +180,7 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surfaceColor,
         elevation: 2,
         shape: RoundedRectangleBorder(

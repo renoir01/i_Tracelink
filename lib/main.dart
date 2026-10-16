@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
@@ -20,51 +19,18 @@ import 'utils/constants.dart';
 import 'utils/app_localizations.dart';
 import 'utils/material_localizations_rw.dart';
 import 'widgets/protected_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-/// DEBUG: List all documents in admins collection
-Future<void> _debugListAdminDocuments() async {
-  try {
-    debugPrint('\n🔍 ===== ADMIN DOCUMENTS DEBUG =====');
-    final snapshot = await FirebaseFirestore.instance
-        .collection('admins')
-        .get();
-    
-    debugPrint('📋 Total documents in admins collection: ${snapshot.docs.length}');
-    
-    if (snapshot.docs.isEmpty) {
-      debugPrint('⚠️  NO DOCUMENTS FOUND in admins collection!');
-      debugPrint('💡 You need to create a document in Firebase Console');
-    } else {
-      for (var doc in snapshot.docs) {
-        debugPrint('\n📄 Document ID: "${doc.id}"');
-        debugPrint('   Data: ${doc.data()}');
-        debugPrint('   isActive: ${doc.data()['isActive']}');
-      }
-    }
-    debugPrint('===== END DEBUG =====\n');
-  } catch (e) {
-    debugPrint('❌ Error listing admin documents: $e');
-  }
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load environment variables
-  try {
-    await dotenv.load(fileName: ".env");
-    debugPrint('✅ Environment variables loaded successfully');
-  } catch (e) {
-    debugPrint('⚠️ Could not load .env file: $e');
-  }
-  
+  var firebaseInitialized = false;
+
   // Initialize Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    debugPrint('✅ Firebase initialized successfully');
+    firebaseInitialized = true;
+    debugPrint('Firebase initialized successfully');
 
     // Initialize Firebase Crashlytics
     // This catches and reports all Flutter framework errors
@@ -82,10 +48,14 @@ void main() async {
 
     debugPrint('✅ Firebase Crashlytics initialized successfully');
 
-    // DEBUG: List all admin documents
-    // await _debugListAdminDocuments();
-  } catch (e) {
-    debugPrint('⚠️ Firebase initialization error: $e');
+  } catch (e, stackTrace) {
+    debugPrint('Firebase initialization failed: $e');
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
+  if (!firebaseInitialized) {
+    runApp(const StartupErrorApp());
+    return;
   }
 
   // Initialize Payment Service
@@ -174,6 +144,46 @@ class iTraceLinkApp extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+
+/// Shown when Firebase cannot initialize. Avoid building screens that access
+/// Firebase singletons when the default Firebase app is unavailable.
+class StartupErrorApp extends StatelessWidget {
+  const StartupErrorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.cloud_off, size: 56),
+                  const SizedBox(height: 16),
+                  Text(
+                    'iTraceLink could not connect to its services.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Check your connection and try again. If the problem continues, contact support.',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

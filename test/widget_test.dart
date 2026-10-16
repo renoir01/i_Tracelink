@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:itracelink/main.dart';
+import 'package:itracelink/models/user_model.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('UserModel', () {
+    test("stores a registered user's profile fields", () {
+      final user = UserModel(
+        id: 'user-123',
+        userType: 'farmer',
+        name: 'Aline Mukamana',
+        email: 'aline@example.com',
+        phone: '+250780000000',
+        language: 'rw',
+        isVerified: false,
+      );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(user.id, 'user-123');
+      expect(user.userType, 'farmer');
+      expect(user.displayName, 'Aline Mukamana');
+      expect(user.isVerified, isFalse);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('copyWith changes language without changing role or identity', () {
+      final user = UserModel(
+        id: 'user-123',
+        userType: 'farmer',
+        name: 'Aline Mukamana',
+        email: 'aline@example.com',
+        phone: '+250780000000',
+        language: 'en',
+      );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      final updated = user.copyWith(language: 'rw');
+
+      expect(updated.language, 'rw');
+      expect(updated.id, user.id);
+      expect(updated.email, user.email);
+      expect(updated.userType, user.userType);
+    });
   });
 }
