@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
@@ -305,15 +306,56 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
               title: const Text('Profile Settings'),
               onTap: () {
                 Navigator.of(context).pop();
-                // TODO: Navigate to profile settings
+                final admin = Provider.of<AuthProvider>(context, listen: false).userModel;
+                showDialog<void>(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    title: const Text('Admin Profile'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Name: ${admin?.displayName ?? 'Admin'}'),
+                        const SizedBox(height: 8),
+                        Text('Email: ${admin?.email ?? 'Not available'}'),
+                        const SizedBox(height: 8),
+                        const Text('Administrator account'),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.security),
               title: const Text('Security Settings'),
-              onTap: () {
+              onTap: () async {
                 Navigator.of(context).pop();
-                // TODO: Navigate to security settings
+                final email = FirebaseAuth.instance.currentUser?.email;
+                if (email == null || email.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No email is available for password reset.')),
+                  );
+                  return;
+                }
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Password reset instructions sent to $email.')),
+                  );
+                } on FirebaseAuthException catch (error) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Could not send reset email: ${error.message ?? error.code}')),
+                  );
+                }
               },
             ),
           ],
@@ -356,16 +398,61 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   void _navigateToSettings(BuildContext context) {
-    // TODO: Implement settings screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Settings screen coming soon!')),
+    final email = FirebaseAuth.instance.currentUser?.email ?? 'Not available';
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Admin Settings'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Account'),
+            const SizedBox(height: 6),
+            Text(email),
+            const SizedBox(height: 16),
+            const Text('Security'),
+            const SizedBox(height: 6),
+            const Text('Use Security Settings in the profile menu to request a password reset email.'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 
   void _navigateToHelp(BuildContext context) {
-    // TODO: Implement help screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Help & Support coming soon!')),
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Admin Help & Support'),
+        content: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('User management: review pending accounts and verify or reject profiles.'),
+              SizedBox(height: 10),
+              Text('Reports and analytics: review the data available to your administrator account.'),
+              SizedBox(height: 10),
+              Text('Account security: open the profile menu and choose Security Settings to request a password reset.'),
+              SizedBox(height: 10),
+              Text('If a page fails to load, check your connection and try Refresh before repeating an action.'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 
