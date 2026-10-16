@@ -32,7 +32,7 @@ class InventoryManagementScreen extends StatelessWidget {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text('Error: ${snapshot.error}'),
+              child: Text('${AppLocalizations.of(context)!.translate('commonError')}: ${snapshot.error}'),
             );
           }
 
@@ -92,7 +92,7 @@ class InventoryManagementScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _buildSummaryCard(
-                        'Total Stock',
+                        AppLocalizations.of(context)!.translate('traderTotalStock'),
                         '${totalQuantity.toStringAsFixed(0)} kg',
                         Icons.inventory_2,
                         Colors.blue,
@@ -101,7 +101,7 @@ class InventoryManagementScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSummaryCard(
-                        'Total Value',
+                        AppLocalizations.of(context)!.translate('traderTotalValue'),
                         'RWF ${totalValue.toStringAsFixed(0)}',
                         Icons.attach_money,
                         Colors.green,
@@ -110,7 +110,7 @@ class InventoryManagementScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSummaryCard(
-                        'Low Stock',
+                        AppLocalizations.of(context)!.translate('traderLowStockCount'),
                         '$lowStockCount items',
                         Icons.warning,
                         lowStockCount > 0 ? Colors.orange : Colors.grey,
@@ -578,7 +578,7 @@ class InventoryManagementScreen extends StatelessWidget {
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(
-            labelText: 'Selling Price per kg (RWF)',
+            labelText: AppLocalizations.of(context)!.translate('traderSellingPricePerKg'),
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.attach_money),
             suffixText: 'RWF',
