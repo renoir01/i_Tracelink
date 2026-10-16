@@ -601,7 +601,7 @@ class InventoryManagementScreen extends StatelessWidget {
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text(AppLocalizations.of(context)!.translate('traderPriceUpdated')),
                       backgroundColor: Colors.green,
                     ),
