@@ -359,7 +359,7 @@ service cloud.firestore {
         && request.resource.data.paymentMethod in ['PaymentMethod.mtnMomo', 'PaymentMethod.airtelMoney']
         && request.resource.data.status == 'PaymentStatus.pending'
         && request.resource.data.createdAt is timestamp
-        && request.resource.data.transactionId == null
+        && (request.resource.data.transactionId == null || request.resource.data.transactionId is string)
         && request.resource.data.externalTransactionId == null
         && request.resource.data.completedAt == null
         && request.resource.data.failureReason == null
