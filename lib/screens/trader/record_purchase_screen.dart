@@ -306,7 +306,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(AppLocalizations.of(context)!.translate('traderPurchaseRecorded')),
             backgroundColor: Colors.green,
           ),
