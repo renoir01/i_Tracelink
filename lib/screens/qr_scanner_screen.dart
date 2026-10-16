@@ -57,7 +57,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      Text('Product ID: ${qrData['productId'] ?? 'Unknown'}'),
+                      Text("Product ID: ${qrData['productId'] ?? 'Unknown'}"),
                       const SizedBox(height: 8),
                       const Text(
                         'Product certificate verification is not available yet. '
