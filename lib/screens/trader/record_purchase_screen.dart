@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 import '../../utils/constants.dart';
 
 class RecordPurchaseScreen extends StatefulWidget {
@@ -91,7 +92,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
           children: [
             Icon(Icons.error, color: Colors.red),
             SizedBox(width: 12),
-            Text('Error'),
+            Text(AppLocalizations.of(context)!.translate('commonError')),
           ],
         ),
         content: Text(message),
@@ -102,7 +103,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
               if (mounted) setState(() => isProcessing = false);
               if (mounted) controller.start();
             },
-            child: const Text('Try Again'),
+            child: Text(AppLocalizations.of(context)!.translate('commonTryAgain')),
           ),
         ],
       ),
@@ -119,7 +120,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Record Purchase'),
+        title: Text(AppLocalizations.of(context)!.translate('traderRecordPurchase')),
         centerTitle: true,
         backgroundColor: AppTheme.primaryColor,
       ),
@@ -306,7 +307,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Purchase recorded successfully!'),
+            content: Text(AppLocalizations.of(context)!.translate('traderPurchaseRecorded')),
             backgroundColor: Colors.green,
           ),
         );
@@ -331,7 +332,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Purchase Details'),
+        title: Text(AppLocalizations.of(context)!.translate('traderPurchaseDetails')),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
