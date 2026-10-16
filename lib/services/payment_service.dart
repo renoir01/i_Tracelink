@@ -18,6 +18,21 @@ class PaymentService {
   // Firestore instance
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  bool get _mtnConfigured =>
+      _mtnConfig.apiKey.isNotEmpty && _mtnConfig.apiSecret.isNotEmpty;
+
+  bool get _airtelConfigured =>
+      _airtelConfig.apiKey.isNotEmpty && _airtelConfig.apiSecret.isNotEmpty;
+
+  bool _isConfigured(PaymentMethod method) {
+    switch (method) {
+      case PaymentMethod.mtnMomo:
+        return _mtnConfigured;
+      case PaymentMethod.airtelMoney:
+        return _airtelConfigured;
+    }
+  }
+
   // Initialize configurations from environment variables
   void initialize() {
     _mtnConfig = PaymentConfig(
@@ -92,6 +107,11 @@ class PaymentService {
 
   // Request payment from MTN MoMo
   Future<PaymentResponse> requestMtnPayment(PaymentRequest request) async {
+    if (!_mtnConfigured) {
+      return PaymentResponse.failure(
+        'MTN MoMo is unavailable: payment credentials must be configured on a trusted backend.',
+      );
+    }
     try {
       final token = await _getMtnAccessToken();
       if (token == null) {
@@ -136,6 +156,11 @@ class PaymentService {
 
   // Request payment from Airtel Money
   Future<PaymentResponse> requestAirtelPayment(PaymentRequest request) async {
+    if (!_airtelConfigured) {
+      return PaymentResponse.failure(
+        'Airtel Money is unavailable: payment credentials must be configured on a trusted backend.',
+      );
+    }
     try {
       final token = await _getAirtelAccessToken();
       if (token == null) {
@@ -329,6 +354,14 @@ class PaymentService {
     String? description,
   }) async {
     try {
+      // Do not create orphaned payment records when provider credentials are
+      // absent. Real provider secrets must live on a trusted backend.
+      if (!_isConfigured(paymentMethod)) {
+        return PaymentResult.error(
+          'Payment is temporarily unavailable. Please contact support.',
+        );
+      }
+
       // 1. Validate inputs
       if (!isValidAmount(amount)) {
         return PaymentResult.error('Invalid payment amount');
