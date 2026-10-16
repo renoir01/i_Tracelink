@@ -333,3 +333,124 @@ test('business profile creation cannot claim another account or self-verify', as
     userId: 'user-2',
   }));
 });
+
+
+test('seed batches enforce producer ownership and prevent stock increases or certificate edits', async () => {
+  await seed('users/producer-1', { userType: 'seed_producer', email: 'producer@example.com' });
+  const producerDb = testEnv.authenticatedContext('producer-1', {
+    email: 'producer@example.com',
+  }).firestore();
+  const batch = {
+    producerId: 'producer-1', batchNumber: 'SB-1', variety: 'Iron bean',
+    quantity: 100, qualityGrade: 'Grade A',
+    productionDate: stamp(), expiryDate: stamp(),
+    certificationNumber: 'CERT-1', status: 'active', createdAt: stamp(),
+    ironContent: 80,
+  };
+  await assertSucceeds(setDoc(doc(producerDb, 'seed_batches/batch-1'), batch));
+  await assertFails(setDoc(doc(producerDb, 'seed_batches/forged'), {
+    ...batch, producerId: 'someone-else',
+  }));
+  await assertSucceeds(updateDoc(doc(producerDb, 'seed_batches/batch-1'), { quantity: 80 }));
+  await assertFails(updateDoc(doc(producerDb, 'seed_batches/batch-1'), { quantity: 200 }));
+  await assertFails(updateDoc(doc(producerDb, 'seed_batches/batch-1'), {
+    certificationNumber: 'FAKE-CERT',
+  }));
+});
+
+test('seed distributions cannot be attributed to another producer or rewrite recipients', async () => {
+  await seed('users/producer-1', { userType: 'seed_producer' });
+  const producerDb = testEnv.authenticatedContext('producer-1').firestore();
+  const distribution = {
+    seedProducerId: 'producer-1', seedVariety: 'Iron bean', quantity: 50,
+    recipientId: 'farmer-1', recipientName: 'Farmer', recipientType: 'farmer',
+    distributionDate: stamp(), distributionMethod: 'direct',
+    certificationNumber: 'CERT-1', ironContent: 80, quality: 'certified',
+    status: 'distributed', followUpRequired: false,
+  };
+  await assertSucceeds(setDoc(doc(producerDb, 'seed_distributions/dist-1'), distribution));
+  await assertFails(setDoc(doc(producerDb, 'seed_distributions/forged'), {
+    ...distribution, seedProducerId: 'someone-else',
+  }));
+  await assertSucceeds(updateDoc(doc(producerDb, 'seed_distributions/dist-1'), {
+    status: 'planted',
+  }));
+  await assertFails(updateDoc(doc(producerDb, 'seed_distributions/dist-1'), {
+    recipientId: 'different-farmer',
+  }));
+});
+
+test('dealer sales enforce ownership and totals and cannot be rewritten', async () => {
+  await seed('users/dealer-1', { userType: 'agro_dealer' });
+  const dealerDb = testEnv.authenticatedContext('dealer-1').firestore();
+  const sale = {
+    agroDealerId: 'dealer-1', seedVariety: 'Iron bean', quantity: 10,
+    pricePerKg: 100, totalAmount: 1000, customerId: 'customer-1',
+    customerName: 'Customer', customerType: 'farmer', saleDate: stamp(),
+    paymentStatus: 'pending', paymentMethod: 'cash',
+  };
+  await assertSucceeds(setDoc(doc(dealerDb, 'agro_dealer_sales/sale-1'), sale));
+  await assertFails(setDoc(doc(dealerDb, 'agro_dealer_sales/forged'), {
+    ...sale, agroDealerId: 'other-dealer',
+  }));
+  await assertFails(setDoc(doc(dealerDb, 'agro_dealer_sales/wrong-total'), {
+    ...sale, totalAmount: 1,
+  }));
+  await assertFails(updateDoc(doc(dealerDb, 'agro_dealer_sales/sale-1'), {
+    paymentStatus: 'completed',
+  }));
+});
+
+test('transactions use the model schema, validate totals, and are immutable', async () => {
+  const buyerDb = testEnv.authenticatedContext('buyer-1').firestore();
+  const transaction = {
+    type: 'purchase', sellerId: 'seller-1', sellerName: 'Seller',
+    buyerId: 'buyer-1', buyerName: 'Buyer', batchId: 'batch-1',
+    batchNumber: 'B-1', quantity: 10, pricePerKg: 100, totalAmount: 1000,
+    transactionDate: stamp(), paymentStatus: 'pending', paymentMethod: 'cash',
+    receiptNumber: null, location: {}, status: 'pending', notes: null,
+  };
+  await assertSucceeds(setDoc(doc(buyerDb, 'transactions/txn-1'), transaction));
+  await assertFails(setDoc(doc(buyerDb, 'transactions/forged-total'), {
+    ...transaction, totalAmount: 1,
+  }));
+  await assertFails(updateDoc(doc(buyerDb, 'transactions/txn-1'), {
+    paymentStatus: 'completed',
+  }));
+});
+
+test('certification applicants cannot approve their own submissions', async () => {
+  const producerDb = testEnv.authenticatedContext('producer-1').firestore();
+  const certification = {
+    producerId: 'producer-1', batchId: 'batch-1',
+    type: 'CertificationType.ironContent',
+    status: 'CertificationStatus.pending',
+    certificateNumber: 'CERT-1', issuingAuthority: 'Lab',
+    issueDate: stamp(), expiryDate: stamp(), testResults: {},
+    documentUrls: [], rejectionReason: null, notes: null,
+    createdAt: stamp(), reviewedAt: null, reviewedBy: null,
+  };
+  await assertSucceeds(setDoc(doc(producerDb, 'certifications/cert-1'), certification));
+  await assertFails(updateDoc(doc(producerDb, 'certifications/cert-1'), {
+    status: 'CertificationStatus.approved',
+  }));
+});
+
+test('consumer scans cannot claim a product is verified and purchase records are private', async () => {
+  const consumerDb = testEnv.authenticatedContext('consumer-1').firestore();
+  const otherDb = testEnv.authenticatedContext('consumer-2').firestore();
+  const purchase = {
+    consumerId: 'consumer-1', batchId: 'batch-1', sellerId: 'seller-1',
+    sellerName: 'Seller', sellerType: 'farmer', scanDate: stamp(),
+    wasVerified: false, rating: null, review: null, photos: [],
+    reportedFraud: false, fraudDetails: null,
+  };
+  await assertSucceeds(setDoc(doc(consumerDb, 'consumer_purchases/scan-1'), purchase));
+  await assertFails(setDoc(doc(consumerDb, 'consumer_purchases/forged'), {
+    ...purchase, wasVerified: true,
+  }));
+  await assertFails(getDoc(doc(otherDb, 'consumer_purchases/scan-1')));
+  await assertSucceeds(updateDoc(doc(consumerDb, 'consumer_purchases/scan-1'), {
+    rating: 5, review: 'Good quality',
+  }));
+});
