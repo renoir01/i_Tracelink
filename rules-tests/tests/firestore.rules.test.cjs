@@ -298,3 +298,38 @@ test('notifications cannot be created for another user or rewritten after creati
   }));
   await assertFails(updateDoc(doc(ownerDb, 'notifications/own'), { isRead: false }));
 });
+
+
+test('business profile creation cannot claim another account or self-verify', async () => {
+  await seed('users/user-1', {
+    userType: 'cooperative',
+    name: 'Cooperative Owner',
+    email: 'owner@example.com',
+    isVerified: false,
+  });
+
+  const ownerDb = testEnv.authenticatedContext('user-1', {
+    email: 'owner@example.com',
+  }).firestore();
+
+  await assertSucceeds(setDoc(doc(ownerDb, 'cooperatives/own-coop'), {
+    userId: 'user-1',
+    cooperativeName: 'Own Cooperative',
+    isVerified: false,
+    isActive: true,
+  }));
+
+  await assertFails(setDoc(doc(ownerDb, 'cooperatives/claimed-coop'), {
+    userId: 'user-2',
+    cooperativeName: 'Claimed Cooperative',
+    isVerified: false,
+    isActive: true,
+  }));
+
+  await assertFails(updateDoc(doc(ownerDb, 'cooperatives/own-coop'), {
+    isVerified: true,
+  }));
+  await assertFails(updateDoc(doc(ownerDb, 'cooperatives/own-coop'), {
+    userId: 'user-2',
+  }));
+});
