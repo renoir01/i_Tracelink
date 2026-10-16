@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/app_localizations.dart';
@@ -41,6 +42,7 @@ class SupplierManagementScreen extends StatelessWidget {
               supplierMap[supplierId] = {
                 'supplierName': data['supplierName'],
                 'supplierId': supplierId,
+                'supplierPhone': data['supplierPhone'] ?? data['phoneNumber'] ?? '',
                 'totalPurchases': 1,
                 'totalQuantity': (data['quantityPurchased'] ?? 0).toDouble(),
                 'totalSpent': (data['quantityPurchased'] ?? 0).toDouble() * 
@@ -227,17 +229,7 @@ class SupplierManagementScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.star_border),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(AppLocalizations.of(context)!.translate('traderFavoriteComingSoon')),
-                        ),
-                      );
-                    },
-                    tooltip: 'Add to favorites',
-                  ),
+
                 ],
               ),
               const Divider(height: 24),
@@ -443,13 +435,26 @@ class SupplierManagementScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(AppLocalizations.of(context)!.translate('traderContactComingSoon')),
-                          ),
-                        );
+                      onPressed: () async {
+                        final rawPhone = (supplier['supplierPhone'] ?? '').toString().trim();
+                        final phone = rawPhone.replaceAll(RegExp(r'[^0-9+]'), '');
+                        if (phone.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context)!.translate('traderNoSupplierPhone')),
+                            ),
+                          );
+                          return;
+                        }
+                        final phoneUri = Uri(scheme: 'tel', path: phone);
+                        final launched = await launchUrl(phoneUri);
+                        if (!launched && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context)!.translate('traderPhoneLaunchFailed')),
+                            ),
+                          );
+                        }
                       },
                       icon: const Icon(Icons.phone),
                       label: Text(AppLocalizations.of(context)!.translate('traderContact')),
