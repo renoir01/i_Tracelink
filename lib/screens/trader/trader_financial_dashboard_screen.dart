@@ -91,7 +91,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
                           'RWF ${grossProfit.toStringAsFixed(0)}',
                           grossProfit >= 0 ? Icons.trending_up : Icons.trending_down,
                           grossProfit >= 0 ? Colors.green : Colors.red,
-                          subtitle: '${profitMargin.toStringAsFixed(1)}% margin',
+                          subtitle: AppLocalizations.of(context)!.translate('traderRevenueMargin').replaceAll('{margin}', profitMargin.toStringAsFixed(1)),
                         ),
                         const SizedBox(height: 12),
                         
