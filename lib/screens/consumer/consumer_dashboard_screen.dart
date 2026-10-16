@@ -165,6 +165,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection(AppConstants.consumerPurchasesCollection)
           .where('consumerId', isEqualTo: userId)
+          .limit(100)
           .snapshots(),
       builder: (context, snapshot) {
         final purchases = snapshot.data?.docs ?? [];
