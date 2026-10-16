@@ -65,6 +65,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.seedProducersCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => SeedProducerModel.fromFirestore(doc))
@@ -224,7 +225,7 @@ class FirestoreService {
       query = query.where('location.district', isEqualTo: district);
     }
 
-    return query.snapshots().map((snapshot) => snapshot.docs
+    return query.limit(50).snapshots().map((snapshot) => snapshot.docs
         .map((doc) => CooperativeModel.fromFirestore(doc))
         .where((coop) => 
             minQuantity == null || 
@@ -387,6 +388,7 @@ class FirestoreService {
         .collection(AppConstants.ordersCollection)
         .where(field, isEqualTo: userId)
         .orderBy('requestDate', descending: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromFirestore(doc))
