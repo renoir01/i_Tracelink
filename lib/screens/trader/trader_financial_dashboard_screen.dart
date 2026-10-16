@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 import '../../utils/constants.dart';
 
 class TraderFinancialDashboardScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Financial Dashboard'),
+        title: Text(AppLocalizations.of(context)!.translate('traderFinancialTitle')),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
