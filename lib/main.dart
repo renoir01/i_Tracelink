@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
@@ -23,14 +22,6 @@ import 'widgets/protected_route.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load environment variables
-  try {
-    await dotenv.load(fileName: ".env");
-    debugPrint('✅ Environment variables loaded successfully');
-  } catch (e) {
-    debugPrint('⚠️ Could not load .env file: $e');
-  }
   
   // Initialize Firebase
   try {
