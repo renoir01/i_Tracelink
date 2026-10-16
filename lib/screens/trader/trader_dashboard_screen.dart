@@ -22,10 +22,10 @@ class TraderDashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trader Dashboard'),
+        title: const Text(AppLocalizations.of(context)!.translate('traderDashboard')),
         actions: [
           IconButton(
-            tooltip: 'Sign out',
+            tooltip: AppLocalizations.of(context)!.translate('signOut'),
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await auth.signOut();
@@ -48,7 +48,7 @@ class TraderDashboardScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Welcome back',
+                          AppLocalizations.of(context)!.translate('welcomeBack'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 6),
@@ -57,8 +57,8 @@ class TraderDashboardScreen extends StatelessWidget {
                         Chip(
                           avatar: const Icon(Icons.storefront, size: 18),
                           label: Text(user.isVerified
-                              ? 'Trader account verified'
-                              : 'Account pending verification'),
+                              ? AppLocalizations.of(context)!.translate('traderVerified')
+                              : AppLocalizations.of(context)!.translate('traderPendingVerification')),
                           backgroundColor: user.isVerified
                               ? Colors.green.withOpacity(0.1)
                               : Colors.orange.withOpacity(0.12),
@@ -70,32 +70,32 @@ class TraderDashboardScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _TraderActionTile(
                   icon: Icons.qr_code_scanner,
-                  title: 'Record a purchase',
-                  subtitle: 'Scan a bean batch QR code and record incoming stock.',
+                  title: AppLocalizations.of(context)!.translate('recordPurchase'),
+                  subtitle: AppLocalizations.of(context)!.translate('recordPurchaseDesc'),
                   onTap: () => _open(context, const RecordPurchaseScreen()),
                 ),
                 _TraderActionTile(
                   icon: Icons.inventory_2_outlined,
-                  title: 'Inventory',
-                  subtitle: 'View stock, quantity available, value, and low-stock items.',
+                  title: AppLocalizations.of(context)!.translate('inventory'),
+                  subtitle: AppLocalizations.of(context)!.translate('inventoryDesc'),
                   onTap: () => _open(context, const InventoryManagementScreen()),
                 ),
                 _TraderActionTile(
                   icon: Icons.point_of_sale,
-                  title: 'Sales tracking',
-                  subtitle: 'Record sales and review recent transactions.',
+                  title: AppLocalizations.of(context)!.translate('salesTracking'),
+                  subtitle: AppLocalizations.of(context)!.translate('salesTrackingDesc'),
                   onTap: () => _open(context, const SalesTrackingScreen()),
                 ),
                 _TraderActionTile(
                   icon: Icons.local_shipping_outlined,
-                  title: 'Suppliers',
-                  subtitle: 'Review suppliers associated with your recorded stock.',
+                  title: AppLocalizations.of(context)!.translate('suppliers'),
+                  subtitle: AppLocalizations.of(context)!.translate('suppliersDesc'),
                   onTap: () => _open(context, const SupplierManagementScreen()),
                 ),
                 _TraderActionTile(
                   icon: Icons.account_balance_wallet_outlined,
-                  title: 'Financial dashboard',
-                  subtitle: 'Review purchases, sales, and financial totals.',
+                  title: AppLocalizations.of(context)!.translate('financialDashboard'),
+                  subtitle: AppLocalizations.of(context)!.translate('financialDashboardDesc'),
                   onTap: () => _open(context, const TraderFinancialDashboardScreen()),
                 ),
               ],
