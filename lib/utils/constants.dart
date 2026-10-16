@@ -26,6 +26,7 @@ class AppConstants {
   static const String cooperativeType = 'cooperative';
   static const String farmerType = 'farmer';
   static const String aggregatorType = 'aggregator';
+  static const String traderType = 'trader';
   static const String institutionType = 'institution';
   static const String consumerType = 'consumer';
   
