@@ -80,6 +80,7 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
                       .collection('agro_dealer_sales')
                       .where('customerId', isEqualTo: _cooperativeId)
                       .orderBy('saleDate', descending: true)
+                      .limit(50)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
