@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 
 class SupplierManagementScreen extends StatelessWidget {
   const SupplierManagementScreen({super.key});
@@ -14,7 +15,7 @@ class SupplierManagementScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Supplier Management'),
+        title: Text(AppLocalizations.of(context)!.translate('traderSupplierTitle')),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -451,7 +452,7 @@ class SupplierManagementScreen extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.phone),
-                      label: const Text('Contact'),
+                      label: Text(AppLocalizations.of(context)!.translate('traderContact')),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -459,7 +460,7 @@ class SupplierManagementScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.close),
-                      label: const Text('Close'),
+                      label: Text(AppLocalizations.of(context)!.translate('commonClose')),
                     ),
                   ),
                 ],
