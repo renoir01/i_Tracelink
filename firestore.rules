@@ -151,11 +151,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'cooperative'
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.isVerified == false;
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt']);
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -249,11 +257,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer'
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.isVerified == false;
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt']);
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -265,11 +281,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer'
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.isVerified == false;
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt']);
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -379,11 +403,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator'
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.isVerified == false;
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt']);
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
@@ -395,11 +427,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['institution', 'school', 'hospital']
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.isVerified == false;
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt']);
+      allow update: if (
+          isAuthenticated()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasNone(['isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy', 'rejectionReason', 'rejectedAt'])
+        ) || (
+          isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'isVerified', 'isActive', 'status', 'verifiedAt', 'verifiedBy',
+            'rejectionReason', 'rejectedAt'
+          ])
+        );
       allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
     }
 
