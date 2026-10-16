@@ -344,6 +344,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                       .collection('inventory')
                       .where('traderId', isEqualTo: widget.traderId)
                       .where('quantityAvailable', isGreaterThan: 0)
+                      .limit(100)
                       .snapshots(),
                   builder: (context, snapshot) {
                     final inventory = snapshot.data?.docs ?? [];
