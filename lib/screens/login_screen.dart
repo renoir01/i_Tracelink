@@ -5,6 +5,7 @@ import '../utils/app_theme.dart';
 import '../utils/app_localizations.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
+import 'trader/trader_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final String userType;
@@ -40,7 +41,13 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (success) {
-        Navigator.of(context).pushReplacementNamed('/dashboard');
+        if (authProvider.userModel?.userType == 'trader') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const TraderDashboardScreen()),
+          );
+        } else {
+          Navigator.of(context).pushReplacementNamed('/dashboard');
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
