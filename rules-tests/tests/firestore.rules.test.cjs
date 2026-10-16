@@ -479,3 +479,25 @@ test('business profile owners cannot self-verify at creation or through status m
     verifiedAt: stamp(),
   }));
 });
+
+
+test('only an active admin can verify a business profile', async () => {
+  await seed('cooperatives/coop-1', {
+    userId: 'owner-1', cooperativeName: 'Pending coop',
+    isVerified: false, isActive: true, status: 'pending',
+  });
+  await seed('admins/admin@example.com', { isActive: true });
+  const ownerDb = testEnv.authenticatedContext('owner-1', {
+    email: 'owner@example.com',
+  }).firestore();
+  const adminDb = testEnv.authenticatedContext('admin-1', {
+    email: 'admin@example.com',
+  }).firestore();
+
+  await assertFails(updateDoc(doc(ownerDb, 'cooperatives/coop-1'), {
+    isVerified: true, status: 'active',
+  }));
+  await assertSucceeds(updateDoc(doc(adminDb, 'cooperatives/coop-1'), {
+    isVerified: true, status: 'active', verifiedAt: stamp(),
+  }));
+});
