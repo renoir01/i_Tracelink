@@ -273,11 +273,26 @@ service cloud.firestore {
     // ==================== SEED BATCHES ====================
 
     match /seed_batches/{batchId} {
+      // Batch ownership and certification metadata must not be user-selectable.
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['seed_producer', 'agro_dealer'];
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin() || resource.data.userId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer'
+        && request.resource.data.producerId == request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.status == 'active'
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.productionDate is timestamp
+        && request.resource.data.expiryDate is timestamp;
+      allow update: if isAuthenticated()
+        && resource.data.producerId == request.auth.uid
+        && request.resource.data.producerId == resource.data.producerId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantity', 'status'])
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.quantity <= resource.data.quantity
+        && request.resource.data.status in ['active', 'expired', 'depleted'];
+      allow delete: if isAdmin();
     }
 
     // ==================== SEED DISTRIBUTIONS ====================
@@ -285,10 +300,24 @@ service cloud.firestore {
     match /seed_distributions/{distributionId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer';
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'seed_producer'
+        && request.resource.data.seedProducerId == request.auth.uid
+        && request.resource.data.recipientId is string
+        && request.resource.data.recipientId != request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.status == 'distributed'
+        && request.resource.data.distributionDate is timestamp;
       allow update: if isAuthenticated()
-        && (resource.data.producerId == request.auth.uid
-          || resource.data.dealerId == request.auth.uid);
+        && resource.data.seedProducerId == request.auth.uid
+        && request.resource.data.seedProducerId == resource.data.seedProducerId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'notes', 'followUpRequired', 'expectedPlantingDate', 'expectedHarvestDate'])
+        && (
+          (resource.data.status == 'distributed' && request.resource.data.status in ['distributed', 'planted'])
+          || (resource.data.status == 'planted' && request.resource.data.status in ['planted', 'harvested'])
+          || (resource.data.status == 'harvested' && request.resource.data.status == 'harvested')
+        );
       allow delete: if isAdmin();
     }
 
@@ -296,14 +325,26 @@ service cloud.firestore {
 
     match /agro_dealer_sales/{saleId} {
       allow read: if isAuthenticated()
-        && (resource.data.dealerId == request.auth.uid
-          || resource.data.buyerId == request.auth.uid
+        && (resource.data.agroDealerId == request.auth.uid
+          || resource.data.customerId == request.auth.uid
           || isAdmin());
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer';
-      allow update: if isAuthenticated()
-        && (resource.data.dealerId == request.auth.uid
-          || resource.data.buyerId == request.auth.uid);
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer'
+        && request.resource.data.agroDealerId == request.auth.uid
+        && request.resource.data.customerId is string
+        && request.resource.data.customerId != request.auth.uid
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.totalAmount is number
+        && request.resource.data.totalAmount >= request.resource.data.quantity * request.resource.data.pricePerKg - 0.01
+        && request.resource.data.totalAmount <= request.resource.data.quantity * request.resource.data.pricePerKg + 0.01
+        && request.resource.data.saleDate is timestamp
+        && request.resource.data.paymentStatus in ['pending', 'completed'];
+      // Sales are audit records. Correct mistakes through an authorized
+      // administrative workflow rather than rewriting financial history.
+      allow update: if false;
       allow delete: if isAdmin();
     }
 
@@ -361,16 +402,34 @@ service cloud.firestore {
 
     match /transactions/{transactionId} {
       allow read: if isAuthenticated()
-        && (resource.data.fromUserId == request.auth.uid
-          || resource.data.toUserId == request.auth.uid
+        && (resource.data.sellerId == request.auth.uid
+          || resource.data.buyerId == request.auth.uid
           || isAdmin());
 
-      // A user can create a transaction record only when they are one of its
-      // named parties, preventing arbitrary records attributed to others.
+      // Match TransactionModel's actual schema and validate client-supplied
+      // totals. These records remain immutable after creation.
       allow create: if isAuthenticated()
-        && (request.resource.data.fromUserId == request.auth.uid
-          || request.resource.data.toUserId == request.auth.uid);
-
+        && request.resource.data.keys().hasOnly([
+          'type', 'sellerId', 'sellerName', 'buyerId', 'buyerName',
+          'batchId', 'batchNumber', 'quantity', 'pricePerKg', 'totalAmount',
+          'transactionDate', 'paymentStatus', 'paymentMethod', 'receiptNumber',
+          'location', 'status', 'notes'
+        ])
+        && (request.resource.data.sellerId == request.auth.uid
+          || request.resource.data.buyerId == request.auth.uid)
+        && request.resource.data.sellerId is string
+        && request.resource.data.buyerId is string
+        && request.resource.data.sellerId != request.resource.data.buyerId
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.totalAmount is number
+        && request.resource.data.totalAmount >= request.resource.data.quantity * request.resource.data.pricePerKg - 0.01
+        && request.resource.data.totalAmount <= request.resource.data.quantity * request.resource.data.pricePerKg + 0.01
+        && request.resource.data.transactionDate is timestamp
+        && request.resource.data.paymentStatus == 'pending'
+        && request.resource.data.status == 'pending';
       allow update: if false;
       allow delete: if isAdmin();
     }
@@ -421,20 +480,44 @@ service cloud.firestore {
     // ==================== CERTIFICATIONS ====================
 
     match /certifications/{certificationId} {
+      // Certification status is an approval decision, never a client claim.
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && request.resource.data.userId == request.auth.uid;
-      allow update: if isAuthenticated()
-        && (resource.data.userId == request.auth.uid || isAdmin());
-      allow delete: if isAdmin();
+        && request.resource.data.producerId == request.auth.uid
+        && request.resource.data.status == 'CertificationStatus.pending'
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.batchId is string;
+      allow update, delete: if isAdmin();
     }
 
     // ==================== CONSUMER PURCHASES ====================
 
     match /consumer_purchases/{purchaseId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if false;
+      allow read: if isAuthenticated()
+        && (resource.data.consumerId == request.auth.uid
+          || resource.data.sellerId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated()
+        && request.resource.data.consumerId == request.auth.uid
+        && request.resource.data.batchId is string
+        && request.resource.data.sellerId is string
+        && request.resource.data.scanDate is timestamp
+        // A client scan is not proof of certification or authenticity.
+        && request.resource.data.wasVerified == false
+        && request.resource.data.reportedFraud == false
+        && (!('rating' in request.resource.data) || request.resource.data.rating == null
+          || (request.resource.data.rating is int && request.resource.data.rating >= 1
+            && request.resource.data.rating <= 5));
+      allow update: if isAuthenticated()
+        && resource.data.consumerId == request.auth.uid
+        && request.resource.data.consumerId == resource.data.consumerId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['purchaseDate', 'quantityPurchased', 'pricePerKg', 'totalAmount',
+            'purchaseLocation', 'rating', 'review', 'photos', 'reportedFraud', 'fraudDetails'])
+        && request.resource.data.wasVerified == resource.data.wasVerified
+        && (!('rating' in request.resource.data) || request.resource.data.rating == null
+          || (request.resource.data.rating is int && request.resource.data.rating >= 1
+            && request.resource.data.rating <= 5));
       allow delete: if isAdmin();
     }
 
