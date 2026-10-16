@@ -548,7 +548,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(AppLocalizations.of(context)!.translate('traderSaleRecorded')),
             backgroundColor: Colors.green,
           ),
