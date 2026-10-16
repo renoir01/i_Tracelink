@@ -10,6 +10,20 @@ import '../models/seed_batch_model.dart';
 import '../models/payment_model.dart';
 import '../utils/constants.dart';
 
+class UserPage {
+  final List<UserModel> users;
+  final Map<String, DocumentSnapshot<Map<String, dynamic>>> cursors;
+  final Map<String, bool> hasMoreByCollection;
+
+  const UserPage({
+    required this.users,
+    required this.cursors,
+    required this.hasMoreByCollection,
+  });
+
+  bool get hasMore => hasMoreByCollection.values.any((value) => value);
+}
+
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -691,6 +705,62 @@ class FirestoreService {
   }
 
   // ========== USER MANAGEMENT METHODS ==========
+
+  /// Loads a bounded page from each role collection. The admin UI merges and
+  /// sorts these results, avoiding an unbounded read of every registered user.
+  Future<UserPage> getAllUsersPage({
+    int pageSizePerCollection = 10,
+    Map<String, DocumentSnapshot<Map<String, dynamic>>> cursors = const {},
+  }) async {
+    final collections = [
+      AppConstants.seedProducersCollection,
+      AppConstants.agroDealersCollection,
+      AppConstants.cooperativesCollection,
+      AppConstants.aggregatorsCollection,
+      AppConstants.institutionsCollection,
+    ];
+
+    final users = <UserModel>[];
+    final nextCursors = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+    final hasMoreByCollection = <String, bool>{};
+
+    try {
+      for (final collection in collections) {
+        Query<Map<String, dynamic>> query = _firestore
+            .collection(collection)
+            .orderBy('createdAt', descending: true)
+            .limit(pageSizePerCollection);
+        final cursor = cursors[collection];
+        if (cursor != null) {
+          query = query.startAfterDocument(cursor);
+        }
+
+        final snapshot = await query.get();
+        if (snapshot.docs.isNotEmpty) {
+          nextCursors[collection] = snapshot.docs.last;
+          users.addAll(snapshot.docs.map(UserModel.fromFirestore));
+        } else if (cursor != null) {
+          nextCursors[collection] = cursor;
+        }
+        hasMoreByCollection[collection] =
+            snapshot.docs.length == pageSizePerCollection;
+      }
+
+      users.sort((a, b) {
+        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return bDate.compareTo(aDate);
+      });
+
+      return UserPage(
+        users: users,
+        cursors: nextCursors,
+        hasMoreByCollection: hasMoreByCollection,
+      );
+    } catch (e) {
+      throw Exception('Failed to load a page of users: $e');
+    }
+  }
 
   // Get all users for admin panel
   Future<List<UserModel>> getAllUsers() async {
