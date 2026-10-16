@@ -170,11 +170,52 @@ service cloud.firestore {
     // ==================== BATCHES ====================
 
     match /batches/{batchId} {
+      // Batch records are traceability records; keep ownership immutable.
       allow read: if isAuthenticated();
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['cooperative', 'farmer'];
-      allow update: if isAuthenticated() && resource.data.farmerId == request.auth.uid;
-      allow delete: if isAdmin() || resource.data.farmerId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType in ['cooperative', 'farmer']
+        && request.resource.data.keys().hasOnly([
+          'farmerId', 'cooperativeName', 'batchNumber', 'beanVariety', 'quantity',
+          'status', 'registrationDate', 'harvestDate', 'plantingDate', 'landSize',
+          'seedSource', 'seedBatchNumber', 'seedBatchId', 'agroDealerId', 'quality',
+          'pricePerKg', 'availableForSale', 'storageLocation', 'photos', 'ironContent',
+          'notes', 'location'
+        ])
+        && request.resource.data.farmerId == request.auth.uid
+        && request.resource.data.batchNumber is string
+        && request.resource.data.batchNumber.size() > 0
+        && request.resource.data.beanVariety is string
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.status in ['growing', 'harvested', 'available']
+        && request.resource.data.registrationDate is timestamp
+        && request.resource.data.availableForSale is bool
+        && request.resource.data.availableForSale == (request.resource.data.status == 'available')
+        && request.resource.data.ironContent is number
+        && request.resource.data.ironContent >= 0
+        && (!('harvestDate' in request.resource.data) || request.resource.data.harvestDate == null || request.resource.data.harvestDate is timestamp)
+        && (!('plantingDate' in request.resource.data) || request.resource.data.plantingDate == null || request.resource.data.plantingDate is timestamp)
+        && (!('landSize' in request.resource.data) || request.resource.data.landSize == null || (request.resource.data.landSize is number && request.resource.data.landSize > 0))
+        && (!('pricePerKg' in request.resource.data) || request.resource.data.pricePerKg == null || (request.resource.data.pricePerKg is number && request.resource.data.pricePerKg > 0))
+        && (!('photos' in request.resource.data) || request.resource.data.photos is list)
+        && (!('location' in request.resource.data) || request.resource.data.location == null || request.resource.data.location is map);
+      allow update: if isAuthenticated()
+        && resource.data.farmerId == request.auth.uid
+        && request.resource.data.farmerId == resource.data.farmerId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'quantity', 'status', 'harvestDate', 'plantingDate', 'landSize',
+          'quality', 'pricePerKg', 'availableForSale', 'storageLocation',
+          'photos', 'notes', 'location'
+        ])
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.status in ['growing', 'harvested', 'available', 'sold']
+        && request.resource.data.availableForSale is bool
+        && request.resource.data.availableForSale == (request.resource.data.status == 'available')
+        && (!('pricePerKg' in request.resource.data) || request.resource.data.pricePerKg == null || (request.resource.data.pricePerKg is number && request.resource.data.pricePerKg > 0))
+        && (!('photos' in request.resource.data) || request.resource.data.photos is list);
+      // Keep traceability history; deletion is reserved for active admins.
+      allow delete: if isAdmin();
     }
 
     // ==================== ORDERS ====================
@@ -379,20 +420,102 @@ service cloud.firestore {
 
     match /agro_dealer_inventory/{inventoryId} {
       allow read: if isAuthenticated();
+      // Support the fields used by both manual stock entry and distribution records.
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer';
-      allow update: if isAuthenticated() && resource.data.dealerId == request.auth.uid;
-      allow delete: if isAdmin() || resource.data.dealerId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'agro_dealer'
+        && request.resource.data.keys().hasOnly([
+          'agroDealerId', 'seedVariety', 'quantity', 'pricePerKg', 'quality',
+          'ironContent', 'addedDate', 'dateAdded', 'lastUpdated',
+          'certificationNumber', 'status'
+        ])
+        && request.resource.data.agroDealerId == request.auth.uid
+        && request.resource.data.seedVariety is string
+        && request.resource.data.seedVariety.size() > 0
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.quality is string
+        && (!('ironContent' in request.resource.data) || (request.resource.data.ironContent is number && request.resource.data.ironContent >= 0))
+        && (!('addedDate' in request.resource.data) || request.resource.data.addedDate is timestamp)
+        && (!('dateAdded' in request.resource.data) || request.resource.data.dateAdded is timestamp)
+        && (!('lastUpdated' in request.resource.data) || request.resource.data.lastUpdated is timestamp)
+        && (!('certificationNumber' in request.resource.data) || request.resource.data.certificationNumber is string)
+        && (!('status' in request.resource.data) || request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']);
+      // Owners can adjust stock details, but cannot reassign inventory or
+      // rewrite certification/creation metadata.
+      allow update: if isAuthenticated()
+        && resource.data.agroDealerId == request.auth.uid
+        && request.resource.data.agroDealerId == resource.data.agroDealerId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'quantity', 'pricePerKg', 'quality', 'lastUpdated', 'status'
+        ])
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.pricePerKg is number
+        && request.resource.data.pricePerKg > 0
+        && request.resource.data.quality is string
+        && (!('lastUpdated' in request.resource.data) || request.resource.data.lastUpdated is timestamp)
+        && (!('status' in request.resource.data) || request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']);
+      allow delete: if isAdmin();
     }
 
     // ==================== AGGREGATOR INVENTORY ====================
 
     match /inventory/{inventoryId} {
       allow read: if isAuthenticated();
+      // Aggregator stock must link to a real batch and its recorded supplier.
       allow create: if isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator';
-      allow update: if isAuthenticated() && resource.data.traderId == request.auth.uid;
-      allow delete: if isAdmin() || resource.data.traderId == request.auth.uid;
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'aggregator'
+        && request.resource.data.keys().hasOnly([
+          'traderId', 'batchId', 'batchNumber', 'beanVariety', 'quantityAvailable',
+          'quantityPurchased', 'quantitySold', 'purchasePricePerKg', 'sellingPricePerKg',
+          'purchaseDate', 'supplierId', 'supplierName', 'storageLocation', 'status',
+          'quality', 'expiryDate', 'ironContent', 'notes'
+        ])
+        && request.resource.data.traderId == request.auth.uid
+        && request.resource.data.batchId is string
+        && exists(/databases/$(database)/documents/batches/$(request.resource.data.batchId))
+        && get(/databases/$(database)/documents/batches/$(request.resource.data.batchId)).data.farmerId == request.resource.data.supplierId
+        && request.resource.data.batchNumber is string
+        && request.resource.data.beanVariety is string
+        && request.resource.data.quantityAvailable is number
+        && request.resource.data.quantityAvailable > 0
+        && request.resource.data.quantityPurchased is number
+        && request.resource.data.quantityPurchased > 0
+        && request.resource.data.quantityAvailable <= request.resource.data.quantityPurchased
+        && request.resource.data.quantitySold is number
+        && request.resource.data.quantitySold >= 0
+        && request.resource.data.quantityAvailable + request.resource.data.quantitySold <= request.resource.data.quantityPurchased
+        && request.resource.data.purchasePricePerKg is number
+        && request.resource.data.purchasePricePerKg > 0
+        && request.resource.data.purchaseDate is timestamp
+        && request.resource.data.supplierId is string
+        && request.resource.data.supplierId != request.auth.uid
+        && request.resource.data.supplierName is string
+        && request.resource.data.storageLocation is string
+        && request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']
+        && request.resource.data.ironContent is number
+        && request.resource.data.ironContent >= 0
+        && (!('sellingPricePerKg' in request.resource.data) || request.resource.data.sellingPricePerKg == null || (request.resource.data.sellingPricePerKg is number && request.resource.data.sellingPricePerKg > 0))
+        && (!('expiryDate' in request.resource.data) || request.resource.data.expiryDate == null || request.resource.data.expiryDate is timestamp);
+      // Keep supplier, batch provenance, and purchased quantity immutable.
+      allow update: if isAuthenticated()
+        && resource.data.traderId == request.auth.uid
+        && request.resource.data.traderId == resource.data.traderId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'quantityAvailable', 'quantitySold', 'sellingPricePerKg',
+          'status', 'storageLocation', 'notes'
+        ])
+        && request.resource.data.quantityAvailable is number
+        && request.resource.data.quantityAvailable >= 0
+        && request.resource.data.quantitySold is number
+        && request.resource.data.quantitySold >= resource.data.quantitySold
+        && request.resource.data.quantityAvailable + request.resource.data.quantitySold <= resource.data.quantityPurchased
+        && request.resource.data.status in ['in_stock', 'low_stock', 'out_of_stock', 'expired']
+        && (!('sellingPricePerKg' in request.resource.data) || request.resource.data.sellingPricePerKg == null || (request.resource.data.sellingPricePerKg is number && request.resource.data.sellingPricePerKg > 0))
+        && request.resource.data.storageLocation is string;
+      allow delete: if isAdmin();
     }
 
     // ==================== AGGREGATORS ====================
