@@ -254,7 +254,7 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
                   if (sale.certificationNumber != null)
                     _buildQualityBadge(
                       label: 'Certified',
-                      icon: Icons.certificate,
+                      icon: Icons.verified,
                       color: Colors.purple,
                     ),
                 ],
