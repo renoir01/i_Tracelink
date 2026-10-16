@@ -568,11 +568,83 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     );
   }
 
-  void _editUser(UserModel user) {
-    // TODO: Implement user editing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('User editing coming soon!')),
+  Future<void> _editUser(UserModel user) async {
+    final nameController = TextEditingController(text: user.name ?? '');
+    final phoneController = TextEditingController(text: user.phone);
+    final formKey = GlobalKey<FormState>();
+
+    final values = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Edit User Profile'),
+        content: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name / Organization'),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter a name.'
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'Phone number'),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter a phone number.'
+                      : null,
+                ),
+                const SizedBox(height: 8),
+                Text('Email and account role are read-only in this form: ${user.email}'),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (!formKey.currentState!.validate()) return;
+              Navigator.of(dialogContext).pop({
+                'name': nameController.text.trim(),
+                'phone': phoneController.text.trim(),
+              });
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
+    nameController.dispose();
+    phoneController.dispose();
+    if (values == null) return;
+
+    try {
+      await FirestoreService().updateUserProfile(
+        userId: user.id,
+        name: values['name']!,
+        phone: values['phone']!,
+      );
+      if (!mounted) return;
+      await _loadUsers();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile updated for ${user.email}.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not update profile: $error')),
+      );
+    }
   }
 }
 
