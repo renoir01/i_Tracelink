@@ -532,7 +532,6 @@ class _OrderDialogState extends State<_OrderDialog> {
         district: 'Unknown',
         sector: 'Unknown',
         cell: 'Unknown',
-        village: 'Unknown',
       );
 
       final order = OrderModel(
