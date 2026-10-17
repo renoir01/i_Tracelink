@@ -88,10 +88,10 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.error, color: Colors.red),
-            SizedBox(width: 12),
+            const Icon(Icons.error, color: Colors.red),
+            const SizedBox(width: 12),
             Text(AppLocalizations.of(context)!.translate('commonError')),
           ],
         ),
@@ -413,7 +413,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               // Price per kg
               TextFormField(
                 controller: _priceController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.translate('traderPricePerKg'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.attach_money),
@@ -436,7 +436,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               // Quality Grade
               DropdownButtonFormField<String>(
                 value: _selectedQuality,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.translate('traderQualityGrade'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.star),
@@ -456,7 +456,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               // Storage Location
               TextFormField(
                 controller: _storageController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.translate('traderStorageLocation'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.warehouse),
@@ -474,7 +474,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               // Notes
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.translate('traderOptionalNotes'),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.note),
