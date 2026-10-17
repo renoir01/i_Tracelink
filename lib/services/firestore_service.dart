@@ -801,92 +801,67 @@ class FirestoreService {
     }
   }
 
-  /// Update editable profile fields for a user in their role-specific profile.
+  /// Update editable fields on the canonical account profile.
   Future<void> updateUserProfile({
     required String userId,
     required String name,
     required String phone,
   }) async {
-    final collections = [
-      AppConstants.seedProducersCollection,
-      AppConstants.agroDealersCollection,
-      AppConstants.cooperativesCollection,
-      AppConstants.aggregatorsCollection,
-      AppConstants.institutionsCollection,
-    ];
-
-    for (final collection in collections) {
-      final reference = _firestore.collection(collection).doc(userId);
+    try {
+      final reference = _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(userId);
       final document = await reference.get();
-      if (document.exists) {
-        await reference.update({
-          'name': name.trim(),
-          'phone': phone.trim(),
-          'phoneNumber': phone.trim(),
-          'updatedAt': Timestamp.now(),
-        });
-        return;
+      if (!document.exists) {
+        throw Exception('No account found for user $userId.');
       }
+      await reference.update({
+        'name': name.trim(),
+        'phone': phone.trim(),
+        'phoneNumber': phone.trim(),
+        'updatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      throw Exception('Failed to update user profile: $e');
     }
-    throw Exception('No profile found for user $userId.');
   }
 
-  // Verify user account
+  // Verify the canonical user account, including roles without a business profile.
   Future<void> verifyUser(String userId) async {
     try {
-      // Find which collection the user belongs to
-      final collections = [
-        AppConstants.seedProducersCollection,
-        AppConstants.agroDealersCollection,
-        AppConstants.cooperativesCollection,
-        AppConstants.aggregatorsCollection,
-        AppConstants.institutionsCollection,
-      ];
-
-      for (String collection in collections) {
-        final docRef = _firestore.collection(collection).doc(userId);
-        final doc = await docRef.get();
-
-        if (doc.exists) {
-          await docRef.update({
-            'isVerified': true,
-            'status': 'active',
-            'verifiedAt': Timestamp.now(),
-          });
-          break;
-        }
+      final reference = _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(userId);
+      final document = await reference.get();
+      if (!document.exists) {
+        throw Exception('No account found for user $userId.');
       }
+      await reference.update({
+        'isVerified': true,
+        'status': 'active',
+        'verifiedAt': Timestamp.now(),
+      });
     } catch (e) {
       throw Exception('Failed to verify user: $e');
     }
   }
 
-  // Reject user account
+  // Reject the canonical account and retain the review reason for admins.
   Future<void> rejectUser(String userId, String reason) async {
     try {
-      // Find which collection the user belongs to
-      final collections = [
-        AppConstants.seedProducersCollection,
-        AppConstants.agroDealersCollection,
-        AppConstants.cooperativesCollection,
-        AppConstants.aggregatorsCollection,
-        AppConstants.institutionsCollection,
-      ];
-
-      for (String collection in collections) {
-        final docRef = _firestore.collection(collection).doc(userId);
-        final doc = await docRef.get();
-
-        if (doc.exists) {
-          await docRef.update({
-            'isVerified': false,
-            'status': 'rejected',
-            'rejectionReason': reason,
-            'rejectedAt': Timestamp.now(),
-          });
-          break;
-        }
+      final reference = _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(userId);
+      final document = await reference.get();
+      if (!document.exists) {
+        throw Exception('No account found for user $userId.');
       }
+      await reference.update({
+        'isVerified': false,
+        'status': 'rejected',
+        'rejectionReason': reason.trim(),
+        'rejectedAt': Timestamp.now(),
+      });
     } catch (e) {
       throw Exception('Failed to reject user: $e');
     }
