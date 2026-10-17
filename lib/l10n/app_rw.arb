@@ -211,5 +211,13 @@
   "dashboardHelpSupport": "Ubufasha n'ubwunganizi",
   "dashboardPhoneUnavailable": "Ntibishobotse gufungura telefoni. Hamagara 0780866714",
   "dashboardConsumerProfileComingSoon": "Umwirondoro w'umuguzi uzaboneka nyuma.",
-  "dashboardProfileUnavailable": "Umwirondoro ntuboneka"
+  "dashboardProfileUnavailable": "Umwirondoro ntuboneka",
+  "dashboardOrders": "Ibicuruzwa byatumijwe",
+  "dashboardNotifications": "Ubutumwa bw'imenyesha",
+  "dashboardSalesTracking": "Gukurikirana ibyagurishijwe",
+  "dashboardViewPlaceOrders": "Reba kandi utumize ibicuruzwa",
+  "dashboardCallSupport": "Hamagara: 0780866714",
+  "traderStartRecordingPurchases": "Tangira wandika ibyo uguze",
+  "traderRecordSaleTooltip": "Andika igicuruzwa wagurishije",
+  "traderTapToRecordSale": "Kanda kuri + wandike igicuruzwa cya mbere wagurishije"
 }
