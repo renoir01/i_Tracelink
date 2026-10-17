@@ -728,7 +728,7 @@ class FirestoreService {
     try {
       Query<Map<String, dynamic>> query = _firestore
           .collection(collection)
-          .orderBy(FieldPath.documentId())
+          .orderBy(FieldPath.documentId)
           .limit(pageSizePerCollection);
       final cursor = cursors[collection];
       if (cursor != null) {
@@ -766,7 +766,7 @@ class FirestoreService {
     try {
       final snapshot = await _firestore
           .collection(AppConstants.usersCollection)
-          .orderBy(FieldPath.documentId())
+          .orderBy(FieldPath.documentId)
           .limit(250)
           .get();
       final allUsers = snapshot.docs
