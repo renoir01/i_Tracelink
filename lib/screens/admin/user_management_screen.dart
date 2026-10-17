@@ -61,6 +61,11 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
       _userCursors.addAll(page.cursors);
       final users = loadMore ? [..._allUsers, ...page.users] : page.users;
+      users.sort((a, b) {
+        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return bDate.compareTo(aDate);
+      });
       setState(() {
         _allUsers = users;
         _pendingUsers = users.where((u) => !u.isVerified && u.status != 'rejected').toList();
