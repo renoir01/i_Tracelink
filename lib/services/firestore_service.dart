@@ -455,27 +455,44 @@ class FirestoreService {
   // Traceability Methods
   Future<Map<String, dynamic>?> getTraceabilityByBatch(String batchNumber) async {
     try {
-      // Find the batch in seed dealer inventory or transactions
+      // Inventory entries are maps with several fields, so arrayContains with
+      // a partial map (only batchNumber) will not match Firestore array elements.
+      // For the current pilot dataset, load dealer records and match the batch
+      // number in memory. For larger datasets, add a top-level indexed batch
+      // number field and maintain it whenever inventory changes.
       final inventorySnapshot = await _firestore
           .collection(AppConstants.agroDealersCollection)
-          .where('inventory', arrayContains: {
-            'batchNumber': batchNumber
-          })
-          .limit(1)
           .get();
 
-      if (inventorySnapshot.docs.isEmpty) {
+      QueryDocumentSnapshot<Map<String, dynamic>>? dealerDoc;
+      Map<String, dynamic>? matchedInventory;
+
+      for (final doc in inventorySnapshot.docs) {
+        final inventory = doc.data()['inventory'];
+        if (inventory is! List) continue;
+
+        for (final item in inventory) {
+          if (item is Map && item['batchNumber'] == batchNumber) {
+            dealerDoc = doc;
+            matchedInventory = Map<String, dynamic>.from(item);
+            break;
+          }
+        }
+
+        if (dealerDoc != null) break;
+      }
+
+      if (dealerDoc == null || matchedInventory == null) {
         return null;
       }
 
-      final dealerDoc = inventorySnapshot.docs.first;
       final dealerData = dealerDoc.data();
 
       // Build traceability chain
       final chain = <Map<String, dynamic>>[];
 
       // 1. Seed Producer
-      final seedProducerId = dealerData['seedProducer'];
+      final seedProducerId = matchedInventory['seedProducerId'];
       if (seedProducerId != null) {
         final producerDoc = await _firestore
             .collection(AppConstants.seedProducersCollection)
@@ -532,9 +549,9 @@ class FirestoreService {
       return {
         'chain': chain,
         'batchNumber': batchNumber,
-        'variety': 'RWR 2245', // Would be dynamic
-        'quantity': '2500', // Would be dynamic
-        'quality': 'Grade A',
+        'variety': matchedInventory['varietyName'] ?? matchedInventory['varietyCode'] ?? 'Unknown',
+        'quantity': '${matchedInventory['quantity'] ?? 'Unknown'}',
+        'quality': matchedInventory['qualityGrade'] ?? 'Not specified',
       };
     } catch (e) {
       print('Error getting traceability by batch: $e');
@@ -556,34 +573,106 @@ class FirestoreService {
       final orderData = orderDoc.data()!;
       final chain = <Map<String, dynamic>>[];
 
-      // Get seller and buyer info
-      final sellerDoc = await _firestore
-          .collection(orderData['sellerType'] == 'aggregator' ? AppConstants.aggregatorsCollection : AppConstants.cooperativesCollection)
-          .doc(orderData['sellerId'])
-          .get();
+      // OrderModel stores requestDate, orderType, seedVariety and qualityGrade.
+      // The orderType follows the "<buyer>_to_<seller>" convention.
+      final orderType = (orderData['orderType'] as String?) ?? '';
+      final orderParts = orderType.split('_to_');
+      final buyerType = orderParts.isNotEmpty ? orderParts.first : '';
+      final sellerType = orderParts.length > 1 ? orderParts.last : '';
 
-      final buyerDoc = await _firestore
-          .collection(orderData['buyerType'] == 'aggregator' ? AppConstants.aggregatorsCollection : AppConstants.institutionsCollection)
-          .doc(orderData['buyerId'])
-          .get();
+      String collectionForActor(String actorType) {
+        switch (actorType) {
+          case 'aggregator':
+            return AppConstants.aggregatorsCollection;
+          case 'institution':
+            return AppConstants.institutionsCollection;
+          case 'cooperative':
+          case 'farmer':
+            return AppConstants.cooperativesCollection;
+          case 'seed_producer':
+            return AppConstants.seedProducersCollection;
+          case 'agro_dealer':
+            return AppConstants.agroDealersCollection;
+          default:
+            return '';
+        }
+      }
 
-      if (sellerDoc.exists) {
-        final sellerData = sellerDoc.data()!;
+      String actorName(Map<String, dynamic> data) {
+        return data['businessName'] ??
+            data['cooperativeName'] ??
+            data['institutionName'] ??
+            data['organizationName'] ??
+            'Unknown';
+      }
+
+      String actorLocation(Map<String, dynamic> data) {
+        final location = data['location'];
+        if (location is Map) {
+          return location['district']?.toString() ?? 'Unknown';
+        }
+        return 'Unknown';
+      }
+
+      String formatDate(dynamic value) {
+        if (value is Timestamp) {
+          return value.toDate().toString().split('T')[0];
+        }
+        return DateTime.now().toString().split('T')[0];
+      }
+
+      final requestDate = formatDate(orderData['requestDate']);
+
+      // Resolve profile documents by userId, since profile document IDs may
+      // be generated independently of the Firebase Authentication user ID.
+      Future<Map<String, dynamic>?> loadActor(
+        String collection,
+        dynamic userId,
+      ) async {
+        if (collection.isEmpty || userId is! String || userId.isEmpty) {
+          return null;
+        }
+
+        final byDocumentId =
+            await _firestore.collection(collection).doc(userId).get();
+        if (byDocumentId.exists) {
+          return byDocumentId.data();
+        }
+
+        final byUserId = await _firestore
+            .collection(collection)
+            .where('userId', isEqualTo: userId)
+            .limit(1)
+            .get();
+        if (byUserId.docs.isNotEmpty) {
+          return byUserId.docs.first.data();
+        }
+        return null;
+      }
+
+      final sellerData = await loadActor(
+        collectionForActor(sellerType),
+        orderData['sellerId'],
+      );
+      if (sellerData != null) {
         chain.add({
-          'actorType': orderData['sellerType'] == 'aggregator' ? 'aggregator' : 'farmer',
-          'actorName': sellerData['businessName'] ?? sellerData['cooperativeName'] ?? 'Unknown',
-          'date': (orderData['createdAt'] as Timestamp?)?.toDate().toString().split('T')[0] ?? DateTime.now().toString().split('T')[0],
-          'location': sellerData['location']?['district'] ?? 'Unknown',
+          'actorType': sellerType,
+          'actorName': actorName(sellerData),
+          'date': requestDate,
+          'location': actorLocation(sellerData),
         });
       }
 
-      if (buyerDoc.exists) {
-        final buyerData = buyerDoc.data()!;
+      final buyerData = await loadActor(
+        collectionForActor(buyerType),
+        orderData['buyerId'],
+      );
+      if (buyerData != null) {
         chain.add({
-          'actorType': orderData['buyerType'] == 'aggregator' ? 'aggregator' : 'institution',
-          'actorName': buyerData['businessName'] ?? buyerData['institutionName'] ?? 'Unknown',
-          'date': DateTime.now().toString().split('T')[0],
-          'location': buyerData['location']?['district'] ?? 'Unknown',
+          'actorType': buyerType,
+          'actorName': actorName(buyerData),
+          'date': requestDate,
+          'location': actorLocation(buyerData),
         });
       }
 
@@ -591,8 +680,8 @@ class FirestoreService {
         'chain': chain,
         'orderId': orderId,
         'quantity': orderData['quantity']?.toString() ?? '0',
-        'variety': 'RWR 2245',
-        'quality': 'Grade A',
+        'variety': orderData['seedVariety'] ?? 'Unknown',
+        'quality': orderData['qualityGrade'] ?? 'Not specified',
       };
     } catch (e) {
       print('Error getting traceability by order: $e');
