@@ -219,5 +219,13 @@
   "dashboardCallSupport": "Call: 0780866714",
   "traderStartRecordingPurchases": "Start by recording purchases",
   "traderRecordSaleTooltip": "Record Sale",
-  "traderTapToRecordSale": "Tap + to record your first sale"
+  "traderTapToRecordSale": "Tap + to record your first sale",
+  "traderEnterQuantity": "Please enter quantity",
+  "traderValidQuantity": "Enter a valid quantity",
+  "traderQuantityExceedsAvailable": "Cannot exceed available quantity",
+  "traderEnterPrice": "Please enter price",
+  "traderValidPrice": "Enter a valid price",
+  "traderEnterStorageLocation": "Please enter storage location",
+  "traderSelectBatchValidation": "Please select a batch",
+  "traderEnterBuyerName": "Please enter buyer name"
 }
