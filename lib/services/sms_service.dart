@@ -8,9 +8,14 @@ class SMSService {
   factory SMSService() => _instance;
   SMSService._internal();
 
-  final String _apiKey = dotenv.env['AFRICAS_TALKING_API_KEY'] ?? '';
-  final String _username = dotenv.env['AFRICAS_TALKING_USERNAME'] ?? 'sandbox';
-  final String _senderId = dotenv.env['AFRICAS_TALKING_SENDER_ID'] ?? 'AFRICASTKNG';
+  // dotenv throws if it was never loaded, so read it defensively. (Secrets should
+  // ultimately live in a Cloud Function, not in the app.)
+  static String _env(String key, String fallback) =>
+      dotenv.isInitialized ? (dotenv.env[key] ?? fallback) : fallback;
+
+  String get _apiKey => _env('AFRICAS_TALKING_API_KEY', '');
+  String get _username => _env('AFRICAS_TALKING_USERNAME', 'sandbox');
+  String get _senderId => _env('AFRICAS_TALKING_SENDER_ID', 'AFRICASTKNG');
   
   final String _baseUrl = 'https://api.sandbox.africastalking.com/version1';
 
