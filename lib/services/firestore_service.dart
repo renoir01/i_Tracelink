@@ -745,7 +745,7 @@ class FirestoreService {
         final snapshot = await query.get();
         if (snapshot.docs.isNotEmpty) {
           nextCursors[collection] = snapshot.docs.last;
-          users.addAll(snapshot.docs.map(UserModel.fromFirestore));
+          users.addAll(snapshot.docs.map((doc) => UserModel.fromFirestore(doc)));
         } else if (cursor != null) {
           nextCursors[collection] = cursor;
         }
