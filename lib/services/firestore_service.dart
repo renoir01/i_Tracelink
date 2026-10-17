@@ -867,10 +867,16 @@ class FirestoreService {
     }
   }
 
-  // Delete user account
+  // Delete the app account profile and any role profile using the same UID.
+  // Removing a Firestore profile does not delete the Firebase Authentication account.
   Future<void> deleteUser(String userId) async {
     try {
-      // Find which collection the user belongs to and delete from there
+      final userRef = _firestore.collection(AppConstants.usersCollection).doc(userId);
+      final userDoc = await userRef.get();
+      if (userDoc.exists) {
+        await userRef.delete();
+      }
+
       final collections = [
         AppConstants.seedProducersCollection,
         AppConstants.agroDealersCollection,
@@ -879,17 +885,19 @@ class FirestoreService {
         AppConstants.institutionsCollection,
       ];
 
-      for (String collection in collections) {
-        final docRef = _firestore.collection(collection).doc(userId);
-        final doc = await docRef.get();
-
-        if (doc.exists) {
-          await docRef.delete();
-          break;
+      for (final collection in collections) {
+        final profileRef = _firestore.collection(collection).doc(userId);
+        final profile = await profileRef.get();
+        if (profile.exists) {
+          await profileRef.delete();
         }
       }
+
+      if (!userDoc.exists) {
+        throw Exception('No canonical app account was found for user $userId.');
+      }
     } catch (e) {
-      throw Exception('Failed to delete user: $e');
+      throw Exception('Failed to delete user profile: $e');
     }
   }
 
