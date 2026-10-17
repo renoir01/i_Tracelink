@@ -434,20 +434,37 @@ class FirestoreService {
   // Traceability Methods
   Future<Map<String, dynamic>?> getTraceabilityByBatch(String batchNumber) async {
     try {
-      // Find the batch in seed dealer inventory or transactions
+      // Inventory entries are maps with several fields, so arrayContains with
+      // a partial map (only batchNumber) will not match Firestore array elements.
+      // For the current pilot dataset, load dealer records and match the batch
+      // number in memory. For larger datasets, add a top-level indexed batch
+      // number field and maintain it whenever inventory changes.
       final inventorySnapshot = await _firestore
           .collection(AppConstants.agroDealersCollection)
-          .where('inventory', arrayContains: {
-            'batchNumber': batchNumber
-          })
-          .limit(1)
           .get();
 
-      if (inventorySnapshot.docs.isEmpty) {
+      QueryDocumentSnapshot<Map<String, dynamic>>? dealerDoc;
+      Map<String, dynamic>? matchedInventory;
+
+      for (final doc in inventorySnapshot.docs) {
+        final inventory = doc.data()['inventory'];
+        if (inventory is! List) continue;
+
+        for (final item in inventory) {
+          if (item is Map && item['batchNumber'] == batchNumber) {
+            dealerDoc = doc;
+            matchedInventory = Map<String, dynamic>.from(item);
+            break;
+          }
+        }
+
+        if (dealerDoc != null) break;
+      }
+
+      if (dealerDoc == null || matchedInventory == null) {
         return null;
       }
 
-      final dealerDoc = inventorySnapshot.docs.first;
       final dealerData = dealerDoc.data();
 
       // Build traceability chain
