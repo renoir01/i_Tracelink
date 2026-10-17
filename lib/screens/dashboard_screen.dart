@@ -21,6 +21,10 @@ import 'consumer/education_center_screen.dart';
 import 'orders/institution_orders_screen.dart';
 import 'traceability_screen.dart';
 import 'trader/record_purchase_screen.dart';
+import 'trader/trader_financial_dashboard_screen.dart';
+import 'trader/supplier_management_screen.dart';
+import 'trader/sales_tracking_screen.dart';
+import 'trader/inventory_management_screen.dart';
 import 'profile/cooperative_profile_screen.dart';
 import 'profile/aggregator_profile_screen.dart';
 import 'profile/seed_producer_profile_screen.dart';
@@ -406,6 +410,43 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
       ));
+    }
+
+    if (userType == AppConstants.traderType) {
+      actions.addAll([
+        Card(child: ListTile(
+          leading: const Icon(Icons.inventory_2),
+          title: Text(AppLocalizations.of(context)!.translate('traderInventoryTitle')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('traderStartPurchases')),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const InventoryManagementScreen(),
+          )),
+        )),
+        Card(child: ListTile(
+          leading: const Icon(Icons.point_of_sale),
+          title: Text(AppLocalizations.of(context)!.translate('traderSalesTitle')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('traderRecordFirstSale')),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SalesTrackingScreen(),
+          )),
+        )),
+        Card(child: ListTile(
+          leading: const Icon(Icons.people_alt),
+          title: Text(AppLocalizations.of(context)!.translate('traderSupplierTitle')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('traderStartSupplierNetwork')),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SupplierManagementScreen(),
+          )),
+        )),
+        Card(child: ListTile(
+          leading: const Icon(Icons.account_balance_wallet),
+          title: Text(AppLocalizations.of(context)!.translate('traderFinancialTitle')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('financialDashboardDesc')),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const TraderFinancialDashboardScreen(),
+          )),
+        )),
+      ]);
     }
 
     // Consumer-specific actions
