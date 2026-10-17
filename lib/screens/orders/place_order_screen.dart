@@ -89,7 +89,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
         notes: _notesController.text.isNotEmpty ? _notesController.text : null,
       );
 
-      await FirestoreService().createOrder(order);
+      final orderId = await FirestoreService().createOrder(order);
 
       // Send SMS & in-app notification to farmer
       try {
@@ -113,7 +113,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
           await NotificationService().notifyOrderPlaced(
             userId: widget.cooperative.userId,
             aggregatorName: aggregator.businessName,
-            orderId: order.id,
+            orderId: orderId,
             quantity: quantity,
           );
           debugPrint('✅ In-app notification sent to farmer');
