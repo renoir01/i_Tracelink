@@ -129,7 +129,9 @@ service cloud.firestore {
         ) || (
           isAdmin()
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'isVerified', 'verifiedAt', 'verifiedBy', 'status'
+            'name', 'phone', 'phoneNumber', 'updatedAt',
+            'isVerified', 'verifiedAt', 'verifiedBy', 'status',
+            'rejectionReason', 'rejectedAt'
           ])
         );
 
