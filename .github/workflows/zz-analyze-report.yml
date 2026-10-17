@@ -1,0 +1,64 @@
+# TEMPORARY: runs flutter analyze + a debug build and publishes the raw output to the
+# branch ci-report/analyze so it can be read without access to Actions logs.
+# Safe to delete (this file and the throwaway branch ai/analyze-report-run).
+name: Analyze report (temporary)
+
+on:
+  push:
+    branches: ['ai/analyze-report-run']
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Analyze
+        run: |
+          mkdir -p /tmp/report
+          flutter --version > /tmp/report/flutter_version.txt 2>&1 || true
+          flutter pub get > /tmp/report/pub_get.txt 2>&1; echo "pub get exit: $?" >> /tmp/report/pub_get.txt
+          flutter analyze --no-pub > /tmp/report/analyze.txt 2>&1; echo "analyze exit: $?" >> /tmp/report/analyze.txt
+          true
+
+      - name: Publish analyze report
+        run: |
+          rm -rf /tmp/pub && mkdir /tmp/pub && cd /tmp/pub
+          git init -q -b ci-report-analyze
+          cp /tmp/report/* .
+          git add -A
+          git -c user.name=ci-report -c user.email=ci-report@users.noreply.github.com commit -qm "analyze report for ${{ github.sha }}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD:refs/heads/ci-report/analyze
+
+      - name: Build debug APK (full compile check)
+        run: |
+          flutter build apk --debug > /tmp/report/build_full.txt 2>&1; echo "build exit: $?" >> /tmp/report/build_full.txt
+          tail -n 250 /tmp/report/build_full.txt > /tmp/report/build_tail.txt
+          grep -n -i "error\|FAILURE\|What went wrong\|Execution failed\|^e: \|unable to find" /tmp/report/build_full.txt | head -80 > /tmp/report/build_errors.txt || true
+          rm -f /tmp/report/build_full.txt
+          true
+
+      - name: Publish build report
+        run: |
+          rm -rf /tmp/pub2 && mkdir /tmp/pub2 && cd /tmp/pub2
+          git init -q -b ci-report-build
+          cp /tmp/report/build_tail.txt /tmp/report/build_errors.txt .
+          git add -A
+          git -c user.name=ci-report -c user.email=ci-report@users.noreply.github.com commit -qm "build report for ${{ github.sha }}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD:refs/heads/ci-report/build
