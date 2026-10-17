@@ -377,7 +377,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                         setState(() => _selectedInventoryId = value);
                       },
                       validator: (value) {
-                        if (value == null) return 'Please select a batch';
+                        if (value == null) return AppLocalizations.of(context)!.translate('traderSelectBatchValidation');
                         return null;
                       },
                     );
@@ -395,7 +395,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter buyer name';
+                      return AppLocalizations.of(context)!.translate('traderEnterBuyerName');
                     }
                     return null;
                   },
@@ -414,11 +414,11 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter quantity';
+                      return AppLocalizations.of(context)!.translate('traderEnterQuantity');
                     }
                     final qty = double.tryParse(value);
                     if (qty == null || qty <= 0) {
-                      return 'Enter valid quantity';
+                      return AppLocalizations.of(context)!.translate('traderValidQuantity');
                     }
                     return null;
                   },
@@ -437,11 +437,11 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter price';
+                      return AppLocalizations.of(context)!.translate('traderEnterPrice');
                     }
                     final price = double.tryParse(value);
                     if (price == null || price <= 0) {
-                      return 'Enter valid price';
+                      return AppLocalizations.of(context)!.translate('traderValidPrice');
                     }
                     return null;
                   },
