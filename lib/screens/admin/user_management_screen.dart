@@ -532,7 +532,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete User'),
-        content: Text('Are you sure you want to permanently delete ${user.email}? This action cannot be undone.'),
+        content: Text('Remove ${user.email} from iTraceLink? This deletes the Firestore profile data, but does not delete the Firebase Authentication login. Full account removal requires the secure admin backend.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -553,7 +553,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         await _loadUsers();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${user.email} has been deleted')),
+            SnackBar(content: Text('App profile data removed for ${user.email}. The authentication account still exists.')),
           );
         }
       } catch (e) {
