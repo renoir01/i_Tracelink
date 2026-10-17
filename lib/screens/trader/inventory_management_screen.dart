@@ -577,7 +577,7 @@ class InventoryManagementScreen extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.translate('traderUpdateSellingPrice')),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: AppLocalizations.of(context)!.translate('traderSellingPricePerKg'),
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.attach_money),
