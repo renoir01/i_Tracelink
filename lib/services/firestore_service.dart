@@ -471,7 +471,7 @@ class FirestoreService {
       final chain = <Map<String, dynamic>>[];
 
       // 1. Seed Producer
-      final seedProducerId = dealerData['seedProducer'];
+      final seedProducerId = matchedInventory['seedProducerId'];
       if (seedProducerId != null) {
         final producerDoc = await _firestore
             .collection(AppConstants.seedProducersCollection)
@@ -528,9 +528,9 @@ class FirestoreService {
       return {
         'chain': chain,
         'batchNumber': batchNumber,
-        'variety': 'RWR 2245', // Would be dynamic
-        'quantity': '2500', // Would be dynamic
-        'quality': 'Grade A',
+        'variety': matchedInventory['varietyName'] ?? matchedInventory['varietyCode'] ?? 'Unknown',
+        'quantity': '${matchedInventory['quantity'] ?? 'Unknown'}',
+        'quality': matchedInventory['qualityGrade'] ?? 'Not specified',
       };
     } catch (e) {
       print('Error getting traceability by batch: $e');
