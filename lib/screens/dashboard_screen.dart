@@ -20,6 +20,7 @@ import 'consumer/nutritional_tracking_screen.dart';
 import 'consumer/education_center_screen.dart';
 import 'orders/institution_orders_screen.dart';
 import 'traceability_screen.dart';
+import 'trader/record_purchase_screen.dart';
 import 'profile/cooperative_profile_screen.dart';
 import 'profile/aggregator_profile_screen.dart';
 import 'profile/seed_producer_profile_screen.dart';
@@ -392,6 +393,19 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
       ]);
+    }
+
+    if (userType == AppConstants.traderType) {
+      actions.add(Card(
+        child: ListTile(
+          leading: const Icon(Icons.qr_code_scanner),
+          title: Text(AppLocalizations.of(context)!.translate('traderRecordPurchase')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('traderScanBatchDescription')),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const RecordPurchaseScreen()),
+          ),
+        ),
+      ));
     }
 
     // Consumer-specific actions
