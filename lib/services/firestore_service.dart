@@ -552,34 +552,106 @@ class FirestoreService {
       final orderData = orderDoc.data()!;
       final chain = <Map<String, dynamic>>[];
 
-      // Get seller and buyer info
-      final sellerDoc = await _firestore
-          .collection(orderData['sellerType'] == 'aggregator' ? AppConstants.aggregatorsCollection : AppConstants.cooperativesCollection)
-          .doc(orderData['sellerId'])
-          .get();
+      // OrderModel stores requestDate, orderType, seedVariety and qualityGrade.
+      // The orderType follows the "<buyer>_to_<seller>" convention.
+      final orderType = (orderData['orderType'] as String?) ?? '';
+      final orderParts = orderType.split('_to_');
+      final buyerType = orderParts.isNotEmpty ? orderParts.first : '';
+      final sellerType = orderParts.length > 1 ? orderParts.last : '';
 
-      final buyerDoc = await _firestore
-          .collection(orderData['buyerType'] == 'aggregator' ? AppConstants.aggregatorsCollection : AppConstants.institutionsCollection)
-          .doc(orderData['buyerId'])
-          .get();
+      String collectionForActor(String actorType) {
+        switch (actorType) {
+          case 'aggregator':
+            return AppConstants.aggregatorsCollection;
+          case 'institution':
+            return AppConstants.institutionsCollection;
+          case 'cooperative':
+          case 'farmer':
+            return AppConstants.cooperativesCollection;
+          case 'seed_producer':
+            return AppConstants.seedProducersCollection;
+          case 'agro_dealer':
+            return AppConstants.agroDealersCollection;
+          default:
+            return '';
+        }
+      }
 
-      if (sellerDoc.exists) {
-        final sellerData = sellerDoc.data()!;
+      String actorName(Map<String, dynamic> data) {
+        return data['businessName'] ??
+            data['cooperativeName'] ??
+            data['institutionName'] ??
+            data['organizationName'] ??
+            'Unknown';
+      }
+
+      String actorLocation(Map<String, dynamic> data) {
+        final location = data['location'];
+        if (location is Map) {
+          return location['district']?.toString() ?? 'Unknown';
+        }
+        return 'Unknown';
+      }
+
+      String formatDate(dynamic value) {
+        if (value is Timestamp) {
+          return value.toDate().toString().split('T')[0];
+        }
+        return DateTime.now().toString().split('T')[0];
+      }
+
+      final requestDate = formatDate(orderData['requestDate']);
+
+      // Resolve profile documents by userId, since profile document IDs may
+      // be generated independently of the Firebase Authentication user ID.
+      Future<Map<String, dynamic>?> loadActor(
+        String collection,
+        dynamic userId,
+      ) async {
+        if (collection.isEmpty || userId is! String || userId.isEmpty) {
+          return null;
+        }
+
+        final byDocumentId =
+            await _firestore.collection(collection).doc(userId).get();
+        if (byDocumentId.exists) {
+          return byDocumentId.data();
+        }
+
+        final byUserId = await _firestore
+            .collection(collection)
+            .where('userId', isEqualTo: userId)
+            .limit(1)
+            .get();
+        if (byUserId.docs.isNotEmpty) {
+          return byUserId.docs.first.data();
+        }
+        return null;
+      }
+
+      final sellerData = await loadActor(
+        collectionForActor(sellerType),
+        orderData['sellerId'],
+      );
+      if (sellerData != null) {
         chain.add({
-          'actorType': orderData['sellerType'] == 'aggregator' ? 'aggregator' : 'farmer',
-          'actorName': sellerData['businessName'] ?? sellerData['cooperativeName'] ?? 'Unknown',
-          'date': (orderData['createdAt'] as Timestamp?)?.toDate().toString().split('T')[0] ?? DateTime.now().toString().split('T')[0],
-          'location': sellerData['location']?['district'] ?? 'Unknown',
+          'actorType': sellerType,
+          'actorName': actorName(sellerData),
+          'date': requestDate,
+          'location': actorLocation(sellerData),
         });
       }
 
-      if (buyerDoc.exists) {
-        final buyerData = buyerDoc.data()!;
+      final buyerData = await loadActor(
+        collectionForActor(buyerType),
+        orderData['buyerId'],
+      );
+      if (buyerData != null) {
         chain.add({
-          'actorType': orderData['buyerType'] == 'aggregator' ? 'aggregator' : 'institution',
-          'actorName': buyerData['businessName'] ?? buyerData['institutionName'] ?? 'Unknown',
-          'date': DateTime.now().toString().split('T')[0],
-          'location': buyerData['location']?['district'] ?? 'Unknown',
+          'actorType': buyerType,
+          'actorName': actorName(buyerData),
+          'date': requestDate,
+          'location': actorLocation(buyerData),
         });
       }
 
@@ -587,8 +659,8 @@ class FirestoreService {
         'chain': chain,
         'orderId': orderId,
         'quantity': orderData['quantity']?.toString() ?? '0',
-        'variety': 'RWR 2245',
-        'quality': 'Grade A',
+        'variety': orderData['seedVariety'] ?? 'Unknown',
+        'quality': orderData['qualityGrade'] ?? 'Not specified',
       };
     } catch (e) {
       print('Error getting traceability by order: $e');
