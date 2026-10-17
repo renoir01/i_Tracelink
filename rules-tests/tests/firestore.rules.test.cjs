@@ -97,6 +97,39 @@ test('an active admin can read profiles, but an ordinary user cannot', async () 
   await assertFails(getDoc(doc(ordinaryDb, 'users/user-1')));
 });
 
+test('active admins can edit account profiles and review status only', async () => {
+  await seed('users/user-1', {
+    userType: 'trader', name: 'Trader One',
+    email: 'trader@example.com', phone: '0780000000',
+    phoneNumber: '0780000000', isVerified: false, status: 'pending',
+  });
+  await seed('admins/admin@example.com', { isActive: true });
+
+  const adminDb = testEnv.authenticatedContext('admin-1', {
+    email: 'admin@example.com',
+  }).firestore();
+  const ordinaryDb = testEnv.authenticatedContext('ordinary-1', {
+    email: 'ordinary@example.com',
+  }).firestore();
+
+  await assertSucceeds(updateDoc(doc(adminDb, 'users/user-1'), {
+    name: 'Updated Trader',
+    phone: '0781111111',
+    phoneNumber: '0781111111',
+    updatedAt: stamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(adminDb, 'users/user-1'), {
+    isVerified: false,
+    status: 'rejected',
+    rejectionReason: 'Missing documents',
+    rejectedAt: stamp(),
+  }));
+  await assertFails(updateDoc(doc(ordinaryDb, 'users/user-1'), {
+    status: 'active',
+    isVerified: true,
+  }));
+});
+
 test('a buyer can create a valid pending order', async () => {
   const buyerDb = testEnv.authenticatedContext('buyer-1', {
     email: 'buyer@example.com',
