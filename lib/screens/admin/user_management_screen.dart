@@ -127,7 +127,12 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              Text(
+                'For performance, up to 50 profiles per user type are loaded at a time.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+              ),
+              const SizedBox(height: 16),
 
               // Stats Cards
               Row(
