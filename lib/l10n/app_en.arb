@@ -211,5 +211,13 @@
   "dashboardHelpSupport": "Help & Support",
   "dashboardPhoneUnavailable": "Could not launch phone dialer. Please call 0780866714",
   "dashboardConsumerProfileComingSoon": "Consumer profile coming soon!",
-  "dashboardProfileUnavailable": "Profile not available"
+  "dashboardProfileUnavailable": "Profile not available",
+  "dashboardOrders": "Orders",
+  "dashboardNotifications": "Notifications",
+  "dashboardSalesTracking": "Sales Tracking",
+  "dashboardViewPlaceOrders": "View and place orders",
+  "dashboardCallSupport": "Call: 0780866714",
+  "traderStartRecordingPurchases": "Start by recording purchases",
+  "traderRecordSaleTooltip": "Record Sale",
+  "traderTapToRecordSale": "Tap + to record your first sale"
 }
