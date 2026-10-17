@@ -22,7 +22,7 @@ class SalesTrackingScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add_circle),
             onPressed: () => _showRecordSaleDialog(context, userId),
-            tooltip: 'Record Sale',
+            tooltip: AppLocalizations.of(context)!.translate('traderRecordSaleTooltip'),
           ),
         ],
       ),
@@ -49,7 +49,7 @@ class SalesTrackingScreen extends StatelessWidget {
                   Icon(Icons.point_of_sale, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
-                    'No sales recorded yet',
+                    AppLocalizations.of(context)!.translate('traderNoSales'),
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],
@@ -58,7 +58,7 @@ class SalesTrackingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap + to record your first sale',
+                    AppLocalizations.of(context)!.translate('traderTapToRecordSale'),
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                 ],
