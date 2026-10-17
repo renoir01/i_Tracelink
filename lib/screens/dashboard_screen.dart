@@ -170,7 +170,7 @@ class DashboardScreen extends StatelessWidget {
                       Expanded(
                         child: _StatCard(
                           icon: Icons.shopping_bag,
-                          label: 'Orders',
+                          label: AppLocalizations.of(context)!.translate('dashboardOrders'),
                           value: '0',
                           color: AppTheme.primaryColor,
                         ),
@@ -179,7 +179,7 @@ class DashboardScreen extends StatelessWidget {
                       Expanded(
                         child: _StatCard(
                           icon: Icons.notifications,
-                          label: 'Notifications',
+                          label: AppLocalizations.of(context)!.translate('dashboardNotifications'),
                           value: '0',
                           color: AppTheme.secondaryColor,
                         ),
@@ -379,7 +379,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.receipt_long, color: Colors.orange),
             ),
-            title: const Text('Sales Tracking'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardSalesTracking')),
             subtitle: Text(AppLocalizations.of(context)!.translate('dashboardAgroSalesDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
@@ -480,7 +480,7 @@ class DashboardScreen extends StatelessWidget {
               child: Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
             ),
             title: Text(AppLocalizations.of(context)!.translate('dashboardMyOrders')),
-            subtitle: const Text('View and place orders'),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardViewPlaceOrders')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -569,7 +569,7 @@ class DashboardScreen extends StatelessWidget {
             child: const Icon(Icons.help, color: Colors.green),
           ),
           title: Text(AppLocalizations.of(context)!.translate('dashboardHelpSupport')),
-          subtitle: const Text('Call: 0780866714'),
+          subtitle: Text(AppLocalizations.of(context)!.translate('dashboardCallSupport')),
           trailing: const Icon(Icons.phone, size: 16),
           onTap: () async {
             final Uri phoneUri = Uri(scheme: 'tel', path: '0780866714');
