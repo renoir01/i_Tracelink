@@ -63,7 +63,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       final users = loadMore ? [..._allUsers, ...page.users] : page.users;
       setState(() {
         _allUsers = users;
-        _pendingUsers = users.where((u) => !u.isVerified).toList();
+        _pendingUsers = users.where((u) => !u.isVerified && u.status != 'rejected').toList();
         _verifiedUsers = users.where((u) => u.isVerified).toList();
         _rejectedUsers = users.where((u) => u.status == 'rejected').toList();
         _hasMoreUsers = page.hasMore;
