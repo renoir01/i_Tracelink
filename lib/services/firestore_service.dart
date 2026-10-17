@@ -713,45 +713,37 @@ class FirestoreService {
 
   // ========== USER MANAGEMENT METHODS ==========
 
-  /// Loads a bounded page from each role collection. The admin UI merges and
-  /// sorts these results, avoiding an unbounded read of every registered user.
+  /// Loads a bounded page from the canonical users collection. This includes
+  /// every registered role (including consumers and traders) without reading
+  /// all role-specific business profiles.
   Future<UserPage> getAllUsersPage({
     int pageSizePerCollection = 10,
     Map<String, DocumentSnapshot<Map<String, dynamic>>> cursors = const {},
   }) async {
-    final collections = [
-      AppConstants.seedProducersCollection,
-      AppConstants.agroDealersCollection,
-      AppConstants.cooperativesCollection,
-      AppConstants.aggregatorsCollection,
-      AppConstants.institutionsCollection,
-    ];
-
+    const collection = AppConstants.usersCollection;
     final users = <UserModel>[];
     final nextCursors = <String, DocumentSnapshot<Map<String, dynamic>>>{};
     final hasMoreByCollection = <String, bool>{};
 
     try {
-      for (final collection in collections) {
-        Query<Map<String, dynamic>> query = _firestore
-            .collection(collection)
-            .orderBy(FieldPath.documentId())
-            .limit(pageSizePerCollection);
-        final cursor = cursors[collection];
-        if (cursor != null) {
-          query = query.startAfterDocument(cursor);
-        }
-
-        final snapshot = await query.get();
-        if (snapshot.docs.isNotEmpty) {
-          nextCursors[collection] = snapshot.docs.last;
-          users.addAll(snapshot.docs.map((doc) => UserModel.fromFirestore(doc)));
-        } else if (cursor != null) {
-          nextCursors[collection] = cursor;
-        }
-        hasMoreByCollection[collection] =
-            snapshot.docs.length == pageSizePerCollection;
+      Query<Map<String, dynamic>> query = _firestore
+          .collection(collection)
+          .orderBy(FieldPath.documentId())
+          .limit(pageSizePerCollection);
+      final cursor = cursors[collection];
+      if (cursor != null) {
+        query = query.startAfterDocument(cursor);
       }
+
+      final snapshot = await query.get();
+      if (snapshot.docs.isNotEmpty) {
+        nextCursors[collection] = snapshot.docs.last;
+        users.addAll(snapshot.docs.map((doc) => UserModel.fromFirestore(doc)));
+      } else if (cursor != null) {
+        nextCursors[collection] = cursor;
+      }
+      hasMoreByCollection[collection] =
+          snapshot.docs.length == pageSizePerCollection;
 
       users.sort((a, b) {
         final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -769,34 +761,23 @@ class FirestoreService {
     }
   }
 
-  // Get all users for admin panel
+  // Bounded legacy helper; prefer getAllUsersPage for admin lists.
   Future<List<UserModel>> getAllUsers() async {
     try {
-      final collections = [
-        AppConstants.seedProducersCollection,
-        AppConstants.agroDealersCollection,
-        AppConstants.cooperativesCollection,
-        AppConstants.aggregatorsCollection,
-        AppConstants.institutionsCollection,
-      ];
+      final snapshot = await _firestore
+          .collection(AppConstants.usersCollection)
+          .orderBy(FieldPath.documentId())
+          .limit(250)
+          .get();
+      final allUsers = snapshot.docs
+          .map((doc) => UserModel.fromFirestore(doc))
+          .toList();
 
-      List<UserModel> allUsers = [];
-
-      for (String collection in collections) {
-        final snapshot = await _firestore.collection(collection).limit(50).get();
-        for (var doc in snapshot.docs) {
-          final userModel = UserModel.fromFirestore(doc);
-          allUsers.add(userModel);
-        }
-      }
-
-      // Sort by creation date (newest first)
       allUsers.sort((a, b) {
-        final aDate = a.createdAt ?? DateTime.now();
-        final bDate = b.createdAt ?? DateTime.now();
+        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         return bDate.compareTo(aDate);
       });
-
       return allUsers;
     } catch (e) {
       throw Exception('Failed to get all users: $e');
