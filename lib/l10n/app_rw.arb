@@ -219,5 +219,13 @@
   "dashboardCallSupport": "Hamagara: 0780866714",
   "traderStartRecordingPurchases": "Tangira wandika ibyo uguze",
   "traderRecordSaleTooltip": "Andika igicuruzwa wagurishije",
-  "traderTapToRecordSale": "Kanda kuri + wandike igicuruzwa cya mbere wagurishije"
+  "traderTapToRecordSale": "Kanda kuri + wandike igicuruzwa cya mbere wagurishije",
+  "traderEnterQuantity": "Andika ingano",
+  "traderValidQuantity": "Andika ingano yemewe",
+  "traderQuantityExceedsAvailable": "Ntushobora kurenza ingano ihari",
+  "traderEnterPrice": "Andika igiciro",
+  "traderValidPrice": "Andika igiciro cyemewe",
+  "traderEnterStorageLocation": "Andika aho ububiko buherereye",
+  "traderSelectBatchValidation": "Hitamo icyiciro cy'ibicuruzwa",
+  "traderEnterBuyerName": "Andika izina ry'umuguzi"
 }
