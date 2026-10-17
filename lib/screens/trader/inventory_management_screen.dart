@@ -46,7 +46,7 @@ class InventoryManagementScreen extends StatelessWidget {
                   Icon(Icons.inventory_2, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
-                    'No inventory yet',
+                    AppLocalizations.of(context)!.translate('traderNoInventory'),
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],
@@ -55,7 +55,7 @@ class InventoryManagementScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Start by recording purchases',
+                    AppLocalizations.of(context)!.translate('traderStartRecordingPurchases'),
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                 ],
