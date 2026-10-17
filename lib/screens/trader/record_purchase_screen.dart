@@ -396,14 +396,14 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter quantity';
+                    return AppLocalizations.of(context)!.translate('traderEnterQuantity');
                   }
                   final qty = double.tryParse(value);
                   if (qty == null || qty <= 0) {
-                    return 'Enter valid quantity';
+                    return AppLocalizations.of(context)!.translate('traderValidQuantity');
                   }
                   if (qty > availableQty) {
-                    return 'Cannot exceed available quantity';
+                    return AppLocalizations.of(context)!.translate('traderQuantityExceedsAvailable');
                   }
                   return null;
                 },
@@ -422,11 +422,11 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter price';
+                    return AppLocalizations.of(context)!.translate('traderEnterPrice');
                   }
                   final price = double.tryParse(value);
                   if (price == null || price <= 0) {
-                    return 'Enter valid price';
+                    return AppLocalizations.of(context)!.translate('traderValidPrice');
                   }
                   return null;
                 },
@@ -464,7 +464,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter storage location';
+                    return AppLocalizations.of(context)!.translate('traderEnterStorageLocation');
                   }
                   return null;
                 },
