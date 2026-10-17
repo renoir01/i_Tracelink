@@ -31,6 +31,7 @@ jobs:
 
       - name: Analyze
         run: |
+          set +e
           mkdir -p /tmp/report
           flutter --version > /tmp/report/flutter_version.txt 2>&1 || true
           flutter pub get > /tmp/report/pub_get.txt 2>&1; echo "pub get exit: $?" >> /tmp/report/pub_get.txt
@@ -48,6 +49,7 @@ jobs:
 
       - name: Build debug APK (full compile check)
         run: |
+          set +e
           flutter build apk --debug > /tmp/report/build_full.txt 2>&1; echo "build exit: $?" >> /tmp/report/build_full.txt
           tail -n 250 /tmp/report/build_full.txt > /tmp/report/build_tail.txt
           grep -n -i "error\|FAILURE\|What went wrong\|Execution failed\|^e: \|unable to find" /tmp/report/build_full.txt | head -80 > /tmp/report/build_errors.txt || true
