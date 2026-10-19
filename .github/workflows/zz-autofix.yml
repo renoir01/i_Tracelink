@@ -1,0 +1,46 @@
+# TEMPORARY: runs `dart fix` + `flutter fix` and publishes the resulting patch and the
+# analyzer output to the branch ci-report/autofix. Safe to delete with branch ai/autofix-run.
+name: Autofix report (temporary)
+
+on:
+  push:
+    branches: ['ai/autofix-run']
+
+permissions:
+  contents: write
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Fix
+        run: |
+          set +e
+          mkdir -p /tmp/report
+          flutter pub get > /tmp/report/pub_get.txt 2>&1
+          flutter analyze --no-pub > /tmp/report/analyze_before.txt 2>&1
+          dart fix --dry-run > /tmp/report/dryrun.txt 2>&1
+          dart fix --apply > /tmp/report/apply_dart.txt 2>&1
+          flutter fix --apply > /tmp/report/apply_flutter.txt 2>&1
+          flutter analyze --no-pub > /tmp/report/analyze_after.txt 2>&1
+          git diff --binary -- lib test > /tmp/report/autofix.patch
+          git diff --stat -- lib test > /tmp/report/autofix_stat.txt
+          true
+
+      - name: Publish
+        run: |
+          rm -rf /tmp/pub && mkdir /tmp/pub && cd /tmp/pub
+          git init -q -b ci-report-autofix
+          cp /tmp/report/* .
+          git add -A
+          git -c user.name=ci-report -c user.email=ci-report@users.noreply.github.com commit -qm "autofix report for ${{ github.sha }}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD:refs/heads/ci-report/autofix
