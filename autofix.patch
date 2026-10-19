@@ -1,0 +1,3139 @@
+diff --git a/lib/screens/admin/admin_dashboard_screen.dart b/lib/screens/admin/admin_dashboard_screen.dart
+index 137e9bd..b9711b5 100644
+--- a/lib/screens/admin/admin_dashboard_screen.dart
++++ b/lib/screens/admin/admin_dashboard_screen.dart
+@@ -109,7 +109,7 @@ class PendingUsersTab extends StatelessWidget {
+         // Header
+         Container(
+           padding: const EdgeInsets.all(16),
+-          color: AppTheme.warningColor.withOpacity(0.1),
++          color: AppTheme.warningColor.withValues(alpha: 0.1),
+           child: Row(
+             children: [
+               const Icon(Icons.pending_actions, color: AppTheme.warningColor),
+@@ -188,7 +188,7 @@ class VerifiedUsersTab extends StatelessWidget {
+         // Header
+         Container(
+           padding: const EdgeInsets.all(16),
+-          color: AppTheme.successColor.withOpacity(0.1),
++          color: AppTheme.successColor.withValues(alpha: 0.1),
+           child: Row(
+             children: [
+               const Icon(Icons.verified_user, color: AppTheme.successColor),
+diff --git a/lib/screens/admin/admin_login_screen.dart b/lib/screens/admin/admin_login_screen.dart
+index 205f004..77f9124 100644
+--- a/lib/screens/admin/admin_login_screen.dart
++++ b/lib/screens/admin/admin_login_screen.dart
+@@ -143,7 +143,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
+                           padding: const EdgeInsets.all(12),
+                           margin: const EdgeInsets.only(bottom: 16),
+                           decoration: BoxDecoration(
+-                            color: AppTheme.errorColor.withOpacity(0.1),
++                            color: AppTheme.errorColor.withValues(alpha: 0.1),
+                             borderRadius: BorderRadius.circular(8),
+                             border: Border.all(color: AppTheme.errorColor),
+                           ),
+diff --git a/lib/screens/admin/admin_panel_screen.dart b/lib/screens/admin/admin_panel_screen.dart
+index 816698b..66cf7bc 100644
+--- a/lib/screens/admin/admin_panel_screen.dart
++++ b/lib/screens/admin/admin_panel_screen.dart
+@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
+ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
+ import 'package:provider/provider.dart';
+ import '../../providers/auth_provider.dart';
+-import '../../services/firestore_service.dart';
+-import '../../models/user_model.dart';
+ import '../../utils/app_theme.dart';
+-import '../../utils/constants.dart';
+ import 'user_management_screen.dart';
+ import 'analytics_screen.dart';
+ import 'reports_screen.dart';
+@@ -67,7 +64,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
+             Container(
+               width: 280,
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.05),
++                color: AppTheme.primaryColor.withValues(alpha: 0.05),
+                 border: Border(
+                   right: BorderSide(color: Colors.grey.shade300),
+                 ),
+@@ -202,7 +199,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
+     return Container(
+       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+       decoration: BoxDecoration(
+-        color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Colors.transparent,
++        color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
+         borderRadius: BorderRadius.circular(8),
+       ),
+       child: ListTile(
+@@ -562,7 +559,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
+                 Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: color.withOpacity(0.1),
++                    color: color.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(icon, color: color),
+@@ -591,7 +588,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
+               subtitle,
+               style: TextStyle(
+                 fontSize: 12,
+-                color: color.withOpacity(0.7),
++                color: color.withValues(alpha: 0.7),
+                 fontWeight: FontWeight.w500,
+               ),
+             ),
+@@ -655,7 +652,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
+       leading: Container(
+         padding: const EdgeInsets.all(8),
+         decoration: BoxDecoration(
+-          color: color.withOpacity(0.1),
++          color: color.withValues(alpha: 0.1),
+           borderRadius: BorderRadius.circular(8),
+         ),
+         child: Icon(icon, color: color),
+@@ -721,7 +718,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
+       leading: Container(
+         padding: const EdgeInsets.all(8),
+         decoration: BoxDecoration(
+-          color: color.withOpacity(0.1),
++          color: color.withValues(alpha: 0.1),
+           borderRadius: BorderRadius.circular(8),
+         ),
+         child: Icon(icon, color: color),
+@@ -729,7 +726,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
+       title: Text(service),
+       trailing: Chip(
+         label: Text(status),
+-        backgroundColor: color.withOpacity(0.1),
++        backgroundColor: color.withValues(alpha: 0.1),
+         labelStyle: TextStyle(color: color),
+       ),
+     );
+diff --git a/lib/screens/admin/analytics_screen.dart b/lib/screens/admin/analytics_screen.dart
+index fca58ad..ad27f1c 100644
+--- a/lib/screens/admin/analytics_screen.dart
++++ b/lib/screens/admin/analytics_screen.dart
+@@ -1,8 +1,6 @@
+ import 'package:flutter/material.dart';
+-import 'package:provider/provider.dart';
+ import '../../services/firestore_service.dart';
+ import '../../utils/app_theme.dart';
+-import '../../utils/constants.dart';
+ 
+ class AnalyticsScreen extends StatefulWidget {
+   const AnalyticsScreen({super.key});
+@@ -394,7 +392,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
+                 Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: color.withOpacity(0.1),
++                    color: color.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(icon, color: color),
+@@ -423,7 +421,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
+               subtitle,
+               style: TextStyle(
+                 fontSize: 12,
+-                color: color.withOpacity(0.7),
++                color: color.withValues(alpha: 0.7),
+                 fontWeight: FontWeight.w500,
+               ),
+             ),
+@@ -778,7 +776,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
+       leading: Container(
+         padding: const EdgeInsets.all(8),
+         decoration: BoxDecoration(
+-          color: color.withOpacity(0.1),
++          color: color.withValues(alpha: 0.1),
+           borderRadius: BorderRadius.circular(8),
+         ),
+         child: Icon(icon, color: color),
+diff --git a/lib/screens/admin/developer_tools_screen.dart b/lib/screens/admin/developer_tools_screen.dart
+index b25d10f..a67fd7d 100644
+--- a/lib/screens/admin/developer_tools_screen.dart
++++ b/lib/screens/admin/developer_tools_screen.dart
+@@ -1,6 +1,5 @@
+ import 'package:flutter/material.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+-import '../../utils/app_theme.dart';
+ import '../payment/payment_test_screen.dart';
+ 
+ class DeveloperToolsScreen extends StatelessWidget {
+@@ -141,7 +140,7 @@ class DeveloperToolsScreen extends StatelessWidget {
+         leading: Container(
+           padding: const EdgeInsets.all(8),
+           decoration: BoxDecoration(
+-            color: color.withOpacity(0.1),
++            color: color.withValues(alpha: 0.1),
+             borderRadius: BorderRadius.circular(8),
+           ),
+           child: Icon(icon, color: color),
+diff --git a/lib/screens/admin/reports_screen.dart b/lib/screens/admin/reports_screen.dart
+index 095d576..6b7b3d4 100644
+--- a/lib/screens/admin/reports_screen.dart
++++ b/lib/screens/admin/reports_screen.dart
+@@ -1,8 +1,5 @@
+ import 'package:flutter/material.dart';
+-import 'package:provider/provider.dart';
+-import '../../services/firestore_service.dart';
+ import '../../utils/app_theme.dart';
+-import '../../utils/constants.dart';
+ 
+ class ReportsScreen extends StatefulWidget {
+   const ReportsScreen({super.key});
+@@ -361,7 +358,7 @@ class _ReportsScreenState extends State<ReportsScreen>
+                 Container(
+                   padding: const EdgeInsets.all(12),
+                   decoration: BoxDecoration(
+-                    color: color.withOpacity(0.1),
++                    color: color.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(12),
+                   ),
+                   child: Icon(icon, color: color, size: 24),
+diff --git a/lib/screens/admin/system_monitoring_screen.dart b/lib/screens/admin/system_monitoring_screen.dart
+index e3be138..96b5a82 100644
+--- a/lib/screens/admin/system_monitoring_screen.dart
++++ b/lib/screens/admin/system_monitoring_screen.dart
+@@ -144,7 +144,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+                       Container(
+                         padding: const EdgeInsets.all(16),
+                         decoration: BoxDecoration(
+-                          color: Colors.green.withOpacity(0.1),
++                          color: Colors.green.withValues(alpha: 0.1),
+                           borderRadius: BorderRadius.circular(50),
+                         ),
+                         child: const Icon(
+@@ -175,7 +175,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+                       ),
+                       Chip(
+                         label: const Text('99.9% Uptime'),
+-                        backgroundColor: Colors.green.withOpacity(0.1),
++                        backgroundColor: Colors.green.withValues(alpha: 0.1),
+                         labelStyle: const TextStyle(color: Colors.green),
+                       ),
+                     ],
+@@ -589,7 +589,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+               change,
+               style: TextStyle(
+                 fontSize: 12,
+-                color: color.withOpacity(0.7),
++                color: color.withValues(alpha: 0.7),
+               ),
+             ),
+           ],
+@@ -683,7 +683,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+ 
+   Widget _buildAlertItem(String title, String message, String severity, Color color, String timestamp) {
+     return Card(
+-      color: color.withOpacity(0.1),
++      color: color.withValues(alpha: 0.1),
+       margin: const EdgeInsets.only(bottom: 8),
+       child: Padding(
+         padding: const EdgeInsets.all(12.0),
+@@ -716,7 +716,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+               children: [
+                 Chip(
+                   label: Text(severity),
+-                  backgroundColor: color.withOpacity(0.2),
++                  backgroundColor: color.withValues(alpha: 0.2),
+                   labelStyle: TextStyle(
+                     color: color,
+                     fontSize: 10,
+@@ -748,7 +748,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+           Container(
+             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+             decoration: BoxDecoration(
+-              color: color.withOpacity(0.1),
++              color: color.withValues(alpha: 0.1),
+               borderRadius: BorderRadius.circular(4),
+             ),
+             child: Text(
+@@ -894,7 +894,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+         const SizedBox(height: 8),
+         LinearProgressIndicator(
+           value: percentage / 100,
+-          backgroundColor: color.withOpacity(0.2),
++          backgroundColor: color.withValues(alpha: 0.2),
+           valueColor: AlwaysStoppedAnimation<Color>(color),
+         ),
+       ],
+@@ -911,7 +911,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+             Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: color.withOpacity(0.1),
++                color: color.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(
+@@ -939,7 +939,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
+                           priority,
+                           style: const TextStyle(fontSize: 10),
+                         ),
+-                        backgroundColor: color.withOpacity(0.2),
++                        backgroundColor: color.withValues(alpha: 0.2),
+                         labelStyle: TextStyle(color: color),
+                         padding: EdgeInsets.zero,
+                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+diff --git a/lib/screens/admin/user_management_screen.dart b/lib/screens/admin/user_management_screen.dart
+index ffa8f7b..0d1293e 100644
+--- a/lib/screens/admin/user_management_screen.dart
++++ b/lib/screens/admin/user_management_screen.dart
+@@ -1,7 +1,5 @@
+ import 'package:flutter/material.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+-import 'package:provider/provider.dart';
+-import '../../providers/auth_provider.dart';
+ import '../../services/firestore_service.dart';
+ import '../../services/sms_service.dart';
+ import '../../models/user_model.dart';
+diff --git a/lib/screens/aggregator/aggregator_dashboard_screen.dart b/lib/screens/aggregator/aggregator_dashboard_screen.dart
+index 9a4de1a..b8771ce 100644
+--- a/lib/screens/aggregator/aggregator_dashboard_screen.dart
++++ b/lib/screens/aggregator/aggregator_dashboard_screen.dart
+@@ -182,7 +182,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+               width: 60,
+               height: 60,
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(30),
+               ),
+               child: const Icon(
+@@ -212,7 +212,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                     decoration: BoxDecoration(
+-                      color: Colors.green.withOpacity(0.1),
++                      color: Colors.green.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: const Row(
+@@ -338,7 +338,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(16),
+                 decoration: BoxDecoration(
+-                  color: Colors.white.withOpacity(0.2),
++                  color: Colors.white.withValues(alpha: 0.2),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: const Icon(
+@@ -443,7 +443,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: color.withOpacity(0.1),
++                  color: color.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Icon(icon, color: color, size: 28),
+@@ -516,7 +516,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                 leading: Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: _getStatusColor(status).withOpacity(0.1),
++                    color: _getStatusColor(status).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -537,7 +537,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                 trailing: Container(
+                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                   decoration: BoxDecoration(
+-                    color: _getStatusColor(status).withOpacity(0.1),
++                    color: _getStatusColor(status).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(12),
+                   ),
+                   child: Text(
+diff --git a/lib/screens/aggregator/aggregator_orders_screen.dart b/lib/screens/aggregator/aggregator_orders_screen.dart
+index c49b1b1..61908b3 100644
+--- a/lib/screens/aggregator/aggregator_orders_screen.dart
++++ b/lib/screens/aggregator/aggregator_orders_screen.dart
+@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../providers/auth_provider.dart';
+-import '../../models/order_model.dart';
+-import '../../services/firestore_service.dart';
+ import '../../utils/app_theme.dart';
+ import '../../utils/constants.dart';
+ 
+@@ -164,7 +162,7 @@ class _AggregatorOrdersScreenState extends State<AggregatorOrdersScreen> with Si
+                   Container(
+                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                     decoration: BoxDecoration(
+-                      color: _getStatusColor(status).withOpacity(0.1),
++                      color: _getStatusColor(status).withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: Text(
+@@ -299,7 +297,7 @@ class _AggregatorOrdersScreenState extends State<AggregatorOrdersScreen> with Si
+               Container(
+                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                 decoration: BoxDecoration(
+-                  color: _getStatusColor(status).withOpacity(0.1),
++                  color: _getStatusColor(status).withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Row(
+diff --git a/lib/screens/aggregator/aggregator_place_order_screen.dart b/lib/screens/aggregator/aggregator_place_order_screen.dart
+index 7a50d33..3bbf328 100644
+--- a/lib/screens/aggregator/aggregator_place_order_screen.dart
++++ b/lib/screens/aggregator/aggregator_place_order_screen.dart
+@@ -1,8 +1,5 @@
+ import 'package:flutter/material.dart';
+-import 'package:provider/provider.dart';
+-import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../models/cooperative_model.dart';
+-import '../../providers/auth_provider.dart';
+ import '../../services/firestore_service.dart';
+ import '../../utils/app_theme.dart';
+ import '../orders/place_order_screen.dart';
+@@ -195,7 +192,7 @@ class _AggregatorPlaceOrderScreenState extends State<AggregatorPlaceOrderScreen>
+                   Container(
+                     padding: const EdgeInsets.all(12),
+                     decoration: BoxDecoration(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                     child: const Icon(
+diff --git a/lib/screens/aggregator_dashboard_screen.dart b/lib/screens/aggregator_dashboard_screen.dart
+index 65964b3..a2953d0 100644
+--- a/lib/screens/aggregator_dashboard_screen.dart
++++ b/lib/screens/aggregator_dashboard_screen.dart
+@@ -106,7 +106,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                     const SizedBox(height: 8),
+                     Chip(
+                       label: const Text('Aggregator'),
+-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     ),
+                   ],
+                 ),
+@@ -117,7 +117,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+             // Verification Status
+             if (!(userModel?.isVerified ?? false))
+               Card(
+-                color: AppTheme.warningColor.withOpacity(0.1),
++                color: AppTheme.warningColor.withValues(alpha: 0.1),
+                 child: Padding(
+                   padding: const EdgeInsets.all(16.0),
+                   child: Row(
+@@ -213,7 +213,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                       Container(
+                         padding: const EdgeInsets.all(12),
+                         decoration: BoxDecoration(
+-                          color: AppTheme.primaryColor.withOpacity(0.1),
++                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                           borderRadius: BorderRadius.circular(12),
+                         ),
+                         child: const Icon(
+@@ -271,7 +271,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                       Container(
+                         padding: const EdgeInsets.all(12),
+                         decoration: BoxDecoration(
+-                          color: Colors.blue.withOpacity(0.1),
++                          color: Colors.blue.withValues(alpha: 0.1),
+                           borderRadius: BorderRadius.circular(12),
+                         ),
+                         child: const Icon(
+@@ -321,9 +321,8 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                 
+                 final orders = snapshot.data ?? [];
+                 final unpaidOrders = orders.where((order) => 
+-                  order.status == AppConstants.orderAccepted && 
+-                  order.totalAmount != null &&
+-                  order.totalAmount! > 0
++                  order.status == AppConstants.orderAccepted &&
++                  order.totalAmount > 0
+                 ).toList();
+                 
+                 if (unpaidOrders.isEmpty) {
+@@ -345,7 +344,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                         Container(
+                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                           decoration: BoxDecoration(
+-                            color: Colors.orange.withOpacity(0.1),
++                            color: Colors.orange.withValues(alpha: 0.1),
+                             borderRadius: BorderRadius.circular(12),
+                           ),
+                           child: Text(
+@@ -366,13 +365,13 @@ class AggregatorDashboardScreen extends StatelessWidget {
+                         leading: Container(
+                           padding: const EdgeInsets.all(8),
+                           decoration: BoxDecoration(
+-                            color: Colors.red.withOpacity(0.1),
++                            color: Colors.red.withValues(alpha: 0.1),
+                             borderRadius: BorderRadius.circular(8),
+                           ),
+                           child: const Icon(Icons.payment, color: Colors.red),
+                         ),
+                         title: Text('Order #${order.id.substring(0, 8)}'),
+-                        subtitle: Text('RWF ${order.totalAmount?.toStringAsFixed(0) ?? '0'} - ${order.quantity}kg'),
++                        subtitle: Text('RWF ${order.totalAmount.toStringAsFixed(0) ?? '0'} - ${order.quantity}kg'),
+                         trailing: ElevatedButton(
+                           onPressed: () {
+                             Navigator.of(context).push(
+diff --git a/lib/screens/agro_dealer/agro_dealer_dashboard_screen.dart b/lib/screens/agro_dealer/agro_dealer_dashboard_screen.dart
+index 0cbe939..210eb2d 100644
+--- a/lib/screens/agro_dealer/agro_dealer_dashboard_screen.dart
++++ b/lib/screens/agro_dealer/agro_dealer_dashboard_screen.dart
+@@ -124,7 +124,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+               width: 60,
+               height: 60,
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(30),
+               ),
+               child: const Icon(
+@@ -154,7 +154,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                     decoration: BoxDecoration(
+-                      color: Colors.green.withOpacity(0.1),
++                      color: Colors.green.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: const Row(
+@@ -262,7 +262,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: color.withOpacity(0.1),
++                  color: color.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Icon(icon, color: color, size: 28),
+diff --git a/lib/screens/agro_dealer/agro_dealer_inventory_screen.dart b/lib/screens/agro_dealer/agro_dealer_inventory_screen.dart
+index 8b23226..3c159dd 100644
+--- a/lib/screens/agro_dealer/agro_dealer_inventory_screen.dart
++++ b/lib/screens/agro_dealer/agro_dealer_inventory_screen.dart
+@@ -190,8 +190,8 @@ class AgroDealerInventoryScreen extends StatelessWidget {
+                   padding: const EdgeInsets.all(10),
+                   decoration: BoxDecoration(
+                     color: isLowStock
+-                        ? Colors.orange.withOpacity(0.1)
+-                        : Colors.green.withOpacity(0.1),
++                        ? Colors.orange.withValues(alpha: 0.1)
++                        : Colors.green.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -363,7 +363,7 @@ class _AddInventoryDialogState extends State<_AddInventoryDialog> {
+ 
+                 // Seed Variety
+                 DropdownButtonFormField<String>(
+-                  value: _selectedVariety,
++                  initialValue: _selectedVariety,
+                   decoration: const InputDecoration(
+                     labelText: 'Seed Variety',
+                     border: OutlineInputBorder(),
+@@ -429,7 +429,7 @@ class _AddInventoryDialogState extends State<_AddInventoryDialog> {
+ 
+                 // Quality
+                 DropdownButtonFormField<String>(
+-                  value: _quality,
++                  initialValue: _quality,
+                   decoration: const InputDecoration(
+                     labelText: 'Quality',
+                     border: OutlineInputBorder(),
+diff --git a/lib/screens/agro_dealer/agro_dealer_sales_screen.dart b/lib/screens/agro_dealer/agro_dealer_sales_screen.dart
+index aaa92b2..9579512 100644
+--- a/lib/screens/agro_dealer/agro_dealer_sales_screen.dart
++++ b/lib/screens/agro_dealer/agro_dealer_sales_screen.dart
+@@ -193,8 +193,8 @@ class AgroDealerSalesScreen extends StatelessWidget {
+                   padding: const EdgeInsets.all(10),
+                   decoration: BoxDecoration(
+                     color: paymentStatus == 'completed'
+-                        ? Colors.green.withOpacity(0.1)
+-                        : Colors.orange.withOpacity(0.1),
++                        ? Colors.green.withValues(alpha: 0.1)
++                        : Colors.orange.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -269,8 +269,8 @@ class AgroDealerSalesScreen extends StatelessWidget {
+                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                   decoration: BoxDecoration(
+                     color: paymentStatus == 'completed'
+-                        ? Colors.green.withOpacity(0.1)
+-                        : Colors.orange.withOpacity(0.1),
++                        ? Colors.green.withValues(alpha: 0.1)
++                        : Colors.orange.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(12),
+                   ),
+                   child: Text(
+@@ -389,7 +389,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
+ 
+                 // Seed Variety
+                 DropdownButtonFormField<String>(
+-                  value: _selectedVariety,
++                  initialValue: _selectedVariety,
+                   decoration: const InputDecoration(
+                     labelText: 'Seed Variety',
+                     border: OutlineInputBorder(),
+@@ -557,7 +557,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
+ 
+                 // Payment Status
+                 DropdownButtonFormField<String>(
+-                  value: _paymentStatus,
++                  initialValue: _paymentStatus,
+                   decoration: const InputDecoration(
+                     labelText: 'Payment Status',
+                     border: OutlineInputBorder(),
+@@ -577,7 +577,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
+                 Container(
+                   padding: const EdgeInsets.all(12),
+                   decoration: BoxDecoration(
+-                    color: AppTheme.primaryColor.withOpacity(0.1),
++                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Row(
+diff --git a/lib/screens/agro_dealer_dashboard_screen.dart b/lib/screens/agro_dealer_dashboard_screen.dart
+index ef04cb2..9b885d3 100644
+--- a/lib/screens/agro_dealer_dashboard_screen.dart
++++ b/lib/screens/agro_dealer_dashboard_screen.dart
+@@ -4,7 +4,6 @@ import '../providers/auth_provider.dart';
+ import '../services/notification_service.dart';
+ import '../utils/app_theme.dart';
+ import '../utils/app_localizations.dart';
+-import '../utils/constants.dart';
+ import 'notifications_screen.dart';
+ import 'agro_dealer/agro_dealer_inventory_screen.dart';
+ import 'agro_dealer/agro_dealer_sales_screen.dart';
+@@ -105,7 +104,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+                     const SizedBox(height: 8),
+                     Chip(
+                       label: const Text('Agro-Dealer'),
+-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     ),
+                   ],
+                 ),
+@@ -116,7 +115,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+             // Verification Status
+             if (!(userModel?.isVerified ?? false))
+               Card(
+-                color: AppTheme.warningColor.withOpacity(0.1),
++                color: AppTheme.warningColor.withValues(alpha: 0.1),
+                 child: Padding(
+                   padding: const EdgeInsets.all(16.0),
+                   child: Row(
+@@ -194,7 +193,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(Icons.inventory_2, color: AppTheme.primaryColor),
+@@ -216,7 +215,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.orange.withOpacity(0.1),
++                color: Colors.orange.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.receipt_long, color: Colors.orange),
+@@ -238,7 +237,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.blue.withOpacity(0.1),
++                color: Colors.blue.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.check_circle, color: Colors.blue),
+@@ -260,7 +259,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.green.withOpacity(0.1),
++                color: Colors.green.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.warning, color: Colors.green),
+@@ -282,7 +281,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.purple.withOpacity(0.1),
++                color: Colors.purple.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.account_circle, color: Colors.purple),
+@@ -304,7 +303,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.teal.withOpacity(0.1),
++                color: Colors.teal.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.help, color: Colors.teal),
+diff --git a/lib/screens/consumer/consumer_dashboard_screen.dart b/lib/screens/consumer/consumer_dashboard_screen.dart
+index d67b5e0..c045663 100644
+--- a/lib/screens/consumer/consumer_dashboard_screen.dart
++++ b/lib/screens/consumer/consumer_dashboard_screen.dart
+@@ -106,7 +106,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
+               width: 60,
+               height: 60,
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(30),
+               ),
+               child: const Icon(
+@@ -136,7 +136,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                     decoration: BoxDecoration(
+-                      color: Colors.green.withOpacity(0.1),
++                      color: Colors.green.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: const Row(
+@@ -263,7 +263,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(16),
+                 decoration: BoxDecoration(
+-                  color: Colors.white.withOpacity(0.2),
++                  color: Colors.white.withValues(alpha: 0.2),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: const Icon(
+@@ -428,7 +428,7 @@ class ConsumerDashboardScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: color.withOpacity(0.1),
++                  color: color.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Icon(icon, color: color, size: 28),
+@@ -502,8 +502,8 @@ class ConsumerDashboardScreen extends StatelessWidget {
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+                     color: wasVerified
+-                        ? Colors.green.withOpacity(0.1)
+-                        : Colors.red.withOpacity(0.1),
++                        ? Colors.green.withValues(alpha: 0.1)
++                        : Colors.red.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+diff --git a/lib/screens/consumer/consumer_scan_verify_screen.dart b/lib/screens/consumer/consumer_scan_verify_screen.dart
+index d2f2e80..c1c9cb1 100644
+--- a/lib/screens/consumer/consumer_scan_verify_screen.dart
++++ b/lib/screens/consumer/consumer_scan_verify_screen.dart
+@@ -182,7 +182,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: Colors.red.withOpacity(0.1),
++                  color: Colors.red.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(8),
+                 ),
+                 child: const Row(
+@@ -230,7 +230,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
+ 
+   @override
+   void dispose() {
+-    controller?.dispose();
++    controller.dispose();
+     super.dispose();
+   }
+ 
+@@ -247,7 +247,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
+           // Instructions Card
+           Container(
+             padding: const EdgeInsets.all(16),
+-            color: AppTheme.primaryColor.withOpacity(0.1),
++            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+             child: Row(
+               children: [
+                 const Icon(Icons.info_outline, color: AppTheme.primaryColor),
+@@ -291,7 +291,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
+           Expanded(
+             flex: 2,
+             child: Container(
+-              color: Colors.black.withOpacity(0.8),
++              color: Colors.black.withValues(alpha: 0.8),
+               child: Center(
+                 child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
+@@ -326,7 +326,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
+                       Container(
+                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                         decoration: BoxDecoration(
+-                          color: AppTheme.primaryColor.withOpacity(0.3),
++                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                           borderRadius: BorderRadius.circular(20),
+                         ),
+                         child: const Row(
+diff --git a/lib/screens/consumer/education_center_screen.dart b/lib/screens/consumer/education_center_screen.dart
+index 3539010..904ea14 100644
+--- a/lib/screens/consumer/education_center_screen.dart
++++ b/lib/screens/consumer/education_center_screen.dart
+@@ -134,7 +134,7 @@ class EducationCenterScreen extends StatelessWidget {
+       padding: const EdgeInsets.all(24),
+       decoration: BoxDecoration(
+         gradient: LinearGradient(
+-          colors: [AppTheme.primaryColor, AppTheme.primaryColor.withOpacity(0.7)],
++          colors: [AppTheme.primaryColor, AppTheme.primaryColor.withValues(alpha: 0.7)],
+         ),
+         borderRadius: BorderRadius.circular(16),
+       ),
+@@ -187,7 +187,7 @@ class EducationCenterScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: color.withOpacity(0.1),
++                  color: color.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(10),
+                 ),
+                 child: Icon(icon, color: color, size: 28),
+diff --git a/lib/screens/consumer/nutritional_tracking_screen.dart b/lib/screens/consumer/nutritional_tracking_screen.dart
+index e63cce8..70a610d 100644
+--- a/lib/screens/consumer/nutritional_tracking_screen.dart
++++ b/lib/screens/consumer/nutritional_tracking_screen.dart
+@@ -133,7 +133,7 @@ class NutritionalTrackingScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: Colors.white.withOpacity(0.2),
++                  color: Colors.white.withValues(alpha: 0.2),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: const Icon(
+@@ -287,9 +287,9 @@ class NutritionalTrackingScreen extends StatelessWidget {
+     return Container(
+       padding: const EdgeInsets.all(12),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(12),
+-        border: Border.all(color: color.withOpacity(0.3)),
++        border: Border.all(color: color.withValues(alpha: 0.3)),
+       ),
+       child: Row(
+         children: [
+@@ -342,7 +342,7 @@ class NutritionalTrackingScreen extends StatelessWidget {
+             Container(
+               padding: const EdgeInsets.all(12),
+               decoration: BoxDecoration(
+-                color: Colors.green.withOpacity(0.1),
++                color: Colors.green.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Row(
+diff --git a/lib/screens/consumer/product_information_screen.dart b/lib/screens/consumer/product_information_screen.dart
+index 8a470ec..06bad07 100644
+--- a/lib/screens/consumer/product_information_screen.dart
++++ b/lib/screens/consumer/product_information_screen.dart
+@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
+ import 'package:url_launcher/url_launcher.dart';
+ import '../../providers/auth_provider.dart';
+ import '../../utils/app_theme.dart';
+-import '../../utils/constants.dart';
+ 
+ class ProductInformationScreen extends StatelessWidget {
+   final String batchId;
+@@ -92,7 +91,7 @@ class ProductInformationScreen extends StatelessWidget {
+           Container(
+             padding: const EdgeInsets.all(16),
+             decoration: BoxDecoration(
+-              color: Colors.white.withOpacity(0.2),
++              color: Colors.white.withValues(alpha: 0.2),
+               borderRadius: BorderRadius.circular(12),
+             ),
+             child: const Icon(
+@@ -271,10 +270,10 @@ class ProductInformationScreen extends StatelessWidget {
+           decoration: BoxDecoration(
+             color: Colors.white,
+             borderRadius: BorderRadius.circular(12),
+-            border: Border.all(color: color.withOpacity(0.3)),
++            border: Border.all(color: color.withValues(alpha: 0.3)),
+             boxShadow: [
+               BoxShadow(
+-                color: color.withOpacity(0.1),
++                color: color.withValues(alpha: 0.1),
+                 blurRadius: 4,
+                 offset: const Offset(0, 2),
+               ),
+@@ -285,7 +284,7 @@ class ProductInformationScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: color.withOpacity(0.1),
++                  color: color.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(10),
+                 ),
+                 child: Icon(icon, color: color, size: 28),
+@@ -352,7 +351,7 @@ class ProductInformationScreen extends StatelessWidget {
+             height: 30,
+             margin: const EdgeInsets.symmetric(vertical: 4),
+             decoration: BoxDecoration(
+-              color: color.withOpacity(0.3),
++              color: color.withValues(alpha: 0.3),
+             ),
+           ),
+       ],
+@@ -469,7 +468,7 @@ class ProductInformationScreen extends StatelessWidget {
+ 
+     final reference = FirebaseFirestore.instance
+         .collection('trusted_sellers')
+-        .doc('${userId}_${sellerId}');
++        .doc('${userId}_$sellerId');
+     try {
+       final existing = await reference.get();
+       if (existing.exists) {
+diff --git a/lib/screens/consumer/purchase_history_screen.dart b/lib/screens/consumer/purchase_history_screen.dart
+index 354f79a..17f4301 100644
+--- a/lib/screens/consumer/purchase_history_screen.dart
++++ b/lib/screens/consumer/purchase_history_screen.dart
+@@ -109,7 +109,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
+                     const SizedBox(height: 8),
+                   ],
+                 );
+-              }).toList(),
++              }),
+             ],
+           );
+         },
+@@ -135,7 +135,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
+     }
+ 
+     return Card(
+-      color: AppTheme.primaryColor.withOpacity(0.1),
++      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+       child: Padding(
+         padding: const EdgeInsets.all(16),
+         child: Column(
+@@ -244,8 +244,8 @@ class PurchaseHistoryScreen extends StatelessWidget {
+                 padding: const EdgeInsets.all(10),
+                 decoration: BoxDecoration(
+                   color: wasVerified
+-                      ? Colors.green.withOpacity(0.1)
+-                      : Colors.red.withOpacity(0.1),
++                      ? Colors.green.withValues(alpha: 0.1)
++                      : Colors.red.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(8),
+                 ),
+                 child: Icon(
+diff --git a/lib/screens/consumer/trusted_sellers_screen.dart b/lib/screens/consumer/trusted_sellers_screen.dart
+index 4da4433..1e3e8e3 100644
+--- a/lib/screens/consumer/trusted_sellers_screen.dart
++++ b/lib/screens/consumer/trusted_sellers_screen.dart
+@@ -126,7 +126,7 @@ class TrustedSellersScreen extends StatelessWidget {
+                 Container(
+                   padding: const EdgeInsets.all(12),
+                   decoration: BoxDecoration(
+-                    color: AppTheme.primaryColor.withOpacity(0.1),
++                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(10),
+                   ),
+                   child: Icon(
+@@ -160,7 +160,7 @@ class TrustedSellersScreen extends StatelessWidget {
+                               vertical: 2,
+                             ),
+                             decoration: BoxDecoration(
+-                              color: Colors.green.withOpacity(0.1),
++                              color: Colors.green.withValues(alpha: 0.1),
+                               borderRadius: BorderRadius.circular(8),
+                             ),
+                             child: Row(
+diff --git a/lib/screens/dashboard_screen.dart b/lib/screens/dashboard_screen.dart
+index 5d07a65..852abfe 100644
+--- a/lib/screens/dashboard_screen.dart
++++ b/lib/screens/dashboard_screen.dart
+@@ -127,7 +127,7 @@ class DashboardScreen extends StatelessWidget {
+                           const SizedBox(height: 8),
+                           Chip(
+                             label: Text(_getUserTypeLabel(userModel.userType)),
+-                            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                           ),
+                         ],
+                       ),
+@@ -137,7 +137,7 @@ class DashboardScreen extends StatelessWidget {
+                   // Verification Status
+                   if (!userModel.isVerified)
+                     Card(
+-                      color: AppTheme.warningColor.withOpacity(0.1),
++                      color: AppTheme.warningColor.withValues(alpha: 0.1),
+                       child: Padding(
+                         padding: const EdgeInsets.all(16.0),
+                         child: Row(
+@@ -235,7 +235,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.green.withOpacity(0.1),
++                color: Colors.green.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.eco, color: Colors.green),
+@@ -257,7 +257,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.orange.withOpacity(0.1),
++                color: Colors.orange.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.agriculture, color: Colors.orange),
+@@ -279,7 +279,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.receipt_long, color: AppTheme.primaryColor),
+@@ -307,7 +307,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(Icons.inventory, color: AppTheme.primaryColor),
+@@ -329,7 +329,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.teal.withOpacity(0.1),
++                color: Colors.teal.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.agriculture, color: Colors.teal),
+@@ -357,7 +357,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(Icons.inventory_2, color: AppTheme.primaryColor),
+@@ -379,7 +379,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.orange.withOpacity(0.1),
++                color: Colors.orange.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.receipt_long, color: Colors.orange),
+@@ -463,7 +463,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.orange.withOpacity(0.1),
++                color: Colors.orange.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.history, color: Colors.orange),
+@@ -485,7 +485,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.green.withOpacity(0.1),
++                color: Colors.green.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.favorite, color: Colors.green),
+@@ -507,7 +507,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.blue.withOpacity(0.1),
++                color: Colors.blue.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.school, color: Colors.blue),
+@@ -535,7 +535,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
+@@ -557,7 +557,7 @@ class DashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.green.withOpacity(0.1),
++                color: Colors.green.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.verified, color: Colors.green),
+@@ -584,7 +584,7 @@ class DashboardScreen extends StatelessWidget {
+           leading: Container(
+             padding: const EdgeInsets.all(8),
+             decoration: BoxDecoration(
+-              color: AppTheme.primaryColor.withOpacity(0.1),
++              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+               borderRadius: BorderRadius.circular(8),
+             ),
+             child: Icon(Icons.qr_code_scanner, color: AppTheme.primaryColor),
+@@ -606,7 +606,7 @@ class DashboardScreen extends StatelessWidget {
+           leading: Container(
+             padding: const EdgeInsets.all(8),
+             decoration: BoxDecoration(
+-              color: Colors.blue.withOpacity(0.1),
++              color: Colors.blue.withValues(alpha: 0.1),
+               borderRadius: BorderRadius.circular(8),
+             ),
+             child: const Icon(Icons.account_circle, color: Colors.blue),
+@@ -624,7 +624,7 @@ class DashboardScreen extends StatelessWidget {
+           leading: Container(
+             padding: const EdgeInsets.all(8),
+             decoration: BoxDecoration(
+-              color: Colors.green.withOpacity(0.1),
++              color: Colors.green.withValues(alpha: 0.1),
+               borderRadius: BorderRadius.circular(8),
+             ),
+             child: const Icon(Icons.help, color: Colors.green),
+@@ -666,7 +666,7 @@ class DashboardScreen extends StatelessWidget {
+         leading: Container(
+           padding: const EdgeInsets.all(8),
+           decoration: BoxDecoration(
+-            color: color.withOpacity(0.1),
++            color: color.withValues(alpha: 0.1),
+             borderRadius: BorderRadius.circular(8),
+           ),
+           child: Icon(icon, color: color),
+diff --git a/lib/screens/farmer/batch_qr_screen.dart b/lib/screens/farmer/batch_qr_screen.dart
+index 8239aa9..abc2216 100644
+--- a/lib/screens/farmer/batch_qr_screen.dart
++++ b/lib/screens/farmer/batch_qr_screen.dart
+@@ -1,10 +1,8 @@
+ import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
+-import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../providers/auth_provider.dart';
+ import '../../models/cooperative_model.dart';
+ import '../../services/firestore_service.dart';
+-import '../../utils/app_theme.dart';
+ import '../../utils/qr_generator.dart';
+ 
+ class BatchQRScreen extends StatefulWidget {
+diff --git a/lib/screens/farmer/batch_tracking_screen.dart b/lib/screens/farmer/batch_tracking_screen.dart
+index 8d156c2..48c65e1 100644
+--- a/lib/screens/farmer/batch_tracking_screen.dart
++++ b/lib/screens/farmer/batch_tracking_screen.dart
+@@ -199,7 +199,7 @@ class BatchTrackingScreen extends StatelessWidget {
+     return Container(
+       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(12),
+       ),
+       child: Row(
+diff --git a/lib/screens/farmer/earnings_dashboard_screen.dart b/lib/screens/farmer/earnings_dashboard_screen.dart
+index 4e7995e..4d749e6 100644
+--- a/lib/screens/farmer/earnings_dashboard_screen.dart
++++ b/lib/screens/farmer/earnings_dashboard_screen.dart
+@@ -1,9 +1,7 @@
+ import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+-import 'package:fl_chart/fl_chart.dart';
+ import '../../providers/auth_provider.dart';
+-import '../../utils/app_theme.dart';
+ 
+ class EarningsDashboardScreen extends StatelessWidget {
+   const EarningsDashboardScreen({super.key});
+@@ -163,7 +161,7 @@ class EarningsDashboardScreen extends StatelessWidget {
+             Container(
+               padding: const EdgeInsets.all(16),
+               decoration: BoxDecoration(
+-                color: color.withOpacity(0.1),
++                color: color.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(12),
+               ),
+               child: Icon(icon, color: color, size: 32),
+@@ -272,8 +270,8 @@ class EarningsDashboardScreen extends StatelessWidget {
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+                 color: paymentStatus == 'completed'
+-                    ? Colors.green.withOpacity(0.1)
+-                    : Colors.orange.withOpacity(0.1),
++                    ? Colors.green.withValues(alpha: 0.1)
++                    : Colors.orange.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(
+diff --git a/lib/screens/farmer/farmer_dashboard_enhanced_screen.dart b/lib/screens/farmer/farmer_dashboard_enhanced_screen.dart
+index 1bc09a2..d37ab65 100644
+--- a/lib/screens/farmer/farmer_dashboard_enhanced_screen.dart
++++ b/lib/screens/farmer/farmer_dashboard_enhanced_screen.dart
+@@ -9,7 +9,6 @@ import '../notifications_screen.dart';
+ import '../orders/farmer_orders_screen.dart';
+ import '../qr/qr_scanner_screen.dart';
+ import 'register_planting_screen.dart';
+-import 'harvest_management_screen.dart';
+ import 'batch_tracking_screen.dart';
+ import 'earnings_dashboard_screen.dart';
+ 
+@@ -143,7 +142,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
+               width: 60,
+               height: 60,
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(30),
+               ),
+               child: const Icon(
+@@ -406,7 +405,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: color.withOpacity(0.1),
++                  color: color.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Icon(icon, color: color, size: 32),
+@@ -470,7 +469,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
+                 leading: Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: _getStatusColor(data['status']).withOpacity(0.1),
++                    color: _getStatusColor(data['status']).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -490,7 +489,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
+                     data['status']?.toString().toUpperCase() ?? 'UNKNOWN',
+                     style: const TextStyle(fontSize: 10),
+                   ),
+-                  backgroundColor: _getStatusColor(data['status']).withOpacity(0.2),
++                  backgroundColor: _getStatusColor(data['status']).withValues(alpha: 0.2),
+                 ),
+               ),
+             );
+diff --git a/lib/screens/farmer/harvest_management_screen.dart b/lib/screens/farmer/harvest_management_screen.dart
+index 9073e48..ca6d198 100644
+--- a/lib/screens/farmer/harvest_management_screen.dart
++++ b/lib/screens/farmer/harvest_management_screen.dart
+@@ -566,7 +566,7 @@ class _NotifyAggregatorsDialogState extends State<_NotifyAggregatorsDialog> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+diff --git a/lib/screens/farmer/register_planting_screen.dart b/lib/screens/farmer/register_planting_screen.dart
+index acae84e..e49ccf8 100644
+--- a/lib/screens/farmer/register_planting_screen.dart
++++ b/lib/screens/farmer/register_planting_screen.dart
+@@ -222,7 +222,7 @@ class _RegisterPlantingScreenState extends State<RegisterPlantingScreen> {
+                     const SizedBox(height: 16),
+ 
+                     DropdownButtonFormField<String>(
+-                      value: _selectedAgroDealer,
++                      initialValue: _selectedAgroDealer,
+                       decoration: const InputDecoration(
+                         labelText: 'Agro-Dealer *',
+                         prefixIcon: Icon(Icons.store),
+@@ -383,7 +383,7 @@ class _RegisterPlantingScreenState extends State<RegisterPlantingScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+diff --git a/lib/screens/farmer/seed_purchase_history_screen.dart b/lib/screens/farmer/seed_purchase_history_screen.dart
+index 7a9dcce..fc19c50 100644
+--- a/lib/screens/farmer/seed_purchase_history_screen.dart
++++ b/lib/screens/farmer/seed_purchase_history_screen.dart
+@@ -7,7 +7,7 @@ import '../../models/agro_dealer_model.dart';
+ import '../../utils/app_theme.dart';
+ 
+ class SeedPurchaseHistoryScreen extends StatefulWidget {
+-  const SeedPurchaseHistoryScreen({Key? key}) : super(key: key);
++  const SeedPurchaseHistoryScreen({super.key});
+ 
+   @override
+   State<SeedPurchaseHistoryScreen> createState() => _SeedPurchaseHistoryScreenState();
+@@ -298,9 +298,9 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
+     return Container(
+       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(8),
+-        border: Border.all(color: color.withOpacity(0.3)),
++        border: Border.all(color: color.withValues(alpha: 0.3)),
+       ),
+       child: Row(
+         mainAxisSize: MainAxisSize.min,
+@@ -328,7 +328,7 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
+     return Container(
+       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(6),
+       ),
+       child: Row(
+@@ -430,10 +430,10 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
+                     return Container(
+                       padding: const EdgeInsets.all(16),
+                       decoration: BoxDecoration(
+-                        color: AppTheme.primaryColor.withOpacity(0.1),
++                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                         borderRadius: BorderRadius.circular(12),
+                         border: Border.all(
+-                          color: AppTheme.primaryColor.withOpacity(0.3),
++                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                         ),
+                       ),
+                       child: Column(
+@@ -459,11 +459,10 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
+                           _buildDetailRow('Contact Person', dealer.contactPerson),
+                           _buildDetailRow('Phone', dealer.phone),
+                           _buildDetailRow('License Number', dealer.licenseNumber),
+-                          if (dealer.location != null)
+-                            _buildDetailRow(
+-                              'Location',
+-                              '${dealer.location!.district}, ${dealer.location!.sector}',
+-                            ),
++                          _buildDetailRow(
++                            'Location',
++                            '${dealer.location.district}, ${dealer.location.sector}',
++                          ),
+                         ],
+                       ),
+                     );
+diff --git a/lib/screens/farmer/update_harvest_screen.dart b/lib/screens/farmer/update_harvest_screen.dart
+index 7768674..cc4fffd 100644
+--- a/lib/screens/farmer/update_harvest_screen.dart
++++ b/lib/screens/farmer/update_harvest_screen.dart
+@@ -209,7 +209,7 @@ class _UpdateHarvestScreenState extends State<UpdateHarvestScreen> {
+                     const SizedBox(height: 16),
+ 
+                     DropdownButtonFormField<String>(
+-                      value: _qualityGrade,
++                      initialValue: _qualityGrade,
+                       decoration: const InputDecoration(
+                         labelText: 'Quality Grade',
+                         prefixIcon: Icon(Icons.grade),
+@@ -257,7 +257,7 @@ class _UpdateHarvestScreenState extends State<UpdateHarvestScreen> {
+                       title: const Text('Available for Sale'),
+                       subtitle: const Text('List your beans for aggregators to purchase'),
+                       value: _availableForSale,
+-                      activeColor: AppTheme.primaryColor,
++                      activeThumbColor: AppTheme.primaryColor,
+                       onChanged: (value) {
+                         setState(() => _availableForSale = value);
+                       },
+@@ -307,7 +307,7 @@ class _UpdateHarvestScreenState extends State<UpdateHarvestScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+diff --git a/lib/screens/forgot_password_screen.dart b/lib/screens/forgot_password_screen.dart
+index 6df6ade..d2b733a 100644
+--- a/lib/screens/forgot_password_screen.dart
++++ b/lib/screens/forgot_password_screen.dart
+@@ -1,7 +1,6 @@
+ import 'package:flutter/material.dart';
+ import 'package:firebase_auth/firebase_auth.dart';
+ import '../utils/app_theme.dart';
+-import '../utils/app_localizations.dart';
+ 
+ class ForgotPasswordScreen extends StatefulWidget {
+   const ForgotPasswordScreen({super.key});
+@@ -112,7 +111,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+                   width: 100,
+                   height: 100,
+                   decoration: BoxDecoration(
+-                    color: AppTheme.primaryColor.withOpacity(0.1),
++                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(16),
+                   ),
+                   child: const Icon(
+diff --git a/lib/screens/institution/institution_dashboard_screen.dart b/lib/screens/institution/institution_dashboard_screen.dart
+index 0d557b0..a0750f3 100644
+--- a/lib/screens/institution/institution_dashboard_screen.dart
++++ b/lib/screens/institution/institution_dashboard_screen.dart
+@@ -182,7 +182,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+               width: 60,
+               height: 60,
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(30),
+               ),
+               child: Icon(
+@@ -212,7 +212,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                     decoration: BoxDecoration(
+-                      color: Colors.green.withOpacity(0.1),
++                      color: Colors.green.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: Row(
+@@ -338,7 +338,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(16),
+                 decoration: BoxDecoration(
+-                  color: Colors.white.withOpacity(0.2),
++                  color: Colors.white.withValues(alpha: 0.2),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: const Icon(
+@@ -443,7 +443,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: color.withOpacity(0.1),
++                  color: color.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Icon(icon, color: color, size: 28),
+@@ -516,7 +516,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+                 leading: Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: _getStatusColor(status).withOpacity(0.1),
++                    color: _getStatusColor(status).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -537,7 +537,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+                 trailing: Container(
+                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                   decoration: BoxDecoration(
+-                    color: _getStatusColor(status).withOpacity(0.1),
++                    color: _getStatusColor(status).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(12),
+                   ),
+                   child: Text(
+diff --git a/lib/screens/institution/institution_place_order_screen.dart b/lib/screens/institution/institution_place_order_screen.dart
+index 51ab91e..06244c3 100644
+--- a/lib/screens/institution/institution_place_order_screen.dart
++++ b/lib/screens/institution/institution_place_order_screen.dart
+@@ -1,6 +1,5 @@
+ import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
+-import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../models/aggregator_model.dart';
+ import '../../models/cooperative_model.dart';
+ import '../../models/order_model.dart';
+@@ -8,7 +7,6 @@ import '../../models/location_model.dart';
+ import '../../providers/auth_provider.dart';
+ import '../../services/firestore_service.dart';
+ import '../../services/notification_service.dart';
+-import '../../services/sms_service.dart';
+ import '../../utils/app_theme.dart';
+ 
+ class InstitutionPlaceOrderScreen extends StatefulWidget {
+@@ -261,7 +259,7 @@ class _InstitutionPlaceOrderScreenState extends State<InstitutionPlaceOrderScree
+                   Container(
+                     padding: const EdgeInsets.all(12),
+                     decoration: BoxDecoration(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                     child: const Icon(
+@@ -347,7 +345,7 @@ class _InstitutionPlaceOrderScreenState extends State<InstitutionPlaceOrderScree
+                   Container(
+                     padding: const EdgeInsets.all(12),
+                     decoration: BoxDecoration(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                     child: const Icon(
+diff --git a/lib/screens/institution_dashboard_screen.dart b/lib/screens/institution_dashboard_screen.dart
+index d236b17..f224f50 100644
+--- a/lib/screens/institution_dashboard_screen.dart
++++ b/lib/screens/institution_dashboard_screen.dart
+@@ -105,7 +105,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+                     const SizedBox(height: 8),
+                     Chip(
+                       label: const Text('Institution'),
+-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     ),
+                   ],
+                 ),
+@@ -116,7 +116,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+             // Verification Status
+             if (!(userModel?.isVerified ?? false))
+               Card(
+-                color: AppTheme.warningColor.withOpacity(0.1),
++                color: AppTheme.warningColor.withValues(alpha: 0.1),
+                 child: Padding(
+                   padding: const EdgeInsets.all(16.0),
+                   child: Row(
+@@ -216,7 +216,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+                       Container(
+                         padding: const EdgeInsets.all(12),
+                         decoration: BoxDecoration(
+-                          color: AppTheme.primaryColor.withOpacity(0.1),
++                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                           borderRadius: BorderRadius.circular(12),
+                         ),
+                         child: const Icon(
+@@ -274,7 +274,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+                       Container(
+                         padding: const EdgeInsets.all(12),
+                         decoration: BoxDecoration(
+-                          color: Colors.blue.withOpacity(0.1),
++                          color: Colors.blue.withValues(alpha: 0.1),
+                           borderRadius: BorderRadius.circular(12),
+                         ),
+                         child: const Icon(
+@@ -332,7 +332,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
+                       Container(
+                         padding: const EdgeInsets.all(12),
+                         decoration: BoxDecoration(
+-                          color: Colors.green.withOpacity(0.1),
++                          color: Colors.green.withValues(alpha: 0.1),
+                           borderRadius: BorderRadius.circular(12),
+                         ),
+                         child: const Icon(
+diff --git a/lib/screens/notifications_screen.dart b/lib/screens/notifications_screen.dart
+index 232f843..7e3bb5f 100644
+--- a/lib/screens/notifications_screen.dart
++++ b/lib/screens/notifications_screen.dart
+@@ -161,7 +161,7 @@ class _NotificationCard extends StatelessWidget {
+           leading: Container(
+             padding: const EdgeInsets.all(8),
+             decoration: BoxDecoration(
+-              color: _getColor().withOpacity(0.1),
++              color: _getColor().withValues(alpha: 0.1),
+               borderRadius: BorderRadius.circular(8),
+             ),
+             child: Icon(_getIcon(), color: _getColor()),
+diff --git a/lib/screens/orders/aggregator_orders_screen.dart b/lib/screens/orders/aggregator_orders_screen.dart
+index 6eb81fb..c9eaac0 100644
+--- a/lib/screens/orders/aggregator_orders_screen.dart
++++ b/lib/screens/orders/aggregator_orders_screen.dart
+@@ -265,7 +265,7 @@ class _StatusBadge extends StatelessWidget {
+     return Container(
+       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(12),
+       ),
+       child: Row(
+diff --git a/lib/screens/orders/browse_aggregators_screen.dart b/lib/screens/orders/browse_aggregators_screen.dart
+index eddad7a..3899c02 100644
+--- a/lib/screens/orders/browse_aggregators_screen.dart
++++ b/lib/screens/orders/browse_aggregators_screen.dart
+@@ -43,7 +43,7 @@ class _BrowseAggregatorsScreenState extends State<BrowseAggregatorsScreen> {
+               color: Colors.white,
+               boxShadow: [
+                 BoxShadow(
+-                  color: Colors.black.withOpacity(0.05),
++                  color: Colors.black.withValues(alpha: 0.05),
+                   blurRadius: 4,
+                   offset: const Offset(0, 2),
+                 ),
+@@ -82,7 +82,7 @@ class _BrowseAggregatorsScreenState extends State<BrowseAggregatorsScreen> {
+                 
+                 // District filter
+                 DropdownButtonFormField<String>(
+-                  value: _selectedDistrict,
++                  initialValue: _selectedDistrict,
+                   decoration: const InputDecoration(
+                     labelText: 'Service Area',
+                     prefixIcon: Icon(Icons.location_on),
+@@ -276,7 +276,7 @@ class _AggregatorCard extends StatelessWidget {
+               Row(
+                 children: [
+                   CircleAvatar(
+-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     child: const Icon(Icons.local_shipping, color: AppTheme.primaryColor),
+                   ),
+                   const SizedBox(width: 12),
+@@ -795,7 +795,7 @@ class _AggregatorCard extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                 decoration: BoxDecoration(
+-                  color: _getStatusColor(order.status).withOpacity(0.2),
++                  color: _getStatusColor(order.status).withValues(alpha: 0.2),
+                   borderRadius: BorderRadius.circular(4),
+                 ),
+                 child: Text(
+diff --git a/lib/screens/orders/farmer_orders_screen.dart b/lib/screens/orders/farmer_orders_screen.dart
+index 3415f60..84235cf 100644
+--- a/lib/screens/orders/farmer_orders_screen.dart
++++ b/lib/screens/orders/farmer_orders_screen.dart
+@@ -1,8 +1,6 @@
+ import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
+ import '../../models/order_model.dart';
+-import '../../models/cooperative_model.dart';
+-import '../../models/aggregator_model.dart';
+ import '../../providers/auth_provider.dart';
+ import '../../services/firestore_service.dart';
+ import '../../services/sms_service.dart';
+@@ -379,7 +377,7 @@ class _StatusBadge extends StatelessWidget {
+     return Container(
+       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(12),
+       ),
+       child: Row(
+diff --git a/lib/screens/orders/find_farmers_screen.dart b/lib/screens/orders/find_farmers_screen.dart
+index 4496f6a..1fe7626 100644
+--- a/lib/screens/orders/find_farmers_screen.dart
++++ b/lib/screens/orders/find_farmers_screen.dart
+@@ -43,7 +43,7 @@ class _FindFarmersScreenState extends State<FindFarmersScreen> {
+               color: Colors.white,
+               boxShadow: [
+                 BoxShadow(
+-                  color: Colors.black.withOpacity(0.05),
++                  color: Colors.black.withValues(alpha: 0.05),
+                   blurRadius: 4,
+                   offset: const Offset(0, 2),
+                 ),
+@@ -82,7 +82,7 @@ class _FindFarmersScreenState extends State<FindFarmersScreen> {
+                 
+                 // District filter
+                 DropdownButtonFormField<String>(
+-                  value: _selectedDistrict,
++                  initialValue: _selectedDistrict,
+                   decoration: const InputDecoration(
+                     labelText: 'District',
+                     prefixIcon: Icon(Icons.location_on),
+@@ -251,7 +251,7 @@ class _CooperativeCard extends StatelessWidget{
+               Row(
+                 children: [
+                   CircleAvatar(
+-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     child: const Icon(Icons.groups, color: AppTheme.primaryColor),
+                   ),
+                   const SizedBox(width: 12),
+@@ -421,7 +421,7 @@ class _CooperativeCard extends StatelessWidget{
+                                 vertical: 2,
+                               ),
+                               decoration: BoxDecoration(
+-                                color: _getQualityColor(batch.quality).withOpacity(0.2),
++                                color: _getQualityColor(batch.quality).withValues(alpha: 0.2),
+                                 borderRadius: BorderRadius.circular(4),
+                               ),
+                               child: Text(
+@@ -708,7 +708,7 @@ class _CooperativeCard extends StatelessWidget{
+               Container(
+                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                 decoration: BoxDecoration(
+-                  color: _getQualityColor(batch.quality).withOpacity(0.2),
++                  color: _getQualityColor(batch.quality).withValues(alpha: 0.2),
+                   borderRadius: BorderRadius.circular(6),
+                 ),
+                 child: Text(
+diff --git a/lib/screens/orders/institution_orders_screen.dart b/lib/screens/orders/institution_orders_screen.dart
+index b897a53..d7aaf5a 100644
+--- a/lib/screens/orders/institution_orders_screen.dart
++++ b/lib/screens/orders/institution_orders_screen.dart
+@@ -286,7 +286,7 @@ class _StatusBadge extends StatelessWidget {
+     return Container(
+       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(12),
+       ),
+       child: Row(
+diff --git a/lib/screens/orders/order_details_screen.dart b/lib/screens/orders/order_details_screen.dart
+index 8d2d575..9e244a5 100644
+--- a/lib/screens/orders/order_details_screen.dart
++++ b/lib/screens/orders/order_details_screen.dart
+@@ -1,8 +1,6 @@
+ import 'package:flutter/material.dart';
+ import 'package:qr_flutter/qr_flutter.dart';
+ import '../../models/order_model.dart';
+-import '../../models/cooperative_model.dart';
+-import '../../models/aggregator_model.dart';
+ import '../../services/firestore_service.dart';
+ import '../../services/sms_service.dart';
+ import '../../services/notification_service.dart';
+@@ -82,14 +80,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+         }
+         
+         // In-app notification
+-        if (notifyUserId != null) {
+-          await NotificationService().notifyOrderStatusUpdate(
+-            userId: notifyUserId,
+-            orderId: widget.order.id,
+-            status: newStatus,
+-          );
+-          debugPrint('✅ Status update notification sent');
+-        }
++        await NotificationService().notifyOrderStatusUpdate(
++          userId: notifyUserId,
++          orderId: widget.order.id,
++          status: newStatus,
++        );
++        debugPrint('✅ Status update notification sent');
+       } catch (e) {
+         debugPrint('⚠️ Notification error: $e');
+         // Don't block status update if notifications fail
+@@ -376,7 +372,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+                             decoration: BoxDecoration(
+                               color: Colors.white,
+                               borderRadius: BorderRadius.circular(12),
+-                              border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
++                              border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
+                             ),
+                             child: QrImageView(
+                               data: widget.order.id,
+@@ -427,7 +423,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+@@ -579,7 +575,7 @@ class _OrderTimeline extends StatelessWidget {
+                                   margin: const EdgeInsets.only(top: 4),
+                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                   decoration: BoxDecoration(
+-                                    color: AppTheme.primaryColor.withOpacity(0.1),
++                                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                                     borderRadius: BorderRadius.circular(12),
+                                   ),
+                                   child: const Text(
+diff --git a/lib/screens/orders/pending_orders_screen.dart b/lib/screens/orders/pending_orders_screen.dart
+index 64b6917..364673c 100644
+--- a/lib/screens/orders/pending_orders_screen.dart
++++ b/lib/screens/orders/pending_orders_screen.dart
+@@ -3,15 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
+ import 'package:provider/provider.dart';
+ import 'package:intl/intl.dart';
+ import '../../models/order_model.dart';
+-import '../../models/cooperative_model.dart';
+-import '../../models/aggregator_model.dart';
+ import '../../providers/auth_provider.dart';
+ import '../../services/firestore_service.dart';
+ import '../../services/notification_service.dart';
+-import '../orders/order_details_screen.dart';
+ 
+ class PendingOrdersScreen extends StatefulWidget {
+-  const PendingOrdersScreen({Key? key}) : super(key: key);
++  const PendingOrdersScreen({super.key});
+ 
+   @override
+   State<PendingOrdersScreen> createState() => _PendingOrdersScreenState();
+diff --git a/lib/screens/orders/place_institution_order_screen.dart b/lib/screens/orders/place_institution_order_screen.dart
+index b091bd2..da5055b 100644
+--- a/lib/screens/orders/place_institution_order_screen.dart
++++ b/lib/screens/orders/place_institution_order_screen.dart
+@@ -144,7 +144,7 @@ class _PlaceInstitutionOrderScreenState extends State<PlaceInstitutionOrderScree
+                   children: [
+                     // Aggregator info card
+                     Card(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       child: Padding(
+                         padding: const EdgeInsets.all(16),
+                         child: Column(
+@@ -353,7 +353,7 @@ class _PlaceInstitutionOrderScreenState extends State<PlaceInstitutionOrderScree
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+diff --git a/lib/screens/orders/place_order_screen.dart b/lib/screens/orders/place_order_screen.dart
+index 0e7bc01..1c12489 100644
+--- a/lib/screens/orders/place_order_screen.dart
++++ b/lib/screens/orders/place_order_screen.dart
+@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
+ import '../../models/cooperative_model.dart';
+ import '../../models/order_model.dart';
+-import '../../models/aggregator_model.dart';
+ import '../../providers/auth_provider.dart';
+ import '../../services/firestore_service.dart';
+ import '../../services/sms_service.dart';
+@@ -168,7 +167,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
+                   children: [
+                     // Cooperative info card
+                     Card(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       child: Padding(
+                         padding: const EdgeInsets.all(16),
+                         child: Column(
+@@ -367,7 +366,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+diff --git a/lib/screens/payment/payment_status_screen.dart b/lib/screens/payment/payment_status_screen.dart
+index c631ebb..5d3279d 100644
+--- a/lib/screens/payment/payment_status_screen.dart
++++ b/lib/screens/payment/payment_status_screen.dart
+@@ -1,7 +1,6 @@
+ import 'package:flutter/material.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../models/payment_model.dart';
+-import '../../utils/app_theme.dart';
+ 
+ class PaymentStatusScreen extends StatelessWidget {
+   final String paymentId;
+@@ -242,7 +241,7 @@ class PaymentStatusScreen extends StatelessWidget {
+     return Container(
+       padding: const EdgeInsets.all(24),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         shape: BoxShape.circle,
+       ),
+       child: Icon(icon, size: 80, color: color),
+diff --git a/lib/screens/payment/payment_test_screen.dart b/lib/screens/payment/payment_test_screen.dart
+index d47ad68..84c2b43 100644
+--- a/lib/screens/payment/payment_test_screen.dart
++++ b/lib/screens/payment/payment_test_screen.dart
+@@ -1,5 +1,4 @@
+ import 'package:flutter/material.dart';
+-import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../models/payment_model.dart';
+ import '../../services/payment_service.dart';
+ import '../../utils/app_theme.dart';
+@@ -250,7 +249,7 @@ class _PaymentTestScreenState extends State<PaymentTestScreen> {
+       child: Container(
+         padding: const EdgeInsets.all(16),
+         decoration: BoxDecoration(
+-          color: isSelected ? color.withOpacity(0.1) : Colors.grey.shade100,
++          color: isSelected ? color.withValues(alpha: 0.1) : Colors.grey.shade100,
+           border: Border.all(
+             color: isSelected ? color : Colors.grey.shade300,
+             width: isSelected ? 2 : 1,
+diff --git a/lib/screens/payment_processing_screen.dart b/lib/screens/payment_processing_screen.dart
+index a1ad19b..fe920ca 100644
+--- a/lib/screens/payment_processing_screen.dart
++++ b/lib/screens/payment_processing_screen.dart
+@@ -283,7 +283,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
+           width: 120,
+           height: 120,
+           decoration: BoxDecoration(
+-            color: Colors.orange.withOpacity(0.1),
++            color: Colors.orange.withValues(alpha: 0.1),
+             shape: BoxShape.circle,
+           ),
+           child: const Icon(
+@@ -298,7 +298,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
+           width: 120,
+           height: 120,
+           decoration: BoxDecoration(
+-            color: Colors.green.withOpacity(0.1),
++            color: Colors.green.withValues(alpha: 0.1),
+             shape: BoxShape.circle,
+           ),
+           child: const Icon(
+@@ -313,7 +313,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
+           width: 120,
+           height: 120,
+           decoration: BoxDecoration(
+-            color: Colors.red.withOpacity(0.1),
++            color: Colors.red.withValues(alpha: 0.1),
+             shape: BoxShape.circle,
+           ),
+           child: const Icon(
+diff --git a/lib/screens/payment_screen.dart b/lib/screens/payment_screen.dart
+index 9e6ebfe..b417a5b 100644
+--- a/lib/screens/payment_screen.dart
++++ b/lib/screens/payment_screen.dart
+@@ -6,7 +6,6 @@ import '../services/firestore_service.dart';
+ import '../models/payment_model.dart';
+ import '../models/order_model.dart';
+ import '../utils/app_theme.dart';
+-import '../utils/constants.dart';
+ import 'payment_processing_screen.dart';
+ 
+ class PaymentScreen extends StatefulWidget {
+@@ -113,7 +112,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
+                   ),
+                 ),
+                 Text(
+-                  'RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}',
++                  'RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}',
+                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                     fontWeight: FontWeight.bold,
+                     color: AppTheme.primaryColor,
+@@ -202,7 +201,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
+             width: isSelected ? 2 : 1,
+           ),
+           borderRadius: BorderRadius.circular(12),
+-          color: isSelected ? color.withOpacity(0.05) : Colors.white,
++          color: isSelected ? color.withValues(alpha: 0.05) : Colors.white,
+         ),
+         child: Row(
+           children: [
+@@ -210,7 +209,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
+               width: 40,
+               height: 40,
+               decoration: BoxDecoration(
+-                color: color.withOpacity(0.1),
++                color: color.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(
+@@ -303,8 +302,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
+                   Expanded(
+                     child: Text(
+                       _selectedMethod == PaymentMethod.mtnMomo
+-                          ? 'You will receive an SMS from MTN MoMo to confirm the payment of RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}.'
+-                          : 'You will receive an SMS from Airtel Money to confirm the payment of RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}.',
++                          ? 'You will receive an SMS from MTN MoMo to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}.'
++                          : 'You will receive an SMS from Airtel Money to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}.',
+                       style: TextStyle(
+                         color: Colors.blue.shade700,
+                         fontSize: 14,
+@@ -407,7 +406,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
+                 ),
+               )
+             : Text(
+-                'Pay RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}',
++                'Pay RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}',
+                 style: const TextStyle(
+                   fontSize: 18,
+                   fontWeight: FontWeight.bold,
+diff --git a/lib/screens/profile/aggregator_profile_screen.dart b/lib/screens/profile/aggregator_profile_screen.dart
+index 77a7e3b..0c58930 100644
+--- a/lib/screens/profile/aggregator_profile_screen.dart
++++ b/lib/screens/profile/aggregator_profile_screen.dart
+@@ -216,7 +216,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+@@ -408,7 +408,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+           const SizedBox(height: 16),
+ 
+           DropdownButtonFormField<String>(
+-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
++            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
+             decoration: const InputDecoration(
+               labelText: 'Province *',
+               prefixIcon: Icon(Icons.location_city),
+@@ -496,7 +496,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+             children: [
+               Expanded(
+                 child: DropdownButtonFormField<String>(
+-                  value: _selectedServiceArea,
++                  initialValue: _selectedServiceArea,
+                   decoration: const InputDecoration(
+                     hintText: 'Select district',
+                     prefixIcon: Icon(Icons.map),
+@@ -570,7 +570,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+             onChanged: (value) {
+               setState(() => _hasStorage = value);
+             },
+-            activeColor: AppTheme.primaryColor,
++            activeThumbColor: AppTheme.primaryColor,
+           ),
+           
+           if (_hasStorage) ...[
+@@ -587,7 +587,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+             const SizedBox(height: 16),
+             
+             DropdownButtonFormField<String>(
+-              value: _storageType,
++              initialValue: _storageType,
+               decoration: const InputDecoration(
+                 labelText: 'Storage Type',
+                 prefixIcon: Icon(Icons.category),
+@@ -610,7 +610,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+               onChanged: (value) {
+                 setState(() => _hasRefrigeration = value);
+               },
+-              activeColor: AppTheme.primaryColor,
++              activeThumbColor: AppTheme.primaryColor,
+             ),
+           ],
+ 
+@@ -623,7 +623,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+             onChanged: (value) {
+               setState(() => _hasTransport = value);
+             },
+-            activeColor: AppTheme.primaryColor,
++            activeThumbColor: AppTheme.primaryColor,
+           ),
+           
+           if (_hasTransport) ...[
+@@ -656,14 +656,14 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
+               onChanged: (value) {
+                 setState(() => _hasRefrigeratedTransport = value);
+               },
+-              activeColor: AppTheme.primaryColor,
++              activeThumbColor: AppTheme.primaryColor,
+             ),
+           ],
+ 
+           const SizedBox(height: 24),
+ 
+           Card(
+-            color: AppTheme.primaryColor.withOpacity(0.1),
++            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+             child: Padding(
+               padding: const EdgeInsets.all(16),
+               child: Column(
+diff --git a/lib/screens/profile/agro_dealer_profile_screen.dart b/lib/screens/profile/agro_dealer_profile_screen.dart
+index b5677e4..e3470a5 100644
+--- a/lib/screens/profile/agro_dealer_profile_screen.dart
++++ b/lib/screens/profile/agro_dealer_profile_screen.dart
+@@ -175,7 +175,7 @@ class _AgroDealerProfileScreenState extends State<AgroDealerProfileScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+@@ -368,7 +368,7 @@ class _AgroDealerProfileScreenState extends State<AgroDealerProfileScreen> {
+           const SizedBox(height: 24),
+ 
+           DropdownButtonFormField<String>(
+-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
++            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
+             decoration: const InputDecoration(
+               labelText: 'Province *',
+               prefixIcon: Icon(Icons.location_city),
+@@ -442,7 +442,7 @@ class _AgroDealerProfileScreenState extends State<AgroDealerProfileScreen> {
+           const SizedBox(height: 24),
+ 
+           Card(
+-            color: AppTheme.primaryColor.withOpacity(0.1),
++            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+             child: Padding(
+               padding: const EdgeInsets.all(16),
+               child: Column(
+diff --git a/lib/screens/profile/cooperative_profile_screen.dart b/lib/screens/profile/cooperative_profile_screen.dart
+index 32d9439..4f04399 100644
+--- a/lib/screens/profile/cooperative_profile_screen.dart
++++ b/lib/screens/profile/cooperative_profile_screen.dart
+@@ -166,7 +166,7 @@ class _CooperativeProfileScreenState extends State<CooperativeProfileScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+@@ -367,7 +367,7 @@ class _CooperativeProfileScreenState extends State<CooperativeProfileScreen> {
+           const SizedBox(height: 24),
+ 
+           DropdownButtonFormField<String>(
+-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
++            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
+             decoration: const InputDecoration(
+               labelText: 'Province *',
+               prefixIcon: Icon(Icons.location_city),
+@@ -455,7 +455,7 @@ class _CooperativeProfileScreenState extends State<CooperativeProfileScreen> {
+           const SizedBox(height: 24),
+ 
+           Card(
+-            color: AppTheme.primaryColor.withOpacity(0.1),
++            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+             child: Padding(
+               padding: const EdgeInsets.all(16),
+               child: Row(
+diff --git a/lib/screens/profile/institution_profile_screen.dart b/lib/screens/profile/institution_profile_screen.dart
+index 2a86ca4..0638b2b 100644
+--- a/lib/screens/profile/institution_profile_screen.dart
++++ b/lib/screens/profile/institution_profile_screen.dart
+@@ -226,7 +226,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+@@ -285,7 +285,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
+           const SizedBox(height: 24),
+ 
+           DropdownButtonFormField<String>(
+-            value: _institutionType,
++            initialValue: _institutionType,
+             decoration: const InputDecoration(
+               labelText: 'Institution Type *',
+               prefixIcon: Icon(Icons.business),
+@@ -433,7 +433,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
+           const SizedBox(height: 24),
+ 
+           DropdownButtonFormField<String>(
+-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
++            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
+             decoration: const InputDecoration(
+               labelText: 'Province *',
+               prefixIcon: Icon(Icons.location_city),
+@@ -543,7 +543,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
+             onChanged: (value) {
+               setState(() => _requiresIronFortified = value);
+             },
+-            activeColor: AppTheme.primaryColor,
++            activeThumbColor: AppTheme.primaryColor,
+           ),
+           const SizedBox(height: 16),
+ 
+@@ -575,7 +575,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
+           const SizedBox(height: 16),
+ 
+           DropdownButtonFormField<String>(
+-            value: _budgetCycle,
++            initialValue: _budgetCycle,
+             decoration: const InputDecoration(
+               labelText: 'Budget Cycle',
+               prefixIcon: Icon(Icons.calendar_today),
+@@ -603,7 +603,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
+           const SizedBox(height: 16),
+ 
+           DropdownButtonFormField<String>(
+-            value: _procurementMethod,
++            initialValue: _procurementMethod,
+             decoration: const InputDecoration(
+               labelText: 'Procurement Method',
+               prefixIcon: Icon(Icons.shopping_cart),
+diff --git a/lib/screens/profile/seed_producer_profile_screen.dart b/lib/screens/profile/seed_producer_profile_screen.dart
+index 05e928a..0fd0e97 100644
+--- a/lib/screens/profile/seed_producer_profile_screen.dart
++++ b/lib/screens/profile/seed_producer_profile_screen.dart
+@@ -4,7 +4,6 @@ import '../../models/seed_producer_model.dart';
+ import '../../models/location_model.dart';
+ import '../../providers/auth_provider.dart';
+ import '../../utils/app_theme.dart';
+-import '../../utils/app_localizations.dart';
+ import '../../services/firestore_service.dart';
+ 
+ class SeedProducerProfileScreen extends StatefulWidget {
+@@ -192,7 +191,7 @@ class _SeedProducerProfileScreenState extends State<SeedProducerProfileScreen> {
+                 color: Colors.white,
+                 boxShadow: [
+                   BoxShadow(
+-                    color: Colors.black.withOpacity(0.05),
++                    color: Colors.black.withValues(alpha: 0.05),
+                     blurRadius: 10,
+                     offset: const Offset(0, -2),
+                   ),
+@@ -436,7 +435,7 @@ class _SeedProducerProfileScreenState extends State<SeedProducerProfileScreen> {
+           const SizedBox(height: 24),
+ 
+           DropdownButtonFormField<String>(
+-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
++            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
+             decoration: const InputDecoration(
+               labelText: 'Province *',
+               prefixIcon: Icon(Icons.location_city),
+@@ -565,7 +564,7 @@ class _SeedProducerProfileScreenState extends State<SeedProducerProfileScreen> {
+                   margin: const EdgeInsets.only(bottom: 8),
+                   child: ListTile(
+                     leading: CircleAvatar(
+-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       child: const Icon(Icons.eco, color: AppTheme.primaryColor),
+                     ),
+                     title: Text(variety.varietyName),
+diff --git a/lib/screens/qr/batch_verification_screen.dart b/lib/screens/qr/batch_verification_screen.dart
+index de24d04..8b00219 100644
+--- a/lib/screens/qr/batch_verification_screen.dart
++++ b/lib/screens/qr/batch_verification_screen.dart
+@@ -1,10 +1,8 @@
+ import 'package:flutter/material.dart';
+-import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../models/seed_batch_model.dart';
+ import '../../models/user_model.dart';
+ import '../../services/firestore_service.dart';
+ import '../../utils/app_theme.dart';
+-import '../traceability/traceability_chain_screen.dart';
+ 
+ class BatchVerificationScreen extends StatefulWidget {
+   final String batchId;
+@@ -303,7 +301,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
+                   end: Alignment.bottomRight,
+                   colors: [
+                     AppTheme.primaryColor,
+-                    AppTheme.primaryColor.withOpacity(0.8),
++                    AppTheme.primaryColor.withValues(alpha: 0.8),
+                   ],
+                 ),
+               ),
+@@ -319,7 +317,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
+                         shape: BoxShape.circle,
+                         boxShadow: [
+                           BoxShadow(
+-                            color: Colors.black.withOpacity(0.1),
++                            color: Colors.black.withValues(alpha: 0.1),
+                             blurRadius: 20,
+                             spreadRadius: 5,
+                           ),
+@@ -516,7 +514,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
+                 Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: AppTheme.primaryColor.withOpacity(0.1),
++                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -579,10 +577,10 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
+       margin: const EdgeInsets.only(bottom: 8),
+       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+       decoration: BoxDecoration(
+-        color: color.withOpacity(0.1),
++        color: color.withValues(alpha: 0.1),
+         borderRadius: BorderRadius.circular(8),
+         border: Border.all(
+-          color: color.withOpacity(0.3),
++          color: color.withValues(alpha: 0.3),
+         ),
+       ),
+       child: Row(
+diff --git a/lib/screens/qr/qr_scanner_screen.dart b/lib/screens/qr/qr_scanner_screen.dart
+index 0e318e4..c00d433 100644
+--- a/lib/screens/qr/qr_scanner_screen.dart
++++ b/lib/screens/qr/qr_scanner_screen.dart
+@@ -110,7 +110,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+         // Dark overlay with transparent center
+         Container(
+           decoration: BoxDecoration(
+-            color: Colors.black.withOpacity(0.5),
++            color: Colors.black.withValues(alpha: 0.5),
+           ),
+           child: ClipPath(
+             clipper: ScannerOverlayClipper(),
+@@ -154,15 +154,15 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+                           gradient: LinearGradient(
+                             colors: [
+                               Colors.transparent,
+-                              AppTheme.primaryColor.withOpacity(0.8),
++                              AppTheme.primaryColor.withValues(alpha: 0.8),
+                               AppTheme.primaryColor,
+-                              AppTheme.primaryColor.withOpacity(0.8),
++                              AppTheme.primaryColor.withValues(alpha: 0.8),
+                               Colors.transparent,
+                             ],
+                           ),
+                           boxShadow: [
+                             BoxShadow(
+-                              color: AppTheme.primaryColor.withOpacity(0.6),
++                              color: AppTheme.primaryColor.withValues(alpha: 0.6),
+                               blurRadius: 10,
+                               spreadRadius: 2,
+                             ),
+@@ -223,7 +223,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+               icon: Container(
+                 padding: const EdgeInsets.all(8),
+                 decoration: BoxDecoration(
+-                  color: Colors.black.withOpacity(0.5),
++                  color: Colors.black.withValues(alpha: 0.5),
+                   borderRadius: BorderRadius.circular(10),
+                 ),
+                 child: const Icon(
+@@ -238,7 +238,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+             Container(
+               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+               decoration: BoxDecoration(
+-                color: Colors.black.withOpacity(0.5),
++                color: Colors.black.withValues(alpha: 0.5),
+                 borderRadius: BorderRadius.circular(20),
+               ),
+               child: const Text(
+@@ -257,7 +257,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+               icon: Container(
+                 padding: const EdgeInsets.all(8),
+                 decoration: BoxDecoration(
+-                  color: Colors.black.withOpacity(0.5),
++                  color: Colors.black.withValues(alpha: 0.5),
+                   borderRadius: BorderRadius.circular(10),
+                 ),
+                 child: Icon(
+@@ -289,7 +289,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+                 borderRadius: BorderRadius.circular(25),
+                 boxShadow: [
+                   BoxShadow(
+-                    color: AppTheme.primaryColor.withOpacity(0.4),
++                    color: AppTheme.primaryColor.withValues(alpha: 0.4),
+                     blurRadius: 20,
+                     spreadRadius: 5,
+                   ),
+@@ -326,7 +326,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+             margin: const EdgeInsets.symmetric(horizontal: 40),
+             padding: const EdgeInsets.all(16),
+             decoration: BoxDecoration(
+-              color: Colors.black.withOpacity(0.7),
++              color: Colors.black.withValues(alpha: 0.7),
+               borderRadius: BorderRadius.circular(15),
+             ),
+             child: Column(
+@@ -350,7 +350,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
+                 Text(
+                   'Make sure the QR code is clearly visible\nand well-lit for best results',
+                   style: TextStyle(
+-                    color: Colors.white.withOpacity(0.7),
++                    color: Colors.white.withValues(alpha: 0.7),
+                     fontSize: 13,
+                   ),
+                   textAlign: TextAlign.center,
+diff --git a/lib/screens/qr_scanner_screen.dart b/lib/screens/qr_scanner_screen.dart
+index 0b4da18..382b3b0 100644
+--- a/lib/screens/qr_scanner_screen.dart
++++ b/lib/screens/qr_scanner_screen.dart
+@@ -119,7 +119,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
+             child: Container(
+               width: double.infinity,
+               padding: const EdgeInsets.all(20),
+-              color: Colors.black.withOpacity(0.65),
++              color: Colors.black.withValues(alpha: 0.65),
+               child: Text(
+                 _isProcessing
+                     ? 'Code detected. Opening traceability…'
+diff --git a/lib/screens/seed_inventory_screen.dart b/lib/screens/seed_inventory_screen.dart
+index 857a71f..2492cf5 100644
+--- a/lib/screens/seed_inventory_screen.dart
++++ b/lib/screens/seed_inventory_screen.dart
+@@ -86,8 +86,8 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
+               : _buildInventoryList(),
+       floatingActionButton: FloatingActionButton(
+         onPressed: _addNewSeedBatch,
+-        child: const Icon(Icons.add),
+         tooltip: 'Add New Seed Batch',
++        child: const Icon(Icons.add),
+       ),
+     );
+   }
+@@ -100,7 +100,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
+           Icon(
+             Icons.inventory_2,
+             size: 80,
+-            color: AppTheme.primaryColor.withOpacity(0.3),
++            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+           ),
+           const SizedBox(height: 16),
+           Text(
+@@ -153,7 +153,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
+                 Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: AppTheme.primaryColor.withOpacity(0.1),
++                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: const Icon(Icons.eco, color: AppTheme.primaryColor),
+@@ -182,7 +182,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
+                   Container(
+                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                     decoration: BoxDecoration(
+-                      color: isLowStock ? Colors.orange.withOpacity(0.1) : Colors.red.withOpacity(0.1),
++                      color: isLowStock ? Colors.orange.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: Text(
+@@ -334,7 +334,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
+                 ),
+                 const SizedBox(height: 12),
+                 DropdownButtonFormField<String>(
+-                  value: selectedStatus,
++                  initialValue: selectedStatus,
+                   decoration: const InputDecoration(labelText: 'Batch status'),
+                   items: const [
+                     DropdownMenuItem(value: 'active', child: Text('Active')),
+@@ -479,7 +479,7 @@ class _AddSeedBatchDialogState extends State<AddSeedBatchDialog> {
+               ),
+               const SizedBox(height: 16),
+               DropdownButtonFormField<String>(
+-                value: _selectedVariety,
++                initialValue: _selectedVariety,
+                 decoration: const InputDecoration(labelText: 'Seed Variety *'),
+                 items: AppConstants.ironBeanVarieties.map((variety) {
+                   return DropdownMenuItem(
+@@ -512,7 +512,7 @@ class _AddSeedBatchDialogState extends State<AddSeedBatchDialog> {
+               ),
+               const SizedBox(height: 16),
+               DropdownButtonFormField<String>(
+-                value: _selectedQuality,
++                initialValue: _selectedQuality,
+                 decoration: const InputDecoration(labelText: 'Quality Grade *'),
+                 items: ['Grade A', 'Grade B', 'Grade C'].map((grade) {
+                   return DropdownMenuItem(
+diff --git a/lib/screens/seed_producer/seed_distribution_screen.dart b/lib/screens/seed_producer/seed_distribution_screen.dart
+index e57828e..df0f10d 100644
+--- a/lib/screens/seed_producer/seed_distribution_screen.dart
++++ b/lib/screens/seed_producer/seed_distribution_screen.dart
+@@ -189,7 +189,7 @@ class SeedDistributionScreen extends StatelessWidget {
+                 Container(
+                   padding: const EdgeInsets.all(10),
+                   decoration: BoxDecoration(
+-                    color: _getStatusColor(status).withOpacity(0.1),
++                    color: _getStatusColor(status).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -223,7 +223,7 @@ class SeedDistributionScreen extends StatelessWidget {
+                 Container(
+                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                   decoration: BoxDecoration(
+-                    color: _getStatusColor(status).withOpacity(0.1),
++                    color: _getStatusColor(status).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(12),
+                   ),
+                   child: Text(
+@@ -376,7 +376,7 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
+   final _quantityController = TextEditingController();
+   final _certificationController = TextEditingController();
+   String _selectedVariety = AppConstants.ironBeanVarieties[0];
+-  String _recipientType = 'agro_dealer';
++  final String _recipientType = 'agro_dealer';
+   String _quality = 'certified';
+   bool _isSubmitting = false;
+   bool _isLoadingDealers = false;
+@@ -430,7 +430,7 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
+ 
+                 // Seed Variety
+                 DropdownButtonFormField<String>(
+-                  value: _selectedVariety,
++                  initialValue: _selectedVariety,
+                   decoration: const InputDecoration(
+                     labelText: 'Seed Variety',
+                     border: OutlineInputBorder(),
+@@ -457,7 +457,7 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
+                         ),
+                       )
+                     : DropdownButtonFormField<AgroDealerModel>(
+-                        value: _selectedAgroDealer,
++                        initialValue: _selectedAgroDealer,
+                         decoration: const InputDecoration(
+                           labelText: 'Select Agro-Dealer',
+                           border: OutlineInputBorder(),
+@@ -520,7 +520,7 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
+ 
+                 // Quality
+                 DropdownButtonFormField<String>(
+-                  value: _quality,
++                  initialValue: _quality,
+                   decoration: const InputDecoration(
+                     labelText: 'Quality',
+                     border: OutlineInputBorder(),
+diff --git a/lib/screens/seed_producer_dashboard_screen.dart b/lib/screens/seed_producer_dashboard_screen.dart
+index 27f2da2..aa98f82 100644
+--- a/lib/screens/seed_producer_dashboard_screen.dart
++++ b/lib/screens/seed_producer_dashboard_screen.dart
+@@ -109,7 +109,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+                     const SizedBox(height: 8),
+                     Chip(
+                       label: const Text('Seed Producer'),
+-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                     ),
+                   ],
+                 ),
+@@ -120,7 +120,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+             // Verification Status
+             if (!(userModel?.isVerified ?? false))
+               Card(
+-                color: AppTheme.warningColor.withOpacity(0.1),
++                color: AppTheme.warningColor.withValues(alpha: 0.1),
+                 child: Padding(
+                   padding: const EdgeInsets.all(16.0),
+                   child: Row(
+@@ -211,7 +211,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: Icon(Icons.inventory, color: AppTheme.primaryColor),
+@@ -233,7 +233,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.teal.withOpacity(0.1),
++                color: Colors.teal.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.agriculture, color: Colors.teal),
+@@ -255,7 +255,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.orange.withOpacity(0.1),
++                color: Colors.orange.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.receipt_long, color: Colors.orange),
+@@ -277,7 +277,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.green.withOpacity(0.1),
++                color: Colors.green.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.verified, color: Colors.green),
+@@ -299,7 +299,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.blue.withOpacity(0.1),
++                color: Colors.blue.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.account_circle, color: Colors.blue),
+@@ -321,7 +321,7 @@ class SeedProducerDashboardScreen extends StatelessWidget {
+             leading: Container(
+               padding: const EdgeInsets.all(8),
+               decoration: BoxDecoration(
+-                color: Colors.purple.withOpacity(0.1),
++                color: Colors.purple.withValues(alpha: 0.1),
+                 borderRadius: BorderRadius.circular(8),
+               ),
+               child: const Icon(Icons.help, color: Colors.purple),
+diff --git a/lib/screens/seed_producer_help_screen.dart b/lib/screens/seed_producer_help_screen.dart
+index 50330a4..f9eb94a 100644
+--- a/lib/screens/seed_producer_help_screen.dart
++++ b/lib/screens/seed_producer_help_screen.dart
+@@ -1,7 +1,6 @@
+ import 'package:flutter/material.dart';
+ import 'package:url_launcher/url_launcher.dart';
+ import '../utils/app_theme.dart';
+-import '../utils/app_localizations.dart';
+ 
+ class SeedProducerHelpScreen extends StatefulWidget {
+   const SeedProducerHelpScreen({super.key});
+@@ -339,7 +338,7 @@ class _SeedProducerHelpScreenState extends State<SeedProducerHelpScreen>
+                 Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: color.withOpacity(0.1),
++                    color: color.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(icon, color: color),
+@@ -378,7 +377,7 @@ class _SeedProducerHelpScreenState extends State<SeedProducerHelpScreen>
+                 Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: color.withOpacity(0.1),
++                    color: color.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(icon, color: color),
+@@ -437,7 +436,7 @@ class _SeedProducerHelpScreenState extends State<SeedProducerHelpScreen>
+                   Container(
+                     padding: const EdgeInsets.all(8),
+                     decoration: BoxDecoration(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                     child: Icon(icon, color: AppTheme.primaryColor),
+diff --git a/lib/screens/splash_screen.dart b/lib/screens/splash_screen.dart
+index f9a3bcd..49d05c4 100644
+--- a/lib/screens/splash_screen.dart
++++ b/lib/screens/splash_screen.dart
+@@ -17,7 +17,6 @@ import '../screens/farmer/farmer_dashboard_enhanced_screen.dart';
+ import '../screens/consumer/consumer_dashboard_screen.dart';
+ import '../screens/trader/trader_dashboard_screen.dart';
+ import 'language_selection_screen.dart';
+-import 'login_screen.dart';
+ 
+ class SplashScreen extends StatefulWidget {
+   const SplashScreen({super.key});
+diff --git a/lib/screens/traceability/traceability_chain_screen.dart b/lib/screens/traceability/traceability_chain_screen.dart
+index 017acd8..97201b5 100644
+--- a/lib/screens/traceability/traceability_chain_screen.dart
++++ b/lib/screens/traceability/traceability_chain_screen.dart
+@@ -10,7 +10,6 @@ import '../../models/agro_dealer_sale_model.dart';
+ import '../../models/seed_batch_model.dart';
+ import '../../models/seed_producer_model.dart';
+ import '../../models/inventory_model.dart';
+-import '../../models/user_model.dart';
+ import '../../services/firestore_service.dart';
+ import '../../services/pdf_service.dart';
+ import '../../utils/app_theme.dart';
+@@ -122,7 +121,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+           children: [
+             // Header Card
+             Card(
+-              color: AppTheme.primaryColor.withOpacity(0.1),
++              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+               child: Padding(
+                 padding: const EdgeInsets.all(16),
+                 child: Column(
+@@ -308,7 +307,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+               title: 'Aggregator',
+               name: aggregator?.businessName ?? 'Loading...',
+               location: aggregator != null
+-                  ? '${aggregator.location.district}'
++                  ? aggregator.location.district
+                   : '',
+               details: aggregator?.storageInfo != null
+                   ? '${aggregator!.storageInfo!.capacityInTons} tons capacity'
+@@ -544,7 +543,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+                 name: 'Iron-Biofortified Seed Producer',
+                 location: 'Rwanda',
+                 details: 'Certified high-iron variety (80-90mg/100g)',
+-                color: Colors.brown.withOpacity(0.5),
++                color: Colors.brown.withValues(alpha: 0.5),
+                 showConnector: true,
+               ),
+ 
+@@ -568,7 +567,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+                 details: cooperative?.agroDealerPurchase != null
+                     ? 'Seed batch: ${cooperative!.agroDealerPurchase!.seedBatch}'
+                     : 'Licensed seed distributor',
+-                color: agroDealer == null ? Colors.orange.withOpacity(0.5) : Colors.orange,
++                color: agroDealer == null ? Colors.orange.withValues(alpha: 0.5) : Colors.orange,
+                 showConnector: true,
+               ),
+ 
+@@ -590,7 +589,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+                 name: 'Bean Farmer Cooperative',
+                 location: _order!.deliveryLocation.district,
+                 details: 'Organic farming practices',
+-                color: Colors.green.withOpacity(0.5),
++                color: Colors.green.withValues(alpha: 0.5),
+                 showConnector: true,
+               ),
+ 
+@@ -600,7 +599,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+                 icon: Icons.local_shipping,
+                 title: 'Aggregator',
+                 name: aggregator.businessName,
+-                location: '${aggregator.location.district}',
++                location: aggregator.location.district,
+                 details: aggregator.storageInfo != null
+                     ? 'Storage: ${aggregator.storageInfo!.capacityInTons} tons'
+                     : '',
+@@ -616,7 +615,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+                     icon: Icons.local_shipping,
+                     title: 'Aggregator',
+                     name: agg?.businessName ?? 'Loading...',
+-                    location: agg != null ? '${agg.location.district}' : '',
++                    location: agg != null ? agg.location.district : '',
+                     details: agg?.storageInfo != null
+                         ? 'Storage: ${agg!.storageInfo!.capacityInTons} tons'
+                         : '',
+@@ -649,7 +648,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
+                   icon: Icons.school,
+                   title: 'Institution',
+                   name: institution?.institutionName ?? 'Loading...',
+-                  location: institution != null ? '${institution.location.district}' : '',
++                  location: institution != null ? institution.location.district : '',
+                   details: institution?.numberOfBeneficiaries != null
+                       ? 'Serves ${institution!.numberOfBeneficiaries} beneficiaries'
+                       : '',
+@@ -699,7 +698,7 @@ class _ChainActor extends StatelessWidget {
+                     Container(
+                       padding: const EdgeInsets.all(12),
+                       decoration: BoxDecoration(
+-                        color: color.withOpacity(0.1),
++                        color: color.withValues(alpha: 0.1),
+                         borderRadius: BorderRadius.circular(12),
+                       ),
+                       child: Icon(icon, color: color, size: 32),
+@@ -752,7 +751,7 @@ class _ChainActor extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.all(8),
+                     decoration: BoxDecoration(
+-                      color: color.withOpacity(0.1),
++                      color: color.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                     child: Row(
+@@ -782,7 +781,7 @@ class _ChainActor extends StatelessWidget {
+               gradient: LinearGradient(
+                 begin: Alignment.topCenter,
+                 end: Alignment.bottomCenter,
+-                colors: [color, color.withOpacity(0.3)],
++                colors: [color, color.withValues(alpha: 0.3)],
+               ),
+             ),
+           ),
+diff --git a/lib/screens/traceability/verify_traceability_screen.dart b/lib/screens/traceability/verify_traceability_screen.dart
+index 6bd2997..b5d917a 100644
+--- a/lib/screens/traceability/verify_traceability_screen.dart
++++ b/lib/screens/traceability/verify_traceability_screen.dart
+@@ -1,5 +1,4 @@
+ import 'package:flutter/material.dart';
+-import '../../models/order_model.dart';
+ import '../../services/firestore_service.dart';
+ import '../../utils/app_theme.dart';
+ import 'traceability_chain_screen.dart';
+@@ -89,7 +88,7 @@ class _VerifyTraceabilityScreenState extends State<VerifyTraceabilityScreen> {
+                 width: 120,
+                 height: 120,
+                 decoration: BoxDecoration(
+-                  color: AppTheme.primaryColor.withOpacity(0.1),
++                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(60),
+                 ),
+                 child: const Icon(
+diff --git a/lib/screens/traceability_screen.dart b/lib/screens/traceability_screen.dart
+index 6bcc8ee..df3dbc0 100644
+--- a/lib/screens/traceability_screen.dart
++++ b/lib/screens/traceability_screen.dart
+@@ -1,12 +1,7 @@
+ import 'package:flutter/material.dart';
+ import 'package:share_plus/share_plus.dart';
+-import 'package:provider/provider.dart';
+-import '../providers/auth_provider.dart';
+ import '../services/firestore_service.dart';
+-import '../models/order_model.dart';
+-import '../models/user_model.dart';
+ import '../utils/app_theme.dart';
+-import '../utils/app_localizations.dart';
+ 
+ class TraceabilityScreen extends StatefulWidget {
+   const TraceabilityScreen({super.key});
+@@ -171,7 +166,7 @@ class _TraceabilityScreenState extends State<TraceabilityScreen> {
+             if (_errorMessage != null) ...[
+               const SizedBox(height: 16),
+               Card(
+-                color: AppTheme.errorColor.withOpacity(0.1),
++                color: AppTheme.errorColor.withValues(alpha: 0.1),
+                 child: Padding(
+                   padding: const EdgeInsets.all(16.0),
+                   child: Row(
+@@ -387,7 +382,7 @@ class _TraceabilityScreenState extends State<TraceabilityScreen> {
+               Expanded(
+                 child: Container(
+                   height: 1,
+-                  color: AppTheme.primaryColor.withOpacity(0.3),
++                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                 ),
+               ),
+             ],
+diff --git a/lib/screens/trader/inventory_management_screen.dart b/lib/screens/trader/inventory_management_screen.dart
+index 2b75d10..de580e0 100644
+--- a/lib/screens/trader/inventory_management_screen.dart
++++ b/lib/screens/trader/inventory_management_screen.dart
+@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
+ import 'package:provider/provider.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../../providers/auth_provider.dart';
+-import '../../utils/app_theme.dart';
+ import '../../utils/app_localizations.dart';
+ 
+ class InventoryManagementScreen extends StatelessWidget {
+@@ -196,7 +195,7 @@ class InventoryManagementScreen extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.all(8),
+                     decoration: BoxDecoration(
+-                      color: _getStatusColor(status).withOpacity(0.1),
++                      color: _getStatusColor(status).withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                     child: Icon(
+@@ -233,7 +232,7 @@ class InventoryManagementScreen extends StatelessWidget {
+                       Container(
+                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                         decoration: BoxDecoration(
+-                          color: _getQualityColor(quality).withOpacity(0.1),
++                          color: _getQualityColor(quality).withValues(alpha: 0.1),
+                           borderRadius: BorderRadius.circular(12),
+                         ),
+                         child: Text(
+diff --git a/lib/screens/trader/record_purchase_screen.dart b/lib/screens/trader/record_purchase_screen.dart
+index cd7461e..754548f 100644
+--- a/lib/screens/trader/record_purchase_screen.dart
++++ b/lib/screens/trader/record_purchase_screen.dart
+@@ -129,7 +129,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
+           // Instructions
+           Container(
+             padding: const EdgeInsets.all(16),
+-            color: AppTheme.primaryColor.withOpacity(0.1),
++            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+             child: Row(
+               children: [
+                 const Icon(Icons.info_outline, color: AppTheme.primaryColor),
+@@ -173,7 +173,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
+           Expanded(
+             flex: 2,
+             child: Container(
+-              color: Colors.black.withOpacity(0.8),
++              color: Colors.black.withValues(alpha: 0.8),
+               child: Center(
+                 child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
+@@ -435,7 +435,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
+ 
+               // Quality Grade
+               DropdownButtonFormField<String>(
+-                value: _selectedQuality,
++                initialValue: _selectedQuality,
+                 decoration: InputDecoration(
+                   labelText: AppLocalizations.of(context)!.translate('traderQualityGrade'),
+                   border: OutlineInputBorder(),
+@@ -488,7 +488,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
+               Container(
+                 padding: const EdgeInsets.all(16),
+                 decoration: BoxDecoration(
+-                  color: AppTheme.primaryColor.withOpacity(0.1),
++                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                   border: Border.all(color: AppTheme.primaryColor),
+                 ),
+diff --git a/lib/screens/trader/sales_tracking_screen.dart b/lib/screens/trader/sales_tracking_screen.dart
+index 3f921c0..9486f60 100644
+--- a/lib/screens/trader/sales_tracking_screen.dart
++++ b/lib/screens/trader/sales_tracking_screen.dart
+@@ -194,8 +194,8 @@ class SalesTrackingScreen extends StatelessWidget {
+                   padding: const EdgeInsets.all(10),
+                   decoration: BoxDecoration(
+                     color: paymentStatus == 'completed'
+-                        ? Colors.green.withOpacity(0.1)
+-                        : Colors.orange.withOpacity(0.1),
++                        ? Colors.green.withValues(alpha: 0.1)
++                        : Colors.orange.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+@@ -269,8 +269,8 @@ class SalesTrackingScreen extends StatelessWidget {
+                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                   decoration: BoxDecoration(
+                     color: paymentStatus == 'completed'
+-                        ? Colors.green.withOpacity(0.1)
+-                        : Colors.orange.withOpacity(0.1),
++                        ? Colors.green.withValues(alpha: 0.1)
++                        : Colors.orange.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(12),
+                   ),
+                   child: Text(
+@@ -358,7 +358,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
+                     }
+ 
+                     return DropdownButtonFormField<String>(
+-                      value: _selectedInventoryId,
++                      initialValue: _selectedInventoryId,
+                       decoration: InputDecoration(
+                         labelText: AppLocalizations.of(context)!.translate('traderSelectBatch'),
+                         border: OutlineInputBorder(),
+@@ -450,7 +450,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
+ 
+                 // Payment Status
+                 DropdownButtonFormField<String>(
+-                  value: _paymentStatus,
++                  initialValue: _paymentStatus,
+                   decoration: InputDecoration(
+                     labelText: AppLocalizations.of(context)!.translate('traderPaymentStatus'),
+                     border: OutlineInputBorder(),
+diff --git a/lib/screens/trader/supplier_management_screen.dart b/lib/screens/trader/supplier_management_screen.dart
+index 35ee7ba..f1cc05f 100644
+--- a/lib/screens/trader/supplier_management_screen.dart
++++ b/lib/screens/trader/supplier_management_screen.dart
+@@ -102,7 +102,7 @@ class SupplierManagementScreen extends StatelessWidget {
+               // Summary
+               Container(
+                 padding: const EdgeInsets.all(16),
+-                color: AppTheme.primaryColor.withOpacity(0.1),
++                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                 child: Row(
+                   children: [
+                     const Icon(Icons.info_outline, color: AppTheme.primaryColor),
+@@ -171,7 +171,7 @@ class SupplierManagementScreen extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.all(12),
+                     decoration: BoxDecoration(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(10),
+                     ),
+                     child: const Icon(
+@@ -201,7 +201,7 @@ class SupplierManagementScreen extends StatelessWidget {
+                                 vertical: 4,
+                               ),
+                               decoration: BoxDecoration(
+-                                color: Colors.green.withOpacity(0.1),
++                                color: Colors.green.withValues(alpha: 0.1),
+                                 borderRadius: BorderRadius.circular(12),
+                               ),
+                               child: Row(
+@@ -353,7 +353,7 @@ class SupplierManagementScreen extends StatelessWidget {
+                   Container(
+                     padding: const EdgeInsets.all(16),
+                     decoration: BoxDecoration(
+-                      color: AppTheme.primaryColor.withOpacity(0.1),
++                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: const Icon(
+@@ -425,7 +425,7 @@ class SupplierManagementScreen extends StatelessWidget {
+                       batch.toString(),
+                       style: const TextStyle(fontSize: 12),
+                     ),
+-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                   );
+                 }).toList(),
+               ),
+diff --git a/lib/screens/trader/trader_dashboard_screen.dart b/lib/screens/trader/trader_dashboard_screen.dart
+index 5c42713..0712f66 100644
+--- a/lib/screens/trader/trader_dashboard_screen.dart
++++ b/lib/screens/trader/trader_dashboard_screen.dart
+@@ -60,8 +60,8 @@ class TraderDashboardScreen extends StatelessWidget {
+                               ? AppLocalizations.of(context)!.translate('traderVerified')
+                               : AppLocalizations.of(context)!.translate('traderPendingVerification')),
+                           backgroundColor: user.isVerified
+-                              ? Colors.green.withOpacity(0.1)
+-                              : Colors.orange.withOpacity(0.12),
++                              ? Colors.green.withValues(alpha: 0.1)
++                              : Colors.orange.withValues(alpha: 0.12),
+                         ),
+                       ],
+                     ),
+@@ -128,7 +128,7 @@ class _TraderActionTile extends StatelessWidget {
+       child: ListTile(
+         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+         leading: CircleAvatar(
+-          backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
++          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+           foregroundColor: AppTheme.primaryColor,
+           child: Icon(icon),
+         ),
+diff --git a/lib/screens/trader/trader_financial_dashboard_screen.dart b/lib/screens/trader/trader_financial_dashboard_screen.dart
+index 84b8f8e..b62d3cb 100644
+--- a/lib/screens/trader/trader_financial_dashboard_screen.dart
++++ b/lib/screens/trader/trader_financial_dashboard_screen.dart
+@@ -211,7 +211,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
+       padding: const EdgeInsets.all(20),
+       decoration: BoxDecoration(
+         gradient: LinearGradient(
+-          colors: [color, color.withOpacity(0.7)],
++          colors: [color, color.withValues(alpha: 0.7)],
+         ),
+         borderRadius: BorderRadius.circular(16),
+       ),
+@@ -220,7 +220,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
+           Container(
+             padding: const EdgeInsets.all(12),
+             decoration: BoxDecoration(
+-              color: Colors.white.withOpacity(0.2),
++              color: Colors.white.withValues(alpha: 0.2),
+               borderRadius: BorderRadius.circular(12),
+             ),
+             child: Icon(icon, color: Colors.white, size: 32),
+@@ -494,7 +494,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
+                 Container(
+                   padding: const EdgeInsets.all(8),
+                   decoration: BoxDecoration(
+-                    color: (insight['color'] as Color).withOpacity(0.1),
++                    color: (insight['color'] as Color).withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(8),
+                   ),
+                   child: Icon(
+diff --git a/lib/screens/unauthorized_screen.dart b/lib/screens/unauthorized_screen.dart
+index baf6e49..a841039 100644
+--- a/lib/screens/unauthorized_screen.dart
++++ b/lib/screens/unauthorized_screen.dart
+@@ -11,10 +11,10 @@ class UnauthorizedScreen extends StatelessWidget {
+   final String? userRole;
+ 
+   const UnauthorizedScreen({
+-    Key? key,
++    super.key,
+     this.message,
+     this.userRole,
+-  }) : super(key: key);
++  });
+ 
+   @override
+   Widget build(BuildContext context) {
+diff --git a/lib/screens/user_type_selection_screen.dart b/lib/screens/user_type_selection_screen.dart
+index 28cae3b..3a132fc 100644
+--- a/lib/screens/user_type_selection_screen.dart
++++ b/lib/screens/user_type_selection_screen.dart
+@@ -119,7 +119,7 @@ class _UserTypeCard extends StatelessWidget {
+               Container(
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+-                  color: AppTheme.primaryColor.withOpacity(0.1),
++                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Icon(
+diff --git a/lib/services/certification_service.dart b/lib/services/certification_service.dart
+index e108b90..ef2e41c 100644
+--- a/lib/services/certification_service.dart
++++ b/lib/services/certification_service.dart
+@@ -2,7 +2,6 @@ import 'dart:io';
+ import 'package:firebase_storage/firebase_storage.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../models/certification_model.dart';
+-import '../utils/constants.dart';
+ 
+ class CertificationService {
+   final FirebaseStorage _storage = FirebaseStorage.instance;
+diff --git a/lib/services/email_service.dart b/lib/services/email_service.dart
+index 5baf0f8..d793d8c 100644
+--- a/lib/services/email_service.dart
++++ b/lib/services/email_service.dart
+@@ -1,4 +1,3 @@
+-import '../utils/constants.dart';
+ 
+ enum EmailProvider {
+   sendgrid,
+diff --git a/lib/services/notification_service.dart b/lib/services/notification_service.dart
+index 8f7b7e4..1c2106f 100644
+--- a/lib/services/notification_service.dart
++++ b/lib/services/notification_service.dart
+@@ -1,6 +1,5 @@
+ import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../models/notification_model.dart';
+-import '../utils/constants.dart';
+ 
+ class NotificationService {
+   static final NotificationService _instance = NotificationService._internal();
+diff --git a/lib/services/payment_service.dart b/lib/services/payment_service.dart
+index fc1a436..4a2f9da 100644
+--- a/lib/services/payment_service.dart
++++ b/lib/services/payment_service.dart
+@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
+ import 'package:flutter/foundation.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+ import '../models/payment_model.dart';
+-import '../utils/constants.dart';
+ 
+ class PaymentService {
+   static final PaymentService _instance = PaymentService._internal();
+@@ -11,7 +10,7 @@ class PaymentService {
+   PaymentService._internal();
+ 
+   // Payment Configurations
+-  PaymentConfig _mtnConfig = const PaymentConfig(
++  final PaymentConfig _mtnConfig = const PaymentConfig(
+     apiKey: '',
+     apiSecret: '',
+     baseUrl: 'https://sandbox.momodeveloper.mtn.com',
+@@ -19,7 +18,7 @@ class PaymentService {
+     collectionAccount: '',
+     currency: 'EUR',
+   );
+-  PaymentConfig _airtelConfig = const PaymentConfig(
++  final PaymentConfig _airtelConfig = const PaymentConfig(
+     apiKey: '',
+     apiSecret: '',
+     baseUrl: 'https://openapiuat.airtel.africa',
+diff --git a/lib/services/pdf_service.dart b/lib/services/pdf_service.dart
+index d3b2a9a..e724938 100644
+--- a/lib/services/pdf_service.dart
++++ b/lib/services/pdf_service.dart
+@@ -1,8 +1,6 @@
+-import 'dart:io';
+ import 'package:pdf/pdf.dart';
+ import 'package:pdf/widgets.dart' as pw;
+ import 'package:printing/printing.dart';
+-import 'package:path_provider/path_provider.dart';
+ import '../models/order_model.dart';
+ import '../models/cooperative_model.dart';
+ import '../models/aggregator_model.dart';
+diff --git a/lib/utils/pdf_generator.dart b/lib/utils/pdf_generator.dart
+index 593dfe5..80ce03a 100644
+--- a/lib/utils/pdf_generator.dart
++++ b/lib/utils/pdf_generator.dart
+@@ -1,4 +1,3 @@
+-import 'dart:typed_data';
+ import 'package:pdf/pdf.dart';
+ import 'package:pdf/widgets.dart' as pw;
+ import 'package:printing/printing.dart';
+diff --git a/lib/utils/validators.dart b/lib/utils/validators.dart
+index 1a2d8a3..26f9d51 100644
+--- a/lib/utils/validators.dart
++++ b/lib/utils/validators.dart
+@@ -7,6 +7,7 @@
+ /// - Prices and currency
+ /// - Percentages
+ /// - Text fields
++library;
+ 
+ class Validators {
+   // ==================== PHONE NUMBER VALIDATION ====================
+diff --git a/lib/widgets/protected_route.dart b/lib/widgets/protected_route.dart
+index 4c8135d..1c50c76 100644
+--- a/lib/widgets/protected_route.dart
++++ b/lib/widgets/protected_route.dart
+@@ -35,12 +35,12 @@ class ProtectedRoute extends StatelessWidget {
+   final String? unauthorizedMessage;
+ 
+   const ProtectedRoute({
+-    Key? key,
++    super.key,
+     required this.child,
+     this.allowedRoles = const [],
+     this.requiresAuth = true,
+     this.unauthorizedMessage,
+-  }) : super(key: key);
++  });
+ 
+   @override
+   Widget build(BuildContext context) {
+@@ -109,12 +109,12 @@ class CustomProtectedRoute extends StatelessWidget {
+   final String? unauthorizedMessage;
+ 
+   const CustomProtectedRoute({
+-    Key? key,
++    super.key,
+     required this.child,
+     required this.canAccess,
+     this.unauthorizedWidget,
+     this.unauthorizedMessage,
+-  }) : super(key: key);
++  });
+ 
+   @override
+   Widget build(BuildContext context) {
+@@ -158,7 +158,7 @@ class CustomProtectedRoute extends StatelessWidget {
+ class AdminOnlyRoute extends StatelessWidget {
+   final Widget child;
+ 
+-  const AdminOnlyRoute({Key? key, required this.child}) : super(key: key);
++  const AdminOnlyRoute({super.key, required this.child});
+ 
+   @override
+   Widget build(BuildContext context) {

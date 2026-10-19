@@ -1,0 +1,7 @@
+Could not find a command named "fix".
+
+Did you mean one of these?
+  screenshot
+
+
+Run 'flutter -h' (or 'flutter <command> -h') for available flutter commands and options.
