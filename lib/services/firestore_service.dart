@@ -824,7 +824,7 @@ class FirestoreService {
       for (final collection in collections) {
         Query<Map<String, dynamic>> query = _firestore
             .collection(collection)
-            .orderBy(FieldPath.documentId())
+            .orderBy(FieldPath.documentId)
             .limit(pageSizePerCollection);
         final cursor = cursors[collection];
         if (cursor != null) {

@@ -639,7 +639,7 @@ class DashboardScreen extends StatelessWidget {
             } else {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text(AppLocalizations.of(context)!.translate('dashboardPhoneUnavailable')),
                   ),
                 );
