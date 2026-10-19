@@ -183,6 +183,8 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('batches')
           .where('farmerId', isEqualTo: userId)
+          .orderBy('registrationDate', descending: true)
+          .limit(100)
           .snapshots(),
       builder: (context, batchSnapshot) {
         final batches = batchSnapshot.data?.docs ?? [];
@@ -196,6 +198,8 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
           stream: FirebaseFirestore.instance
               .collection('transactions')
               .where('sellerId', isEqualTo: userId)
+              .orderBy('transactionDate', descending: true)
+              .limit(100)
               .snapshots(),
           builder: (context, transactionSnapshot) {
             final transactions = transactionSnapshot.data?.docs ?? [];

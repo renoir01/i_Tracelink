@@ -8,6 +8,8 @@ import '../utils/constants.dart';
 import 'notifications_screen.dart';
 import 'agro_dealer/agro_dealer_inventory_screen.dart';
 import 'agro_dealer/agro_dealer_sales_screen.dart';
+import 'orders/pending_orders_screen.dart';
+import 'profile/agro_dealer_profile_screen.dart';
 
 class AgroDealerDashboardScreen extends StatelessWidget {
   const AgroDealerDashboardScreen({super.key});
@@ -245,9 +247,10 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             subtitle: const Text('Confirm farmer seed purchases'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              // TODO: Navigate to purchase confirmations
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Purchase confirmations coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const PendingOrdersScreen(),
+                ),
               );
             },
           ),
@@ -266,9 +269,10 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             subtitle: const Text('Monitor inventory levels'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              // TODO: Navigate to stock alerts
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Stock alerts coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AgroDealerInventoryScreen(),
+                ),
               );
             },
           ),
@@ -287,9 +291,10 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             subtitle: const Text('View and edit your profile'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              // TODO: Navigate to profile
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Profile management coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AgroDealerProfileScreen(),
+                ),
               );
             },
           ),
@@ -308,9 +313,32 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             subtitle: const Text('Get assistance with the app'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              // TODO: Navigate to help
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Help & Support coming soon!')),
+              showDialog<void>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('Help & Support'),
+                  content: const SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Inventory: use Manage Inventory to review and update your stock.'),
+                        SizedBox(height: 10),
+                        Text('Sales: use Sales Tracking to review recent sales and record a sale.'),
+                        SizedBox(height: 10),
+                        Text('Account verification: your account must be verified before restricted actions become available.'),
+                        SizedBox(height: 10),
+                        Text('If data does not load, check your internet connection and tap Refresh where available.'),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
               );
             },
           ),

@@ -70,7 +70,7 @@ class _AggregatorOrdersScreenState extends State<AggregatorOrdersScreen> with Si
     }
 
     return StreamBuilder<QuerySnapshot>(
-      stream: query.snapshots(),
+      stream: query.limit(50).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

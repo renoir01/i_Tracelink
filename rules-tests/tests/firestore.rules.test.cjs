@@ -632,3 +632,45 @@ test('only an active admin can verify a business profile', async () => {
     isVerified: true, status: 'active', verifiedAt: stamp(),
   }));
 });
+
+
+test('trader accounts can register and create inventory tied to a real batch', async () => {
+  const traderDb = testEnv.authenticatedContext('trader-1', {
+    email: 'trader@example.com',
+  }).firestore();
+
+  await assertSucceeds(setDoc(doc(traderDb, 'users/trader-1'), {
+    userType: 'trader',
+    name: 'Trader One',
+    email: 'trader@example.com',
+    phone: '0780000000',
+    language: 'en',
+    createdAt: stamp(),
+    isVerified: false,
+  }));
+
+  await seed('batches/batch-1', {
+    farmerId: 'farmer-1',
+    status: 'harvested',
+    batchNumber: 'BATCH-001',
+  });
+
+  await assertSucceeds(setDoc(doc(traderDb, 'inventory/inventory-1'), {
+    traderId: 'trader-1',
+    batchId: 'batch-1',
+    batchNumber: 'BATCH-001',
+    beanVariety: 'RWR 2245',
+    quantityAvailable: 100,
+    quantityPurchased: 100,
+    quantitySold: 0,
+    purchasePricePerKg: 500,
+    sellingPricePerKg: 600,
+    purchaseDate: stamp(),
+    supplierId: 'farmer-1',
+    supplierName: 'Farmer One',
+    storageLocation: 'Ngoma',
+    status: 'in_stock',
+    quality: 'A',
+    ironContent: 80,
+  }));
+});

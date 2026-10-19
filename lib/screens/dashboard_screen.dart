@@ -14,6 +14,11 @@ import 'seed_producer/seed_distribution_screen.dart';
 import 'seed_inventory_screen.dart';
 import 'agro_dealer/agro_dealer_sales_screen.dart';
 import 'agro_dealer/agro_dealer_inventory_screen.dart';
+import 'trader/inventory_management_screen.dart';
+import 'trader/record_purchase_screen.dart';
+import 'trader/sales_tracking_screen.dart';
+import 'trader/supplier_management_screen.dart';
+import 'trader/trader_financial_dashboard_screen.dart';
 import 'consumer/consumer_scan_verify_screen.dart';
 import 'consumer/purchase_history_screen.dart';
 import 'consumer/nutritional_tracking_screen.dart';
@@ -235,8 +240,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.eco, color: Colors.green),
             ),
-            title: const Text('Register Planting'),
-            subtitle: const Text('Record new bean planting'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardRegisterPlanting')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardRegisterPlantingDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -257,8 +262,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.agriculture, color: Colors.orange),
             ),
-            title: const Text('Harvest Management'),
-            subtitle: const Text('Update harvest information'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardHarvestManagement')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardHarvestDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -279,8 +284,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.receipt_long, color: AppTheme.primaryColor),
             ),
-            title: const Text('My Orders'),
-            subtitle: const Text('View and respond to orders'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardMyOrders')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardOrdersDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -307,8 +312,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Icon(Icons.inventory, color: AppTheme.primaryColor),
             ),
-            title: const Text('Manage Seed Inventory'),
-            subtitle: const Text('Update seed stock and varieties'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardManageSeedInventory')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardSeedInventoryDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -329,8 +334,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.agriculture, color: Colors.teal),
             ),
-            title: const Text('Seed Distribution'),
-            subtitle: const Text('Track seed distributions to farmers'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardSeedDistribution')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardSeedDistributionDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -357,8 +362,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Icon(Icons.inventory_2, color: AppTheme.primaryColor),
             ),
-            title: const Text('Manage Inventory'),
-            subtitle: const Text('Update seed stock and varieties'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardManageInventory')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardSeedInventoryDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -380,7 +385,7 @@ class DashboardScreen extends StatelessWidget {
               child: const Icon(Icons.receipt_long, color: Colors.orange),
             ),
             title: const Text('Sales Tracking'),
-            subtitle: const Text('View and record seed sales'),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardAgroSalesDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -390,6 +395,62 @@ class DashboardScreen extends StatelessWidget {
               );
             },
           ),
+        ),
+      ]);
+    }
+
+    // Trader/Aggregator actions. Keep the trader module reachable from the main dashboard.
+    if (userType == AppConstants.aggregatorType) {
+      actions.addAll([
+        _buildActionCard(
+          context,
+          icon: Icons.qr_code_scanner,
+          color: AppTheme.primaryColor,
+          title: AppLocalizations.of(context)!.translate('traderRecordPurchase'),
+          subtitle: AppLocalizations.of(context)!.translate('traderRecordPurchaseDesc'),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const RecordPurchaseScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.inventory_2,
+          color: Colors.blue,
+          title: AppLocalizations.of(context)!.translate('traderInventory'),
+          subtitle: AppLocalizations.of(context)!.translate('traderInventoryDesc'),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const InventoryManagementScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.point_of_sale,
+          color: Colors.green,
+          title: AppLocalizations.of(context)!.translate('traderSales'),
+          subtitle: AppLocalizations.of(context)!.translate('traderSalesDesc'),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SalesTrackingScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.people,
+          color: Colors.orange,
+          title: AppLocalizations.of(context)!.translate('traderSuppliers'),
+          subtitle: AppLocalizations.of(context)!.translate('traderSuppliersDesc'),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const SupplierManagementScreen(),
+          )),
+        ),
+        _buildActionCard(
+          context,
+          icon: Icons.account_balance_wallet,
+          color: Colors.purple,
+          title: AppLocalizations.of(context)!.translate('traderFinancials'),
+          subtitle: AppLocalizations.of(context)!.translate('traderFinancialsDesc'),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const TraderFinancialDashboardScreen(),
+          )),
         ),
       ]);
     }
@@ -407,8 +468,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.history, color: Colors.orange),
             ),
-            title: const Text('Purchase History'),
-            subtitle: const Text('View your purchases'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardPurchaseHistory')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardPurchaseHistoryDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -429,8 +490,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.favorite, color: Colors.green),
             ),
-            title: const Text('Nutritional Tracking'),
-            subtitle: const Text('Track your iron intake'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardNutritionalTracking')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardNutritionalTrackingDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -451,8 +512,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.school, color: Colors.blue),
             ),
-            title: const Text('Education Center'),
-            subtitle: const Text('Learn about biofortified beans'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardEducationCenter')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardEducationCenterDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -479,7 +540,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
             ),
-            title: const Text('My Orders'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardMyOrders')),
             subtitle: const Text('View and place orders'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
@@ -501,8 +562,8 @@ class DashboardScreen extends StatelessWidget {
               ),
               child: const Icon(Icons.verified, color: Colors.green),
             ),
-            title: const Text('Verify Traceability'),
-            subtitle: const Text('Check product supply chain'),
+            title: Text(AppLocalizations.of(context)!.translate('dashboardVerifyTraceability')),
+            subtitle: Text(AppLocalizations.of(context)!.translate('dashboardVerifyTraceabilityDesc')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               Navigator.of(context).push(
@@ -528,8 +589,8 @@ class DashboardScreen extends StatelessWidget {
             ),
             child: Icon(Icons.qr_code_scanner, color: AppTheme.primaryColor),
           ),
-          title: const Text('Scan & Verify Product'),
-          subtitle: const Text('Scan QR code to verify authenticity'),
+          title: Text(AppLocalizations.of(context)!.translate('dashboardScanVerify')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('dashboardScanVerifyDesc')),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () {
             Navigator.of(context).push(
@@ -550,8 +611,8 @@ class DashboardScreen extends StatelessWidget {
             ),
             child: const Icon(Icons.account_circle, color: Colors.blue),
           ),
-          title: const Text('Profile'),
-          subtitle: const Text('View and edit your profile'),
+          title: Text(AppLocalizations.of(context)!.translate('dashboardProfile')),
+          subtitle: Text(AppLocalizations.of(context)!.translate('dashboardProfileDesc')),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () {
             _navigateToProfile(context, userType);
@@ -568,7 +629,7 @@ class DashboardScreen extends StatelessWidget {
             ),
             child: const Icon(Icons.help, color: Colors.green),
           ),
-          title: const Text('Help & Support'),
+          title: Text(AppLocalizations.of(context)!.translate('dashboardHelpSupport')),
           subtitle: const Text('Call: 0780866714'),
           trailing: const Icon(Icons.phone, size: 16),
           onTap: () async {
@@ -578,8 +639,8 @@ class DashboardScreen extends StatelessWidget {
             } else {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Could not launch phone dialer. Please call 0780866714'),
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.translate('dashboardPhoneUnavailable')),
                   ),
                 );
               }
@@ -590,6 +651,32 @@ class DashboardScreen extends StatelessWidget {
     ]);
 
     return Column(children: actions);
+  }
+
+  Widget _buildActionCard(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
+      ),
+    );
   }
 
   void _navigateToProfile(BuildContext context, String userType) {
@@ -614,12 +701,12 @@ class DashboardScreen extends StatelessWidget {
       case AppConstants.consumerType:
         // For consumer, show a simple message or create a consumer profile screen
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Consumer profile coming soon!')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.translate('dashboardConsumerProfileComingSoon'))),
         );
         return;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile not available')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.translate('dashboardProfileUnavailable'))),
         );
         return;
     }

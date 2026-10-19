@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>iTraceLink uses the camera to scan batch QR codes for traceability.</string>
 </dict>
 </plist>

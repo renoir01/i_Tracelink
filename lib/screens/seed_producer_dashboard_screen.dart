@@ -13,6 +13,7 @@ import 'profile/seed_producer_profile_screen.dart';
 import 'seed_inventory_screen.dart';
 import 'notifications_screen.dart';
 import 'seed_producer/seed_distribution_screen.dart';
+import 'orders/pending_orders_screen.dart';
 
 class SeedProducerDashboardScreen extends StatelessWidget {
   const SeedProducerDashboardScreen({super.key});
@@ -263,9 +264,10 @@ class SeedProducerDashboardScreen extends StatelessWidget {
             subtitle: const Text('View and manage seed orders'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              // TODO: Navigate to seed orders
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Seed orders management coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const PendingOrdersScreen(),
+                ),
               );
             },
           ),

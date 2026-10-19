@@ -33,6 +33,7 @@ class AgroDealerSalesScreen extends StatelessWidget {
             .collection('agro_dealer_sales')
             .where('agroDealerId', isEqualTo: userId)
             .orderBy('saleDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

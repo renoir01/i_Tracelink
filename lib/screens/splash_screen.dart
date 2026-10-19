@@ -64,6 +64,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         return;
       }
       
+      // Traders use the dedicated trader workflow and do not have a separate
+      // profile screen/collection yet. Route them directly to that dashboard.
       if (userModel.userType == AppConstants.traderType) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const TraderDashboardScreen()),

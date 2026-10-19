@@ -33,6 +33,7 @@ class SeedDistributionScreen extends StatelessWidget {
             .collection('seed_distributions')
             .where('seedProducerId', isEqualTo: userId)
             .orderBy('distributionDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

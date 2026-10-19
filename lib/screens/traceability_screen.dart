@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/firestore_service.dart';
@@ -420,11 +421,17 @@ class _TraceabilityScreenState extends State<TraceabilityScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Share traceability report
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Share functionality coming soon!')),
-              );
+            onPressed: () async {
+              final report = [
+                'iTraceLink Traceability Report',
+                'Batch: ${_batchController.text.isEmpty ? 'N/A' : _batchController.text}',
+                'Order: ${_orderController.text.isEmpty ? 'N/A' : _orderController.text}',
+                'Quantity: ${data['quantity'] ?? 'N/A'} kg',
+                'Variety: ${data['variety'] ?? 'N/A'}',
+                'Quality: ${data['quality'] ?? 'N/A'}',
+                'Status: ${data['status'] ?? 'N/A'}',
+              ].join('\\n');
+              await Share.share(report, subject: 'iTraceLink Traceability Report');
             },
             icon: const Icon(Icons.share),
             label: const Text('Share Report'),

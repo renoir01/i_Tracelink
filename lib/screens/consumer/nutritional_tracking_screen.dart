@@ -23,6 +23,7 @@ class NutritionalTrackingScreen extends StatelessWidget {
             .collection(AppConstants.consumerPurchasesCollection)
             .where('consumerId', isEqualTo: userId)
             .where('quantityPurchased', isGreaterThan: 0)
+            .limit(100)
             .snapshots(),
         builder: (context, snapshot) {
           final purchases = snapshot.data?.docs ?? [];

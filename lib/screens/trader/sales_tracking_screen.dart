@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 import '../../utils/constants.dart';
 
 class SalesTrackingScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class SalesTrackingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sales Tracking'),
+        title: Text(AppLocalizations.of(context)!.translate('traderSalesTitle')),
         centerTitle: true,
         actions: [
           IconButton(
@@ -31,6 +32,7 @@ class SalesTrackingScreen extends StatelessWidget {
             .where('sellerId', isEqualTo: userId)
             .where('type', isEqualTo: 'sale')
             .orderBy('transactionDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -133,7 +135,7 @@ class SalesTrackingScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showRecordSaleDialog(context, userId),
         icon: const Icon(Icons.add),
-        label: const Text('Record Sale'),
+        label: Text(AppLocalizations.of(context)!.translate('traderRecordSale')),
         backgroundColor: AppTheme.primaryColor,
       ),
     );
@@ -343,6 +345,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                       .collection('inventory')
                       .where('traderId', isEqualTo: widget.traderId)
                       .where('quantityAvailable', isGreaterThan: 0)
+                      .limit(100)
                       .snapshots(),
                   builder: (context, snapshot) {
                     final inventory = snapshot.data?.docs ?? [];
@@ -356,8 +359,8 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
 
                     return DropdownButtonFormField<String>(
                       value: _selectedInventoryId,
-                      decoration: const InputDecoration(
-                        labelText: 'Select Batch',
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.translate('traderSelectBatch'),
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.inventory_2),
                       ),
@@ -385,8 +388,8 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 // Buyer Name
                 TextFormField(
                   controller: _buyerNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Buyer Name',
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.translate('traderBuyerName'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
                   ),
@@ -402,8 +405,8 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 // Quantity
                 TextFormField(
                   controller: _quantityController,
-                  decoration: const InputDecoration(
-                    labelText: 'Quantity (kg)',
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.translate('traderQuantityKg'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.scale),
                     suffixText: 'kg',
@@ -425,8 +428,8 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 // Price per kg
                 TextFormField(
                   controller: _priceController,
-                  decoration: const InputDecoration(
-                    labelText: 'Price per kg (RWF)',
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.translate('traderPricePerKg'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.attach_money),
                     suffixText: 'RWF',
@@ -448,14 +451,14 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 // Payment Status
                 DropdownButtonFormField<String>(
                   value: _paymentStatus,
-                  decoration: const InputDecoration(
-                    labelText: 'Payment Status',
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.translate('traderPaymentStatus'),
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.payment),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'completed', child: Text('Completed')),
-                    DropdownMenuItem(value: 'pending', child: Text('Pending')),
+                  items: [
+                    DropdownMenuItem(value: 'completed', child: Text(AppLocalizations.of(context)!.translate('traderCompleted'))),
+                    DropdownMenuItem(value: 'pending', child: Text(AppLocalizations.of(context)!.translate('traderPending'))),
                   ],
                   onChanged: (value) {
                     setState(() => _paymentStatus = value!);
@@ -469,7 +472,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-                        child: const Text('Cancel'),
+                        child: Text(AppLocalizations.of(context)!.translate('commonCancel')),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -482,7 +485,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('Record'),
+                            : Text(AppLocalizations.of(context)!.translate('commonRecord')),
                       ),
                     ),
                   ],
@@ -545,8 +548,8 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sale recorded successfully!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.translate('traderSaleRecorded')),
             backgroundColor: Colors.green,
           ),
         );
@@ -555,7 +558,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error recording sale: $e'),
+            content: Text('${AppLocalizations.of(context)!.translate('traderErrorRecordingSale')}: $e'),
             backgroundColor: Colors.red,
           ),
         );
