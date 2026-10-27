@@ -376,7 +376,6 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
   final _quantityController = TextEditingController();
   final _certificationController = TextEditingController();
   String _selectedVariety = AppConstants.ironBeanVarieties[0];
-  final String _recipientType = 'agro_dealer';
   String _quality = 'certified';
   bool _isSubmitting = false;
   bool _isLoadingDealers = false;

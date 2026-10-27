@@ -371,7 +371,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
                           child: const Icon(Icons.payment, color: Colors.red),
                         ),
                         title: Text('Order #${order.id.substring(0, 8)}'),
-                        subtitle: Text('RWF ${order.totalAmount.toStringAsFixed(0) ?? '0'} - ${order.quantity}kg'),
+                        subtitle: Text('RWF ${order.totalAmount.toStringAsFixed(0)} - ${order.quantity}kg'),
                         trailing: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).push(

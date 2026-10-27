@@ -30,7 +30,6 @@ class EarningsDashboardScreen extends StatelessWidget {
           final transactions = snapshot.data?.docs ?? [];
           
           // Calculate statistics
-          double totalEarnings = 0;
           double completedEarnings = 0;
           double pendingEarnings = 0;
           int totalTransactions = transactions.length;
@@ -42,8 +41,6 @@ class EarningsDashboardScreen extends StatelessWidget {
             final data = doc.data() as Map<String, dynamic>;
             final amount = (data['totalAmount'] ?? 0).toDouble();
             final status = data['paymentStatus'] ?? 'pending';
-            
-            totalEarnings += amount;
             
             if (status == 'completed') {
               completedEarnings += amount;

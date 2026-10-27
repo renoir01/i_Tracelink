@@ -69,13 +69,11 @@ class SalesTrackingScreen extends StatelessWidget {
           // Calculate stats
           double totalRevenue = 0;
           double totalQuantity = 0;
-          int completedSales = 0;
 
           for (var doc in sales) {
             final data = doc.data() as Map<String, dynamic>;
             if (data['paymentStatus'] == 'completed') {
               totalRevenue += (data['totalAmount'] ?? 0).toDouble();
-              completedSales++;
             }
             totalQuantity += (data['quantity'] ?? 0).toDouble();
           }

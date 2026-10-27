@@ -35,7 +35,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
     try {
       // Sign in with Firebase Auth
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );

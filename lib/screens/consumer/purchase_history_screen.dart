@@ -209,7 +209,6 @@ class PurchaseHistoryScreen extends StatelessWidget {
   Widget _buildPurchaseCard(BuildContext context, QueryDocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final scanDate = (data['scanDate'] as Timestamp?)?.toDate();
-    final purchaseDate = (data['purchaseDate'] as Timestamp?)?.toDate();
     final wasVerified = data['wasVerified'] ?? false;
     final rating = data['rating'];
 

@@ -116,8 +116,6 @@ class NutritionalTrackingScreen extends StatelessWidget {
   }
 
   Widget _buildIronIntakeCard(double totalIron, double dailyGoal) {
-    final percentage = (totalIron / dailyGoal * 100).clamp(0.0, 100.0);
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(

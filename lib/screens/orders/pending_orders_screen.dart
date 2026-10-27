@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../models/order_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/firestore_service.dart';
 import '../../services/notification_service.dart';
 
 class PendingOrdersScreen extends StatefulWidget {
@@ -15,7 +14,6 @@ class PendingOrdersScreen extends StatefulWidget {
 }
 
 class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
-  final FirestoreService _firestoreService = FirestoreService();
   bool _isLoading = false;
 
   @override

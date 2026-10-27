@@ -158,11 +158,6 @@ class SeedProducerDashboardScreen extends StatelessWidget {
               stream: FirestoreService().getUserOrders(userModel?.id ?? '', isBuyer: false),
               builder: (context, snapshot) {
                 final orders = snapshot.data ?? [];
-                final activeOrders = orders.where((o) =>
-                  o.status == AppConstants.orderPending ||
-                  o.status == AppConstants.orderAccepted ||
-                  o.status == AppConstants.orderInTransit
-                ).length;
                 final completedOrders = orders.where((o) => o.status == AppConstants.orderCompleted).length;
 
                 return Row(

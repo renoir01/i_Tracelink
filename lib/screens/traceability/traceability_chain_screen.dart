@@ -323,16 +323,6 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
 
   Future<Map<String, dynamic>> _getCompleteSupplyChain() async {
     try {
-      // Determine if this is an institution order with potential trader involvement
-      final institution = await FirestoreService().getInstitutionByUserId(_order!.buyerId);
-
-      // Check if order went through a trader (look for intermediate orders)
-      final traderOrdersSnapshot = await FirebaseFirestore.instance
-          .collection('orders')
-          .where('buyerId', isEqualTo: _order!.buyerId)
-          .where('status', whereIn: ['accepted', 'delivered'])
-          .get();
-
       // Check if sellerId is a trader (not an aggregator)
       final aggregatorCheck = await FirestoreService().getAggregatorByUserId(_order!.sellerId);
 
@@ -476,6 +466,8 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
     }
   }
 
+  // TODO: not wired into the trader supply chain yet (kept for that feature).
+  // ignore: unused_element
   Future<AggregatorModel?> _findTraderSupplier(String traderId) async {
     try {
       // Find inventory records for this trader to get supplier info

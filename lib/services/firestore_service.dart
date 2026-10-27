@@ -900,23 +900,6 @@ class FirestoreService {
     }
   }
 
-  String _getUserTypeFromCollection(String collection) {
-    switch (collection) {
-      case AppConstants.seedProducersCollection:
-        return AppConstants.seedProducerType;
-      case AppConstants.agroDealersCollection:
-        return AppConstants.agroDealerType;
-      case AppConstants.cooperativesCollection:
-        return AppConstants.cooperativeType;
-      case AppConstants.aggregatorsCollection:
-        return AppConstants.aggregatorType;
-      case AppConstants.institutionsCollection:
-        return AppConstants.institutionType;
-      default:
-        return 'unknown';
-    }
-  }
-
   /// Update editable profile fields for a user in their role-specific profile.
   Future<void> updateUserProfile({
     required String userId,

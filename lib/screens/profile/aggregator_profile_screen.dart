@@ -33,6 +33,8 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
   String _selectedDistrict = '';
   String _selectedSector = '';
   String _selectedCell = '';
+  // TODO: the Village input is not saved anywhere yet (AddressModel has no village).
+  // ignore: unused_field
   String _selectedVillage = '';
 
   // Service areas

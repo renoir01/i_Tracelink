@@ -112,7 +112,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
                 Text(
-                  'RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}',
+                  'RWF ${widget.order.totalAmount.toStringAsFixed(0)}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryColor,
@@ -302,8 +302,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Expanded(
                     child: Text(
                       _selectedMethod == PaymentMethod.mtnMomo
-                          ? 'You will receive an SMS from MTN MoMo to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}.'
-                          : 'You will receive an SMS from Airtel Money to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}.',
+                          ? 'You will receive an SMS from MTN MoMo to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0)}.'
+                          : 'You will receive an SMS from Airtel Money to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0)}.',
                       style: TextStyle(
                         color: Colors.blue.shade700,
                         fontSize: 14,
@@ -406,7 +406,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               )
             : Text(
-                'Pay RWF ${widget.order.totalAmount.toStringAsFixed(0) ?? '0'}',
+                'Pay RWF ${widget.order.totalAmount.toStringAsFixed(0)}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -432,7 +432,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       return;
     }
 
-    if (!PaymentService().isValidAmount(widget.order.totalAmount ?? 0)) {
+    if (!PaymentService().isValidAmount(widget.order.totalAmount)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid payment amount')),
       );
@@ -447,7 +447,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       final request = PaymentRequest(
         phoneNumber: paymentService.formatPhoneNumber(_phoneController.text),
-        amount: widget.order.totalAmount ?? 0,
+        amount: widget.order.totalAmount,
         currency: 'RWF',
         reference: paymentService.generateTransactionReference(widget.order.id),
         description: 'Payment for Order ${widget.order.id}',
@@ -462,7 +462,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           orderId: widget.order.id,
           payerId: authProvider.userModel?.id ?? '',
           payeeId: widget.order.sellerId,
-          amount: widget.order.totalAmount ?? 0,
+          amount: widget.order.totalAmount,
           currency: 'RWF',
           paymentMethod: _selectedMethod,
           status: PaymentStatus.pending,

@@ -311,7 +311,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 color: Colors.white,
               ),
             ),
-            title: Text(user.email ?? 'No email'),
+            title: Text(user.email.isEmpty ? 'No email' : user.email),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -723,7 +723,7 @@ class UserDetailsDialog extends StatelessWidget {
             child: const Icon(Icons.person, color: Colors.white),
           ),
           const SizedBox(width: 16),
-          Text(user.email ?? 'User Details'),
+          Text(user.email.isEmpty ? 'User Details' : user.email),
         ],
       ),
       content: SingleChildScrollView(
@@ -732,7 +732,7 @@ class UserDetailsDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildDetailRow('User ID', user.id),
-            _buildDetailRow('Email', user.email ?? 'N/A'),
+            _buildDetailRow('Email', user.email.isEmpty ? 'N/A' : user.email),
             _buildDetailRow('User Type', _getUserTypeLabel(user.userType)),
             _buildDetailRow('Status', user.isVerified ? 'Verified' : 'Pending'),
             _buildDetailRow('Created', user.createdAt?.toString().split('T')[0] ?? 'N/A'),
