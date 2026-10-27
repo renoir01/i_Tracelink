@@ -3,22 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../models/order_model.dart';
-import '../../models/cooperative_model.dart';
-import '../../models/aggregator_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/firestore_service.dart';
 import '../../services/notification_service.dart';
-import '../orders/order_details_screen.dart';
 
 class PendingOrdersScreen extends StatefulWidget {
-  const PendingOrdersScreen({Key? key}) : super(key: key);
+  const PendingOrdersScreen({super.key});
 
   @override
   State<PendingOrdersScreen> createState() => _PendingOrdersScreenState();
 }
 
 class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
-  final FirestoreService _firestoreService = FirestoreService();
   bool _isLoading = false;
 
   @override

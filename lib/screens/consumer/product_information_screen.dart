@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
-import '../../utils/constants.dart';
 
 class ProductInformationScreen extends StatelessWidget {
   final String batchId;
@@ -92,7 +91,7 @@ class ProductInformationScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
@@ -271,10 +270,10 @@ class ProductInformationScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color.withOpacity(0.3)),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -285,7 +284,7 @@ class ProductInformationScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: color, size: 28),
@@ -352,7 +351,7 @@ class ProductInformationScreen extends StatelessWidget {
             height: 30,
             margin: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
             ),
           ),
       ],
@@ -469,7 +468,7 @@ class ProductInformationScreen extends StatelessWidget {
 
     final reference = FirebaseFirestore.instance
         .collection('trusted_sellers')
-        .doc('${userId}_${sellerId}');
+        .doc('${userId}_$sellerId');
     try {
       final existing = await reference.get();
       if (existing.exists) {

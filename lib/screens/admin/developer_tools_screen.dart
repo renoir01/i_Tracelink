@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../utils/app_theme.dart';
 import '../payment/payment_test_screen.dart';
 
 class DeveloperToolsScreen extends StatelessWidget {
@@ -141,7 +140,7 @@ class DeveloperToolsScreen extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color),

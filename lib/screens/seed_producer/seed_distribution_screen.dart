@@ -189,7 +189,7 @@ class SeedDistributionScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
+                    color: _getStatusColor(status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -223,7 +223,7 @@ class SeedDistributionScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
+                    color: _getStatusColor(status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -376,7 +376,6 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
   final _quantityController = TextEditingController();
   final _certificationController = TextEditingController();
   String _selectedVariety = AppConstants.ironBeanVarieties[0];
-  String _recipientType = 'agro_dealer';
   String _quality = 'certified';
   bool _isSubmitting = false;
   bool _isLoadingDealers = false;
@@ -430,7 +429,7 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
 
                 // Seed Variety
                 DropdownButtonFormField<String>(
-                  value: _selectedVariety,
+                  initialValue: _selectedVariety,
                   decoration: const InputDecoration(
                     labelText: 'Seed Variety',
                     border: OutlineInputBorder(),
@@ -457,7 +456,7 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
                         ),
                       )
                     : DropdownButtonFormField<AgroDealerModel>(
-                        value: _selectedAgroDealer,
+                        initialValue: _selectedAgroDealer,
                         decoration: const InputDecoration(
                           labelText: 'Select Agro-Dealer',
                           border: OutlineInputBorder(),
@@ -520,7 +519,7 @@ class _RecordDistributionDialogState extends State<_RecordDistributionDialog> {
 
                 // Quality
                 DropdownButtonFormField<String>(
-                  value: _quality,
+                  initialValue: _quality,
                   decoration: const InputDecoration(
                     labelText: 'Quality',
                     border: OutlineInputBorder(),

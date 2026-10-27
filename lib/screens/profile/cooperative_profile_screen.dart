@@ -31,6 +31,8 @@ class _CooperativeProfileScreenState extends State<CooperativeProfileScreen> {
   String _selectedDistrict = '';
   String _selectedSector = '';
   String _selectedCell = '';
+  // TODO: the Village input is not saved anywhere yet (AddressModel has no village).
+  // ignore: unused_field
   String _selectedVillage = '';
 
   @override
@@ -166,7 +168,7 @@ class _CooperativeProfileScreenState extends State<CooperativeProfileScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -367,7 +369,7 @@ class _CooperativeProfileScreenState extends State<CooperativeProfileScreen> {
           const SizedBox(height: 24),
 
           DropdownButtonFormField<String>(
-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
+            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
             decoration: const InputDecoration(
               labelText: 'Province *',
               prefixIcon: Icon(Icons.location_city),
@@ -455,7 +457,7 @@ class _CooperativeProfileScreenState extends State<CooperativeProfileScreen> {
           const SizedBox(height: 24),
 
           Card(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(

@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:path_provider/path_provider.dart';
 import '../models/order_model.dart';
 import '../models/cooperative_model.dart';
 import '../models/aggregator_model.dart';

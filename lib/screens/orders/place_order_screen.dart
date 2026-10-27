@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/cooperative_model.dart';
 import '../../models/order_model.dart';
-import '../../models/aggregator_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../services/sms_service.dart';
@@ -168,7 +167,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                   children: [
                     // Cooperative info card
                     Card(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -367,7 +366,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),

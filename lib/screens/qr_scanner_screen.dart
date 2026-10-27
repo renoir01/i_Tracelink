@@ -119,7 +119,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
-              color: Colors.black.withOpacity(0.65),
+              color: Colors.black.withValues(alpha: 0.65),
               child: Text(
                 _isProcessing
                     ? 'Code detected. Opening traceability…'

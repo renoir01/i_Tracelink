@@ -129,7 +129,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
           // Instructions
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             child: Row(
               children: [
                 const Icon(Icons.info_outline, color: AppTheme.primaryColor),
@@ -173,7 +173,7 @@ class _RecordPurchaseScreenState extends State<RecordPurchaseScreen> {
           Expanded(
             flex: 2,
             child: Container(
-              color: Colors.black.withOpacity(0.8),
+              color: Colors.black.withValues(alpha: 0.8),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -435,7 +435,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
 
               // Quality Grade
               DropdownButtonFormField<String>(
-                value: _selectedQuality,
+                initialValue: _selectedQuality,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.translate('traderQualityGrade'),
                   border: OutlineInputBorder(),
@@ -488,7 +488,7 @@ class _PurchaseFormScreenState extends State<_PurchaseFormScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.primaryColor),
                 ),

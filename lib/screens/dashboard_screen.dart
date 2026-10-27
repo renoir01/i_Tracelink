@@ -127,7 +127,7 @@ class DashboardScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           Chip(
                             label: Text(_getUserTypeLabel(userModel.userType)),
-                            backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                           ),
                         ],
                       ),
@@ -137,7 +137,7 @@ class DashboardScreen extends StatelessWidget {
                   // Verification Status
                   if (!userModel.isVerified)
                     Card(
-                      color: AppTheme.warningColor.withOpacity(0.1),
+                      color: AppTheme.warningColor.withValues(alpha: 0.1),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Row(
@@ -235,7 +235,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.eco, color: Colors.green),
@@ -257,7 +257,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.agriculture, color: Colors.orange),
@@ -279,7 +279,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.receipt_long, color: AppTheme.primaryColor),
@@ -307,7 +307,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(Icons.inventory, color: AppTheme.primaryColor),
@@ -329,7 +329,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.teal.withOpacity(0.1),
+                color: Colors.teal.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.agriculture, color: Colors.teal),
@@ -357,7 +357,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(Icons.inventory_2, color: AppTheme.primaryColor),
@@ -379,7 +379,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.receipt_long, color: Colors.orange),
@@ -463,7 +463,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.history, color: Colors.orange),
@@ -485,7 +485,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.favorite, color: Colors.green),
@@ -507,7 +507,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.school, color: Colors.blue),
@@ -535,7 +535,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(Icons.shopping_cart, color: AppTheme.primaryColor),
@@ -557,7 +557,7 @@ class DashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.verified, color: Colors.green),
@@ -584,7 +584,7 @@ class DashboardScreen extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(Icons.qr_code_scanner, color: AppTheme.primaryColor),
@@ -606,7 +606,7 @@ class DashboardScreen extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(Icons.account_circle, color: Colors.blue),
@@ -624,7 +624,7 @@ class DashboardScreen extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(Icons.help, color: Colors.green),
@@ -666,7 +666,7 @@ class DashboardScreen extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color),

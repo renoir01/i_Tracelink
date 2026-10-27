@@ -69,13 +69,11 @@ class SalesTrackingScreen extends StatelessWidget {
           // Calculate stats
           double totalRevenue = 0;
           double totalQuantity = 0;
-          int completedSales = 0;
 
           for (var doc in sales) {
             final data = doc.data() as Map<String, dynamic>;
             if (data['paymentStatus'] == 'completed') {
               totalRevenue += (data['totalAmount'] ?? 0).toDouble();
-              completedSales++;
             }
             totalQuantity += (data['quantity'] ?? 0).toDouble();
           }
@@ -194,8 +192,8 @@ class SalesTrackingScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: paymentStatus == 'completed'
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.orange.withOpacity(0.1),
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -269,8 +267,8 @@ class SalesTrackingScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: paymentStatus == 'completed'
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.orange.withOpacity(0.1),
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -358,7 +356,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                     }
 
                     return DropdownButtonFormField<String>(
-                      value: _selectedInventoryId,
+                      initialValue: _selectedInventoryId,
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!.translate('traderSelectBatch'),
                         border: OutlineInputBorder(),
@@ -450,7 +448,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
 
                 // Payment Status
                 DropdownButtonFormField<String>(
-                  value: _paymentStatus,
+                  initialValue: _paymentStatus,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.translate('traderPaymentStatus'),
                     border: OutlineInputBorder(),

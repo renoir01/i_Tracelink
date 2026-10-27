@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/firestore_service.dart';
-import '../../models/user_model.dart';
 import '../../utils/app_theme.dart';
-import '../../utils/constants.dart';
 import 'user_management_screen.dart';
 import 'analytics_screen.dart';
 import 'reports_screen.dart';
@@ -67,7 +64,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             Container(
               width: 280,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.05),
+                color: AppTheme.primaryColor.withValues(alpha: 0.05),
                 border: Border(
                   right: BorderSide(color: Colors.grey.shade300),
                 ),
@@ -202,7 +199,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Colors.transparent,
+        color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(
@@ -562,7 +559,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(icon, color: color),
@@ -591,7 +588,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
               subtitle,
               style: TextStyle(
                 fontSize: 12,
-                color: color.withOpacity(0.7),
+                color: color.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -655,7 +652,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: color),
@@ -721,7 +718,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: color),
@@ -729,7 +726,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
       title: Text(service),
       trailing: Chip(
         label: Text(status),
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.1),
         labelStyle: TextStyle(color: color),
       ),
     );

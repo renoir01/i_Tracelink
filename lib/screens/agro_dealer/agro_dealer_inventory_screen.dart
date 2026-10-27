@@ -190,8 +190,8 @@ class AgroDealerInventoryScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: isLowStock
-                        ? Colors.orange.withOpacity(0.1)
-                        : Colors.green.withOpacity(0.1),
+                        ? Colors.orange.withValues(alpha: 0.1)
+                        : Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -363,7 +363,7 @@ class _AddInventoryDialogState extends State<_AddInventoryDialog> {
 
                 // Seed Variety
                 DropdownButtonFormField<String>(
-                  value: _selectedVariety,
+                  initialValue: _selectedVariety,
                   decoration: const InputDecoration(
                     labelText: 'Seed Variety',
                     border: OutlineInputBorder(),
@@ -429,7 +429,7 @@ class _AddInventoryDialogState extends State<_AddInventoryDialog> {
 
                 // Quality
                 DropdownButtonFormField<String>(
-                  value: _quality,
+                  initialValue: _quality,
                   decoration: const InputDecoration(
                     labelText: 'Quality',
                     border: OutlineInputBorder(),

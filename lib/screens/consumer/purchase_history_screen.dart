@@ -109,7 +109,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           );
         },
@@ -135,7 +135,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
     }
 
     return Card(
-      color: AppTheme.primaryColor.withOpacity(0.1),
+      color: AppTheme.primaryColor.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -209,7 +209,6 @@ class PurchaseHistoryScreen extends StatelessWidget {
   Widget _buildPurchaseCard(BuildContext context, QueryDocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final scanDate = (data['scanDate'] as Timestamp?)?.toDate();
-    final purchaseDate = (data['purchaseDate'] as Timestamp?)?.toDate();
     final wasVerified = data['wasVerified'] ?? false;
     final rating = data['rating'];
 
@@ -244,8 +243,8 @@ class PurchaseHistoryScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: wasVerified
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.red.withOpacity(0.1),
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

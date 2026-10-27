@@ -11,10 +11,10 @@ class UnauthorizedScreen extends StatelessWidget {
   final String? userRole;
 
   const UnauthorizedScreen({
-    Key? key,
+    super.key,
     this.message,
     this.userRole,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

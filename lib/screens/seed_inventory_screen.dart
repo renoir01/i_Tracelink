@@ -86,8 +86,8 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
               : _buildInventoryList(),
       floatingActionButton: FloatingActionButton(
         onPressed: _addNewSeedBatch,
-        child: const Icon(Icons.add),
         tooltip: 'Add New Seed Batch',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -100,7 +100,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
           Icon(
             Icons.inventory_2,
             size: 80,
-            color: AppTheme.primaryColor.withOpacity(0.3),
+            color: AppTheme.primaryColor.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(
@@ -153,7 +153,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.eco, color: AppTheme.primaryColor),
@@ -182,7 +182,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isLowStock ? Colors.orange.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                      color: isLowStock ? Colors.orange.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -334,7 +334,7 @@ class _SeedInventoryScreenState extends State<SeedInventoryScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selectedStatus,
+                  initialValue: selectedStatus,
                   decoration: const InputDecoration(labelText: 'Batch status'),
                   items: const [
                     DropdownMenuItem(value: 'active', child: Text('Active')),
@@ -479,7 +479,7 @@ class _AddSeedBatchDialogState extends State<AddSeedBatchDialog> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedVariety,
+                initialValue: _selectedVariety,
                 decoration: const InputDecoration(labelText: 'Seed Variety *'),
                 items: AppConstants.ironBeanVarieties.map((variety) {
                   return DropdownMenuItem(
@@ -512,7 +512,7 @@ class _AddSeedBatchDialogState extends State<AddSeedBatchDialog> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedQuality,
+                initialValue: _selectedQuality,
                 decoration: const InputDecoration(labelText: 'Quality Grade *'),
                 items: ['Grade A', 'Grade B', 'Grade C'].map((grade) {
                   return DropdownMenuItem(

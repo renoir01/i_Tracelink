@@ -193,8 +193,8 @@ class AgroDealerSalesScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: paymentStatus == 'completed'
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.orange.withOpacity(0.1),
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -269,8 +269,8 @@ class AgroDealerSalesScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: paymentStatus == 'completed'
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.orange.withOpacity(0.1),
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -389,7 +389,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
 
                 // Seed Variety
                 DropdownButtonFormField<String>(
-                  value: _selectedVariety,
+                  initialValue: _selectedVariety,
                   decoration: const InputDecoration(
                     labelText: 'Seed Variety',
                     border: OutlineInputBorder(),
@@ -557,7 +557,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
 
                 // Payment Status
                 DropdownButtonFormField<String>(
-                  value: _paymentStatus,
+                  initialValue: _paymentStatus,
                   decoration: const InputDecoration(
                     labelText: 'Payment Status',
                     border: OutlineInputBorder(),
@@ -577,7 +577,7 @@ class _RecordSaleDialogState extends State<_RecordSaleDialog> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(

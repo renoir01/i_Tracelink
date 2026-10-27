@@ -105,7 +105,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Chip(
                       label: const Text('Institution'),
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                     ),
                   ],
                 ),
@@ -116,7 +116,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
             // Verification Status
             if (!(userModel?.isVerified ?? false))
               Card(
-                color: AppTheme.warningColor.withOpacity(0.1),
+                color: AppTheme.warningColor.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -216,7 +216,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withOpacity(0.1),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -274,7 +274,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: Colors.blue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -332,7 +332,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(

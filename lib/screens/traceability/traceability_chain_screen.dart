@@ -10,7 +10,6 @@ import '../../models/agro_dealer_sale_model.dart';
 import '../../models/seed_batch_model.dart';
 import '../../models/seed_producer_model.dart';
 import '../../models/inventory_model.dart';
-import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
 import '../../services/pdf_service.dart';
 import '../../utils/app_theme.dart';
@@ -122,7 +121,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
           children: [
             // Header Card
             Card(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -308,7 +307,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
               title: 'Aggregator',
               name: aggregator?.businessName ?? 'Loading...',
               location: aggregator != null
-                  ? '${aggregator.location.district}'
+                  ? aggregator.location.district
                   : '',
               details: aggregator?.storageInfo != null
                   ? '${aggregator!.storageInfo!.capacityInTons} tons capacity'
@@ -324,16 +323,6 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
 
   Future<Map<String, dynamic>> _getCompleteSupplyChain() async {
     try {
-      // Determine if this is an institution order with potential trader involvement
-      final institution = await FirestoreService().getInstitutionByUserId(_order!.buyerId);
-
-      // Check if order went through a trader (look for intermediate orders)
-      final traderOrdersSnapshot = await FirebaseFirestore.instance
-          .collection('orders')
-          .where('buyerId', isEqualTo: _order!.buyerId)
-          .where('status', whereIn: ['accepted', 'delivered'])
-          .get();
-
       // Check if sellerId is a trader (not an aggregator)
       final aggregatorCheck = await FirestoreService().getAggregatorByUserId(_order!.sellerId);
 
@@ -477,6 +466,8 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
     }
   }
 
+  // TODO: not wired into the trader supply chain yet (kept for that feature).
+  // ignore: unused_element
   Future<AggregatorModel?> _findTraderSupplier(String traderId) async {
     try {
       // Find inventory records for this trader to get supplier info
@@ -544,7 +535,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                 name: 'Iron-Biofortified Seed Producer',
                 location: 'Rwanda',
                 details: 'Certified high-iron variety (80-90mg/100g)',
-                color: Colors.brown.withOpacity(0.5),
+                color: Colors.brown.withValues(alpha: 0.5),
                 showConnector: true,
               ),
 
@@ -568,7 +559,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                 details: cooperative?.agroDealerPurchase != null
                     ? 'Seed batch: ${cooperative!.agroDealerPurchase!.seedBatch}'
                     : 'Licensed seed distributor',
-                color: agroDealer == null ? Colors.orange.withOpacity(0.5) : Colors.orange,
+                color: agroDealer == null ? Colors.orange.withValues(alpha: 0.5) : Colors.orange,
                 showConnector: true,
               ),
 
@@ -590,7 +581,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                 name: 'Bean Farmer Cooperative',
                 location: _order!.deliveryLocation.district,
                 details: 'Organic farming practices',
-                color: Colors.green.withOpacity(0.5),
+                color: Colors.green.withValues(alpha: 0.5),
                 showConnector: true,
               ),
 
@@ -600,7 +591,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                 icon: Icons.local_shipping,
                 title: 'Aggregator',
                 name: aggregator.businessName,
-                location: '${aggregator.location.district}',
+                location: aggregator.location.district,
                 details: aggregator.storageInfo != null
                     ? 'Storage: ${aggregator.storageInfo!.capacityInTons} tons'
                     : '',
@@ -616,7 +607,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                     icon: Icons.local_shipping,
                     title: 'Aggregator',
                     name: agg?.businessName ?? 'Loading...',
-                    location: agg != null ? '${agg.location.district}' : '',
+                    location: agg != null ? agg.location.district : '',
                     details: agg?.storageInfo != null
                         ? 'Storage: ${agg!.storageInfo!.capacityInTons} tons'
                         : '',
@@ -649,7 +640,7 @@ class _TraceabilityChainScreenState extends State<TraceabilityChainScreen> {
                   icon: Icons.school,
                   title: 'Institution',
                   name: institution?.institutionName ?? 'Loading...',
-                  location: institution != null ? '${institution.location.district}' : '',
+                  location: institution != null ? institution.location.district : '',
                   details: institution?.numberOfBeneficiaries != null
                       ? 'Serves ${institution!.numberOfBeneficiaries} beneficiaries'
                       : '',
@@ -699,7 +690,7 @@ class _ChainActor extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(icon, color: color, size: 32),
@@ -752,7 +743,7 @@ class _ChainActor extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
+                      color: color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -782,7 +773,7 @@ class _ChainActor extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [color, color.withOpacity(0.3)],
+                colors: [color, color.withValues(alpha: 0.3)],
               ),
             ),
           ),
