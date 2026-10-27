@@ -784,6 +784,8 @@ class FirestoreService {
   // Get all users for admin panel
   Future<List<UserModel>> getAllUsers() async {
     try {
+      // These collections are independent, so fetch them concurrently instead
+      // of waiting for each network request to finish before starting the next.
       final collections = [
         AppConstants.seedProducersCollection,
         AppConstants.agroDealersCollection,
@@ -792,23 +794,23 @@ class FirestoreService {
         AppConstants.institutionsCollection,
       ];
 
-      List<UserModel> allUsers = [];
+      final snapshots = await Future.wait(
+        collections.map((collection) =>
+            _firestore.collection(collection).get()),
+      );
 
-      for (String collection in collections) {
-        final snapshot = await _firestore.collection(collection).get();
-        for (var doc in snapshot.docs) {
-          final data = doc.data();
-          final userModel = UserModel.fromFirestore(doc);
-          allUsers.add(userModel);
-        }
+      final allUsers = <UserModel>[];
+      for (final snapshot in snapshots) {
+        allUsers.addAll(
+          snapshot.docs.map((doc) => UserModel.fromFirestore(doc)),
+        );
       }
 
-      // Sort by creation date (newest first)
-      allUsers.sort((a, b) {
-        final aDate = a.createdAt ?? DateTime.now();
-        final bDate = b.createdAt ?? DateTime.now();
-        return bDate.compareTo(aDate);
-      });
+      // Sort by creation date (newest first). Use a stable epoch fallback for
+      // legacy records without createdAt; DateTime.now() changes per compare.
+      final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+      allUsers.sort((a, b) =>
+          (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch));
 
       return allUsers;
     } catch (e) {
