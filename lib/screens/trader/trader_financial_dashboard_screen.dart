@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 import '../../utils/constants.dart';
 
 class TraderFinancialDashboardScreen extends StatelessWidget {
@@ -15,13 +16,14 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Financial Dashboard'),
+        title: Text(AppLocalizations.of(context)!.translate('traderFinancialTitle')),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection(AppConstants.transactionsCollection)
             .where('sellerId', isEqualTo: userId)
+            .limit(100)
             .snapshots(),
         builder: (context, salesSnapshot) {
           return StreamBuilder<QuerySnapshot>(
@@ -29,12 +31,14 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
                 .collection(AppConstants.transactionsCollection)
                 .where('buyerId', isEqualTo: userId)
                 .where('type', isEqualTo: 'purchase')
+                .limit(100)
                 .snapshots(),
             builder: (context, purchaseSnapshot) {
               return StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('inventory')
                     .where('traderId', isEqualTo: userId)
+                    .limit(100)
                     .snapshots(),
                 builder: (context, inventorySnapshot) {
                   // Calculate financial metrics
@@ -87,7 +91,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
                           'RWF ${grossProfit.toStringAsFixed(0)}',
                           grossProfit >= 0 ? Icons.trending_up : Icons.trending_down,
                           grossProfit >= 0 ? Colors.green : Colors.red,
-                          subtitle: '${profitMargin.toStringAsFixed(1)}% margin',
+                          subtitle: AppLocalizations.of(context)!.translate('traderRevenueMargin').replaceAll('{margin}', profitMargin.toStringAsFixed(1)),
                         ),
                         const SizedBox(height: 12),
                         
@@ -207,7 +211,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color, color.withOpacity(0.7)],
+          colors: [color, color.withValues(alpha: 0.7)],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -216,7 +220,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: Colors.white, size: 32),
@@ -490,7 +494,7 @@ class TraderFinancialDashboardScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: (insight['color'] as Color).withOpacity(0.1),
+                    color: (insight['color'] as Color).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(

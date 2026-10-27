@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../models/order_model.dart';
-import '../../models/cooperative_model.dart';
-import '../../models/aggregator_model.dart';
 import '../../services/firestore_service.dart';
 import '../../services/sms_service.dart';
 import '../../services/notification_service.dart';
@@ -82,14 +80,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         }
         
         // In-app notification
-        if (notifyUserId != null) {
-          await NotificationService().notifyOrderStatusUpdate(
-            userId: notifyUserId,
-            orderId: widget.order.id,
-            status: newStatus,
-          );
-          debugPrint('✅ Status update notification sent');
-        }
+        await NotificationService().notifyOrderStatusUpdate(
+          userId: notifyUserId,
+          orderId: widget.order.id,
+          status: newStatus,
+        );
+        debugPrint('✅ Status update notification sent');
       } catch (e) {
         debugPrint('⚠️ Notification error: $e');
         // Don't block status update if notifications fail
@@ -376,7 +372,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
+                              border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.3)),
                             ),
                             child: QrImageView(
                               data: widget.order.id,
@@ -427,7 +423,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -579,7 +575,7 @@ class _OrderTimeline extends StatelessWidget {
                                   margin: const EdgeInsets.only(top: 4),
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.primaryColor.withOpacity(0.1),
+                                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Text(

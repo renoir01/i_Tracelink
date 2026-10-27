@@ -38,7 +38,7 @@ class DatabaseService {
       query = query.where('location.district', isEqualTo: district);
     }
 
-    return query.snapshots().map((snapshot) => snapshot.docs
+    return query.limit(50).snapshots().map((snapshot) => snapshot.docs
         .map((doc) => CooperativeModel.fromFirestore(doc))
         .where((coop) => 
             minQuantity == null || 
@@ -67,6 +67,7 @@ class DatabaseService {
         .collection(AppConstants.ordersCollection)
         .where(field, isEqualTo: userId)
         .orderBy('requestDate', descending: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromFirestore(doc))

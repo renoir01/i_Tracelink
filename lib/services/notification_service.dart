@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/notification_model.dart';
-import '../utils/constants.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -58,6 +57,7 @@ class NotificationService {
         .collection('notifications')
         .where('userId', isEqualTo: userId)
         .where('isRead', isEqualTo: false)
+        .limit(100)
         .snapshots()
         .map((snapshot) => snapshot.docs.length);
   }

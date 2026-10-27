@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/cooperative_model.dart';
-import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/app_theme.dart';
 import '../orders/place_order_screen.dart';
@@ -195,7 +192,7 @@ class _AggregatorPlaceOrderScreenState extends State<AggregatorPlaceOrderScreen>
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(

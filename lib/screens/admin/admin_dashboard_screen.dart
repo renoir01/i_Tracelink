@@ -109,7 +109,7 @@ class PendingUsersTab extends StatelessWidget {
         // Header
         Container(
           padding: const EdgeInsets.all(16),
-          color: AppTheme.warningColor.withOpacity(0.1),
+          color: AppTheme.warningColor.withValues(alpha: 0.1),
           child: Row(
             children: [
               const Icon(Icons.pending_actions, color: AppTheme.warningColor),
@@ -130,6 +130,7 @@ class PendingUsersTab extends StatelessWidget {
                 .collection('users')
                 .where('isVerified', isEqualTo: false)
                 .orderBy('createdAt', descending: true)
+                .limit(50)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
@@ -187,13 +188,13 @@ class VerifiedUsersTab extends StatelessWidget {
         // Header
         Container(
           padding: const EdgeInsets.all(16),
-          color: AppTheme.successColor.withOpacity(0.1),
+          color: AppTheme.successColor.withValues(alpha: 0.1),
           child: Row(
             children: [
               const Icon(Icons.verified_user, color: AppTheme.successColor),
               const SizedBox(width: 8),
               Text(
-                'Verified Users',
+                'Recent Verified Users',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -208,6 +209,7 @@ class VerifiedUsersTab extends StatelessWidget {
                 .collection('users')
                 .where('isVerified', isEqualTo: true)
                 .orderBy('createdAt', descending: true)
+                .limit(50)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {

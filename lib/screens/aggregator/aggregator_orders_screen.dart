@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
-import '../../models/order_model.dart';
-import '../../services/firestore_service.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
 
@@ -70,7 +68,7 @@ class _AggregatorOrdersScreenState extends State<AggregatorOrdersScreen> with Si
     }
 
     return StreamBuilder<QuerySnapshot>(
-      stream: query.snapshots(),
+      stream: query.limit(50).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -164,7 +162,7 @@ class _AggregatorOrdersScreenState extends State<AggregatorOrdersScreen> with Si
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(status).withOpacity(0.1),
+                      color: _getStatusColor(status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -299,7 +297,7 @@ class _AggregatorOrdersScreenState extends State<AggregatorOrdersScreen> with Si
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(status).withOpacity(0.1),
+                  color: _getStatusColor(status).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(

@@ -144,7 +144,7 @@ class _PlaceInstitutionOrderScreenState extends State<PlaceInstitutionOrderScree
                   children: [
                     // Aggregator info card
                     Card(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -353,7 +353,7 @@ class _PlaceInstitutionOrderScreenState extends State<PlaceInstitutionOrderScree
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),

@@ -9,7 +9,6 @@ import '../notifications_screen.dart';
 import '../orders/farmer_orders_screen.dart';
 import '../qr/qr_scanner_screen.dart';
 import 'register_planting_screen.dart';
-import 'harvest_management_screen.dart';
 import 'batch_tracking_screen.dart';
 import 'earnings_dashboard_screen.dart';
 
@@ -143,7 +142,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(30),
               ),
               child: const Icon(
@@ -183,6 +182,8 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('batches')
           .where('farmerId', isEqualTo: userId)
+          .orderBy('registrationDate', descending: true)
+          .limit(100)
           .snapshots(),
       builder: (context, batchSnapshot) {
         final batches = batchSnapshot.data?.docs ?? [];
@@ -196,6 +197,8 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
           stream: FirebaseFirestore.instance
               .collection('transactions')
               .where('sellerId', isEqualTo: userId)
+              .orderBy('transactionDate', descending: true)
+              .limit(100)
               .snapshots(),
           builder: (context, transactionSnapshot) {
             final transactions = transactionSnapshot.data?.docs ?? [];
@@ -402,7 +405,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 32),
@@ -466,7 +469,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(data['status']).withOpacity(0.1),
+                    color: _getStatusColor(data['status']).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -486,7 +489,7 @@ class FarmerDashboardEnhancedScreen extends StatelessWidget {
                     data['status']?.toString().toUpperCase() ?? 'UNKNOWN',
                     style: const TextStyle(fontSize: 10),
                   ),
-                  backgroundColor: _getStatusColor(data['status']).withOpacity(0.2),
+                  backgroundColor: _getStatusColor(data['status']).withValues(alpha: 0.2),
                 ),
               ),
             );

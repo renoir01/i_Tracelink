@@ -182,7 +182,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Icon(
@@ -212,7 +212,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
+                      color: Colors.green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -241,6 +241,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection(AppConstants.ordersCollection)
           .where('buyerId', isEqualTo: userId)
+          .limit(100)
           .snapshots(),
       builder: (context, snapshot) {
         final orders = snapshot.data?.docs ?? [];
@@ -337,7 +338,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -442,7 +443,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 28),
@@ -515,7 +516,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
+                    color: _getStatusColor(status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -536,7 +537,7 @@ class InstitutionDashboardScreen extends StatelessWidget {
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
+                    color: _getStatusColor(status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

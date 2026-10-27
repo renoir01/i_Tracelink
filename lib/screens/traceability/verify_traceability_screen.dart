@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../models/order_model.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/app_theme.dart';
 import 'traceability_chain_screen.dart';
@@ -89,7 +88,7 @@ class _VerifyTraceabilityScreenState extends State<VerifyTraceabilityScreen> {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(60),
                 ),
                 child: const Icon(

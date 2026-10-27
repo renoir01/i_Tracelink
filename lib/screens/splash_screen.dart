@@ -17,7 +17,6 @@ import '../screens/farmer/farmer_dashboard_enhanced_screen.dart';
 import '../screens/consumer/consumer_dashboard_screen.dart';
 import '../screens/trader/trader_dashboard_screen.dart';
 import 'language_selection_screen.dart';
-import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -64,6 +63,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         return;
       }
       
+      // Traders use the dedicated trader workflow and do not have a separate
+      // profile screen/collection yet. Route them directly to that dashboard.
       if (userModel.userType == AppConstants.traderType) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const TraderDashboardScreen()),

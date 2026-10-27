@@ -68,7 +68,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             backgroundColor: AppTheme.successColor,
           ),
         );
-        Navigator.of(context).pushReplacementNamed('/dashboard');
+        // The splash router sends newly registered accounts to the correct
+        // role-specific profile/dashboard, including the trader workflow.
+        Navigator.of(context).pushReplacementNamed('/');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

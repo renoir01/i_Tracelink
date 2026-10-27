@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/order_model.dart';
-import '../../models/cooperative_model.dart';
-import '../../models/aggregator_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../services/sms_service.dart';
@@ -379,7 +377,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

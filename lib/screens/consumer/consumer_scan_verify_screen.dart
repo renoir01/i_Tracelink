@@ -110,6 +110,41 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
     }
   }
 
+  Future<void> _reportFraud() async {
+    final userId = Provider.of<AuthProvider>(context, listen: false).userModel?.id;
+    final code = scannedCode?.trim();
+
+    if (userId == null || userId.isEmpty || code == null || code.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not submit report: missing account or QR code.')),
+        );
+      }
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('fraud_reports').add({
+        'reporterId': userId,
+        'scannedCode': code,
+        'reason': 'unregistered_or_unverified_qr',
+        'details': 'Submitted from the product QR verification screen.',
+        'createdAt': Timestamp.now(),
+        'status': 'pending',
+      });
+      if (!mounted) return;
+      setState(() => isProcessing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Fraud report submitted for review.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not submit fraud report: $error')),
+      );
+    }
+  }
+
   void _showVerificationResult({
     required bool isVerified,
     required String message,
@@ -147,7 +182,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
@@ -169,10 +204,9 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
         actions: [
           if (!isVerified)
             TextButton.icon(
-              onPressed: () {
-                // TODO: Report fraud
-                Navigator.pop(context);
-                Navigator.pop(context);
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _reportFraud();
               },
               icon: const Icon(Icons.report, color: Colors.red),
               label: const Text('Report Fraud'),
@@ -196,7 +230,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -213,7 +247,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
           // Instructions Card
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             child: Row(
               children: [
                 const Icon(Icons.info_outline, color: AppTheme.primaryColor),
@@ -257,7 +291,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
           Expanded(
             flex: 2,
             child: Container(
-              color: Colors.black.withOpacity(0.8),
+              color: Colors.black.withValues(alpha: 0.8),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -292,7 +326,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Row(

@@ -23,6 +23,7 @@ class BatchTrackingScreen extends StatelessWidget {
             .collection('batches')
             .where('farmerId', isEqualTo: userId)
             .orderBy('registrationDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -198,7 +199,7 @@ class BatchTrackingScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

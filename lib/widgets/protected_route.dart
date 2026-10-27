@@ -35,12 +35,12 @@ class ProtectedRoute extends StatelessWidget {
   final String? unauthorizedMessage;
 
   const ProtectedRoute({
-    Key? key,
+    super.key,
     required this.child,
     this.allowedRoles = const [],
     this.requiresAuth = true,
     this.unauthorizedMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,12 +109,12 @@ class CustomProtectedRoute extends StatelessWidget {
   final String? unauthorizedMessage;
 
   const CustomProtectedRoute({
-    Key? key,
+    super.key,
     required this.child,
     required this.canAccess,
     this.unauthorizedWidget,
     this.unauthorizedMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +158,7 @@ class CustomProtectedRoute extends StatelessWidget {
 class AdminOnlyRoute extends StatelessWidget {
   final Widget child;
 
-  const AdminOnlyRoute({Key? key, required this.child}) : super(key: key);
+  const AdminOnlyRoute({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
