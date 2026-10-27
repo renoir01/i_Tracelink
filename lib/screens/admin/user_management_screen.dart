@@ -37,10 +37,12 @@ class _UserManagementScreenState extends State<UserManagementScreen>
   }
 
   Future<void> _loadUsers() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       final users = await FirestoreService().getAllUsers();
+      if (!mounted) return;
 
       setState(() {
         _allUsers = users;
@@ -50,12 +52,11 @@ class _UserManagementScreenState extends State<UserManagementScreen>
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading users: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading users: $e')),
+      );
     }
   }
 
