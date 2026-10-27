@@ -20,10 +20,10 @@ The app has **solid technical foundations** but has **4 critical security vulner
 
 **Exposed Credentials:**
 ```
-AFRICAS_TALKING_API_KEY=atsk_62eee19abc7628917b9b8860e46bf744b29558de30c390c1935115cbedd5f63d30ca7cfb
+AFRICAS_TALKING_API_KEY=[REDACTED — rotate/revoke if real]
 AFRICAS_TALKING_SENDER_ID=AFRICASTKNG
-MTN_MOMO_API_KEY=test_mtn_key_12345
-AIRTEL_API_KEY=test_airtel_key_12345
+MTN_MOMO_API_KEY=[REDACTED — rotate/revoke if real]
+AIRTEL_API_KEY=[REDACTED — rotate/revoke if real]
 ```
 
 **Risk:** Anyone with repository access can use these credentials to:

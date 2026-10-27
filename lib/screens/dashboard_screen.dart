@@ -25,6 +25,11 @@ import 'profile/aggregator_profile_screen.dart';
 import 'profile/seed_producer_profile_screen.dart';
 import 'profile/agro_dealer_profile_screen.dart';
 import 'profile/institution_profile_screen.dart';
+import 'trader/trader_financial_dashboard_screen.dart';
+import 'trader/supplier_management_screen.dart';
+import 'trader/sales_tracking_screen.dart';
+import 'trader/record_purchase_screen.dart';
+import 'trader/inventory_management_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -394,6 +399,47 @@ class DashboardScreen extends StatelessWidget {
       ]);
     }
 
+    // Trader tools were implemented but not reachable from the main dashboard.
+    if (userType == AppConstants.traderType) {
+      actions.addAll([
+        _quickAction(
+          context,
+          icon: Icons.inventory_2,
+          title: 'Inventory Management',
+          subtitle: 'View available stock',
+          onTap: () => const InventoryManagementScreen(),
+        ),
+        _quickAction(
+          context,
+          icon: Icons.qr_code_scanner,
+          title: 'Record Purchase',
+          subtitle: 'Scan a batch QR code',
+          onTap: () => const RecordPurchaseScreen(),
+        ),
+        _quickAction(
+          context,
+          icon: Icons.point_of_sale,
+          title: 'Sales Tracking',
+          subtitle: 'Record and review sales',
+          onTap: () => const SalesTrackingScreen(),
+        ),
+        _quickAction(
+          context,
+          icon: Icons.people_alt,
+          title: 'Supplier Management',
+          subtitle: 'Review suppliers',
+          onTap: () => const SupplierManagementScreen(),
+        ),
+        _quickAction(
+          context,
+          icon: Icons.account_balance_wallet,
+          title: 'Financial Dashboard',
+          subtitle: 'Review trader finances',
+          onTap: () => const TraderFinancialDashboardScreen(),
+        ),
+      ]);
+    }
+
     // Consumer-specific actions
     if (userType == AppConstants.consumerType) {
       actions.addAll([
@@ -590,6 +636,26 @@ class DashboardScreen extends StatelessWidget {
     ]);
 
     return Column(children: actions);
+  }
+
+  Widget _quickAction(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget Function() onTap,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Icon(icon, color: AppTheme.primaryColor),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => onTap()),
+        ),
+      ),
+    );
   }
 
   void _navigateToProfile(BuildContext context, String userType) {

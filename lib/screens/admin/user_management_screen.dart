@@ -36,29 +36,46 @@ class _UserManagementScreenState extends State<UserManagementScreen>
     super.dispose();
   }
 
-  Future<void> _loadUsers() async {
-    setState(() => _isLoading = true);
+  final FirestoreService _firestoreService = FirestoreService();
+  bool _hasMoreUsers = false;
+  bool _isLoadingMore = false;
+
+  Future<void> _loadUsers({bool loadMore = false}) async {
+    if (!mounted || (loadMore && _isLoadingMore)) return;
+    setState(() {
+      if (loadMore) {
+        _isLoadingMore = true;
+      } else {
+        _isLoading = true;
+      }
+    });
 
     try {
-      final users = await FirestoreService().getAllUsers();
-
+      final page = await _firestoreService.getUsersPage(reset: !loadMore);
+      if (!mounted) return;
+      final users = loadMore ? [..._allUsers, ...page.users] : page.users;
+      final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+      users.sort((a, b) => (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch));
       setState(() {
         _allUsers = users;
-        _pendingUsers = users.where((u) => !u.isVerified).toList();
+        _pendingUsers = users.where((u) => !u.isVerified && u.status != 'rejected').toList();
         _verifiedUsers = users.where((u) => u.isVerified).toList();
         _rejectedUsers = users.where((u) => u.status == 'rejected').toList();
+        _hasMoreUsers = page.hasMore;
         _isLoading = false;
+        _isLoadingMore = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading users: $e')),
-        );
-      }
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _isLoadingMore = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading users: $e')),
+      );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -111,7 +128,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      'Total Users',
+                      'Users Loaded',
                       _allUsers.length.toString(),
                       Icons.people,
                       Colors.blue,
@@ -230,7 +247,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (users.isEmpty) {
+    if (users.isEmpty && !_hasMoreUsers) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -254,8 +271,26 @@ class _UserManagementScreenState extends State<UserManagementScreen>
 
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
-      itemCount: users.length,
+      itemCount: users.length + (_hasMoreUsers ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == users.length) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: ElevatedButton.icon(
+                onPressed: _isLoadingMore ? null : () => _loadUsers(loadMore: true),
+                icon: _isLoadingMore
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.expand_more),
+                label: Text(_isLoadingMore ? 'Loading more users…' : 'Load more users'),
+              ),
+            ),
+          );
+        }
         final user = users[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 8),
