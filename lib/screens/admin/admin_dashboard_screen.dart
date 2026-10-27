@@ -109,7 +109,7 @@ class PendingUsersTab extends StatelessWidget {
         // Header
         Container(
           padding: const EdgeInsets.all(16),
-          color: AppTheme.warningColor.withOpacity(0.1),
+          color: AppTheme.warningColor.withValues(alpha: 0.1),
           child: Row(
             children: [
               const Icon(Icons.pending_actions, color: AppTheme.warningColor),
@@ -188,7 +188,7 @@ class VerifiedUsersTab extends StatelessWidget {
         // Header
         Container(
           padding: const EdgeInsets.all(16),
-          color: AppTheme.successColor.withOpacity(0.1),
+          color: AppTheme.successColor.withValues(alpha: 0.1),
           child: Row(
             children: [
               const Icon(Icons.verified_user, color: AppTheme.successColor),

@@ -4,7 +4,6 @@ import '../../models/seed_producer_model.dart';
 import '../../models/location_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
-import '../../utils/app_localizations.dart';
 import '../../services/firestore_service.dart';
 
 class SeedProducerProfileScreen extends StatefulWidget {
@@ -192,7 +191,7 @@ class _SeedProducerProfileScreenState extends State<SeedProducerProfileScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -436,7 +435,7 @@ class _SeedProducerProfileScreenState extends State<SeedProducerProfileScreen> {
           const SizedBox(height: 24),
 
           DropdownButtonFormField<String>(
-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
+            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
             decoration: const InputDecoration(
               labelText: 'Province *',
               prefixIcon: Icon(Icons.location_city),
@@ -565,7 +564,7 @@ class _SeedProducerProfileScreenState extends State<SeedProducerProfileScreen> {
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                       child: const Icon(Icons.eco, color: AppTheme.primaryColor),
                     ),
                     title: Text(variety.varietyName),

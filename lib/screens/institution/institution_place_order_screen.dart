@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/aggregator_model.dart';
 import '../../models/cooperative_model.dart';
 import '../../models/order_model.dart';
@@ -8,7 +7,6 @@ import '../../models/location_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../services/notification_service.dart';
-import '../../services/sms_service.dart';
 import '../../utils/app_theme.dart';
 
 class InstitutionPlaceOrderScreen extends StatefulWidget {
@@ -261,7 +259,7 @@ class _InstitutionPlaceOrderScreenState extends State<InstitutionPlaceOrderScree
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -347,7 +345,7 @@ class _InstitutionPlaceOrderScreenState extends State<InstitutionPlaceOrderScree
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(

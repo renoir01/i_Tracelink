@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/payment_model.dart';
-import '../../utils/app_theme.dart';
 
 class PaymentStatusScreen extends StatelessWidget {
   final String paymentId;
@@ -242,7 +241,7 @@ class PaymentStatusScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(icon, size: 80, color: color),

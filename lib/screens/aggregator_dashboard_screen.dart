@@ -106,7 +106,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Chip(
                       label: const Text('Aggregator'),
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                     ),
                   ],
                 ),
@@ -117,7 +117,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
             // Verification Status
             if (!(userModel?.isVerified ?? false))
               Card(
-                color: AppTheme.warningColor.withOpacity(0.1),
+                color: AppTheme.warningColor.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -213,7 +213,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withOpacity(0.1),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -271,7 +271,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: Colors.blue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -321,9 +321,8 @@ class AggregatorDashboardScreen extends StatelessWidget {
                 
                 final orders = snapshot.data ?? [];
                 final unpaidOrders = orders.where((order) => 
-                  order.status == AppConstants.orderAccepted && 
-                  order.totalAmount != null &&
-                  order.totalAmount! > 0
+                  order.status == AppConstants.orderAccepted &&
+                  order.totalAmount > 0
                 ).toList();
                 
                 if (unpaidOrders.isEmpty) {
@@ -345,7 +344,7 @@ class AggregatorDashboardScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
+                            color: Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -366,13 +365,13 @@ class AggregatorDashboardScreen extends StatelessWidget {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
+                            color: Colors.red.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(Icons.payment, color: Colors.red),
                         ),
                         title: Text('Order #${order.id.substring(0, 8)}'),
-                        subtitle: Text('RWF ${order.totalAmount?.toStringAsFixed(0) ?? '0'} - ${order.quantity}kg'),
+                        subtitle: Text('RWF ${order.totalAmount.toStringAsFixed(0) ?? '0'} - ${order.quantity}kg'),
                         trailing: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).push(

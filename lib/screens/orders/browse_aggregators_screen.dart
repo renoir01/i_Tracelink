@@ -43,7 +43,7 @@ class _BrowseAggregatorsScreenState extends State<BrowseAggregatorsScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -82,7 +82,7 @@ class _BrowseAggregatorsScreenState extends State<BrowseAggregatorsScreen> {
                 
                 // District filter
                 DropdownButtonFormField<String>(
-                  value: _selectedDistrict,
+                  initialValue: _selectedDistrict,
                   decoration: const InputDecoration(
                     labelText: 'Service Area',
                     prefixIcon: Icon(Icons.location_on),
@@ -276,7 +276,7 @@ class _AggregatorCard extends StatelessWidget {
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                     child: const Icon(Icons.local_shipping, color: AppTheme.primaryColor),
                   ),
                   const SizedBox(width: 12),
@@ -795,7 +795,7 @@ class _AggregatorCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(order.status).withOpacity(0.2),
+                  color: _getStatusColor(order.status).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(

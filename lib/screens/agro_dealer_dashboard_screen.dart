@@ -4,7 +4,6 @@ import '../providers/auth_provider.dart';
 import '../services/notification_service.dart';
 import '../utils/app_theme.dart';
 import '../utils/app_localizations.dart';
-import '../utils/constants.dart';
 import 'notifications_screen.dart';
 import 'agro_dealer/agro_dealer_inventory_screen.dart';
 import 'agro_dealer/agro_dealer_sales_screen.dart';
@@ -105,7 +104,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Chip(
                       label: const Text('Agro-Dealer'),
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                     ),
                   ],
                 ),
@@ -116,7 +115,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             // Verification Status
             if (!(userModel?.isVerified ?? false))
               Card(
-                color: AppTheme.warningColor.withOpacity(0.1),
+                color: AppTheme.warningColor.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -194,7 +193,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(Icons.inventory_2, color: AppTheme.primaryColor),
@@ -216,7 +215,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.receipt_long, color: Colors.orange),
@@ -238,7 +237,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.check_circle, color: Colors.blue),
@@ -260,7 +259,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.warning, color: Colors.green),
@@ -282,7 +281,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.purple.withOpacity(0.1),
+                color: Colors.purple.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.account_circle, color: Colors.purple),
@@ -304,7 +303,7 @@ class AgroDealerDashboardScreen extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.teal.withOpacity(0.1),
+                color: Colors.teal.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.help, color: Colors.teal),

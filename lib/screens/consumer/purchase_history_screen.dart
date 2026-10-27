@@ -109,7 +109,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           );
         },
@@ -135,7 +135,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
     }
 
     return Card(
-      color: AppTheme.primaryColor.withOpacity(0.1),
+      color: AppTheme.primaryColor.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -244,8 +244,8 @@ class PurchaseHistoryScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: wasVerified
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.red.withOpacity(0.1),
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

@@ -7,6 +7,7 @@
 /// - Prices and currency
 /// - Percentages
 /// - Text fields
+library;
 
 class Validators {
   // ==================== PHONE NUMBER VALIDATION ====================

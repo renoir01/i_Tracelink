@@ -110,7 +110,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         // Dark overlay with transparent center
         Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
           ),
           child: ClipPath(
             clipper: ScannerOverlayClipper(),
@@ -154,15 +154,15 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              AppTheme.primaryColor.withOpacity(0.8),
+                              AppTheme.primaryColor.withValues(alpha: 0.8),
                               AppTheme.primaryColor,
-                              AppTheme.primaryColor.withOpacity(0.8),
+                              AppTheme.primaryColor.withValues(alpha: 0.8),
                               Colors.transparent,
                             ],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryColor.withOpacity(0.6),
+                              color: AppTheme.primaryColor.withValues(alpha: 0.6),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -223,7 +223,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
@@ -238,7 +238,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
@@ -257,7 +257,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -289,7 +289,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.4),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.4),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -326,7 +326,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             margin: const EdgeInsets.symmetric(horizontal: 40),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Column(
@@ -350,7 +350,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                 Text(
                   'Make sure the QR code is clearly visible\nand well-lit for best results',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 13,
                   ),
                   textAlign: TextAlign.center,

@@ -216,7 +216,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -408,7 +408,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
           const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
+            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
             decoration: const InputDecoration(
               labelText: 'Province *',
               prefixIcon: Icon(Icons.location_city),
@@ -496,7 +496,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
             children: [
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _selectedServiceArea,
+                  initialValue: _selectedServiceArea,
                   decoration: const InputDecoration(
                     hintText: 'Select district',
                     prefixIcon: Icon(Icons.map),
@@ -570,7 +570,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
             onChanged: (value) {
               setState(() => _hasStorage = value);
             },
-            activeColor: AppTheme.primaryColor,
+            activeThumbColor: AppTheme.primaryColor,
           ),
           
           if (_hasStorage) ...[
@@ -587,7 +587,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
             const SizedBox(height: 16),
             
             DropdownButtonFormField<String>(
-              value: _storageType,
+              initialValue: _storageType,
               decoration: const InputDecoration(
                 labelText: 'Storage Type',
                 prefixIcon: Icon(Icons.category),
@@ -610,7 +610,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
               onChanged: (value) {
                 setState(() => _hasRefrigeration = value);
               },
-              activeColor: AppTheme.primaryColor,
+              activeThumbColor: AppTheme.primaryColor,
             ),
           ],
 
@@ -623,7 +623,7 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
             onChanged: (value) {
               setState(() => _hasTransport = value);
             },
-            activeColor: AppTheme.primaryColor,
+            activeThumbColor: AppTheme.primaryColor,
           ),
           
           if (_hasTransport) ...[
@@ -656,14 +656,14 @@ class _AggregatorProfileScreenState extends State<AggregatorProfileScreen> {
               onChanged: (value) {
                 setState(() => _hasRefrigeratedTransport = value);
               },
-              activeColor: AppTheme.primaryColor,
+              activeThumbColor: AppTheme.primaryColor,
             ),
           ],
 
           const SizedBox(height: 24),
 
           Card(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(

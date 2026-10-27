@@ -60,8 +60,8 @@ class TraderDashboardScreen extends StatelessWidget {
                               ? AppLocalizations.of(context)!.translate('traderVerified')
                               : AppLocalizations.of(context)!.translate('traderPendingVerification')),
                           backgroundColor: user.isVerified
-                              ? Colors.green.withOpacity(0.1)
-                              : Colors.orange.withOpacity(0.12),
+                              ? Colors.green.withValues(alpha: 0.1)
+                              : Colors.orange.withValues(alpha: 0.12),
                         ),
                       ],
                     ),
@@ -128,7 +128,7 @@ class _TraderActionTile extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         leading: CircleAvatar(
-          backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
           foregroundColor: AppTheme.primaryColor,
           child: Icon(icon),
         ),

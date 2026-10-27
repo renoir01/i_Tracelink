@@ -17,7 +17,6 @@ import '../screens/farmer/farmer_dashboard_enhanced_screen.dart';
 import '../screens/consumer/consumer_dashboard_screen.dart';
 import '../screens/trader/trader_dashboard_screen.dart';
 import 'language_selection_screen.dart';
-import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

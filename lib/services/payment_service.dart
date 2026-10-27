@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/payment_model.dart';
-import '../utils/constants.dart';
 
 class PaymentService {
   static final PaymentService _instance = PaymentService._internal();
@@ -11,7 +10,7 @@ class PaymentService {
   PaymentService._internal();
 
   // Payment Configurations
-  PaymentConfig _mtnConfig = const PaymentConfig(
+  final PaymentConfig _mtnConfig = const PaymentConfig(
     apiKey: '',
     apiSecret: '',
     baseUrl: 'https://sandbox.momodeveloper.mtn.com',
@@ -19,7 +18,7 @@ class PaymentService {
     collectionAccount: '',
     currency: 'EUR',
   );
-  PaymentConfig _airtelConfig = const PaymentConfig(
+  final PaymentConfig _airtelConfig = const PaymentConfig(
     apiKey: '',
     apiSecret: '',
     baseUrl: 'https://openapiuat.airtel.africa',

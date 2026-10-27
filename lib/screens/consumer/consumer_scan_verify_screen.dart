@@ -182,7 +182,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
@@ -230,7 +230,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -247,7 +247,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
           // Instructions Card
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             child: Row(
               children: [
                 const Icon(Icons.info_outline, color: AppTheme.primaryColor),
@@ -291,7 +291,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
           Expanded(
             flex: 2,
             child: Container(
-              color: Colors.black.withOpacity(0.8),
+              color: Colors.black.withValues(alpha: 0.8),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -326,7 +326,7 @@ class _ConsumerScanVerifyScreenState extends State<ConsumerScanVerifyScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Row(

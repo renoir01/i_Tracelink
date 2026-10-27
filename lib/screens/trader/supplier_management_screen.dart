@@ -102,7 +102,7 @@ class SupplierManagementScreen extends StatelessWidget {
               // Summary
               Container(
                 padding: const EdgeInsets.all(16),
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 child: Row(
                   children: [
                     const Icon(Icons.info_outline, color: AppTheme.primaryColor),
@@ -171,7 +171,7 @@ class SupplierManagementScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
@@ -201,7 +201,7 @@ class SupplierManagementScreen extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
+                                color: Colors.green.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -353,7 +353,7 @@ class SupplierManagementScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -425,7 +425,7 @@ class SupplierManagementScreen extends StatelessWidget {
                       batch.toString(),
                       style: const TextStyle(fontSize: 12),
                     ),
-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                   );
                 }).toList(),
               ),

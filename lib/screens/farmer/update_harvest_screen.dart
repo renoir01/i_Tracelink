@@ -209,7 +209,7 @@ class _UpdateHarvestScreenState extends State<UpdateHarvestScreen> {
                     const SizedBox(height: 16),
 
                     DropdownButtonFormField<String>(
-                      value: _qualityGrade,
+                      initialValue: _qualityGrade,
                       decoration: const InputDecoration(
                         labelText: 'Quality Grade',
                         prefixIcon: Icon(Icons.grade),
@@ -257,7 +257,7 @@ class _UpdateHarvestScreenState extends State<UpdateHarvestScreen> {
                       title: const Text('Available for Sale'),
                       subtitle: const Text('List your beans for aggregators to purchase'),
                       value: _availableForSale,
-                      activeColor: AppTheme.primaryColor,
+                      activeThumbColor: AppTheme.primaryColor,
                       onChanged: (value) {
                         setState(() => _availableForSale = value);
                       },
@@ -307,7 +307,7 @@ class _UpdateHarvestScreenState extends State<UpdateHarvestScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),

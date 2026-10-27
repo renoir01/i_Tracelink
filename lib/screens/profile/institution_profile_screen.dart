@@ -226,7 +226,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -285,7 +285,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
           const SizedBox(height: 24),
 
           DropdownButtonFormField<String>(
-            value: _institutionType,
+            initialValue: _institutionType,
             decoration: const InputDecoration(
               labelText: 'Institution Type *',
               prefixIcon: Icon(Icons.business),
@@ -433,7 +433,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
           const SizedBox(height: 24),
 
           DropdownButtonFormField<String>(
-            value: _selectedProvince.isEmpty ? null : _selectedProvince,
+            initialValue: _selectedProvince.isEmpty ? null : _selectedProvince,
             decoration: const InputDecoration(
               labelText: 'Province *',
               prefixIcon: Icon(Icons.location_city),
@@ -543,7 +543,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
             onChanged: (value) {
               setState(() => _requiresIronFortified = value);
             },
-            activeColor: AppTheme.primaryColor,
+            activeThumbColor: AppTheme.primaryColor,
           ),
           const SizedBox(height: 16),
 
@@ -575,7 +575,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
           const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
-            value: _budgetCycle,
+            initialValue: _budgetCycle,
             decoration: const InputDecoration(
               labelText: 'Budget Cycle',
               prefixIcon: Icon(Icons.calendar_today),
@@ -603,7 +603,7 @@ class _InstitutionProfileScreenState extends State<InstitutionProfileScreen> {
           const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
-            value: _procurementMethod,
+            initialValue: _procurementMethod,
             decoration: const InputDecoration(
               labelText: 'Procurement Method',
               prefixIcon: Icon(Icons.shopping_cart),
