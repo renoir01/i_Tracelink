@@ -1,0 +1,142 @@
+Upgrading build.gradle
+Upgrading gradle.properties
+Upgrading gradle.properties
+Running Gradle task 'assembleDebug'...                          
+Warning: Flutter support for your project's Gradle version (8.14.3) will soon be dropped. Please upgrade your Gradle version to a version of at least 9.1.0 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's gradle version is typically defined in the gradle wrapper file. By default, this can be found at /home/runner/work/i_Tracelink/i_Tracelink/android/gradle/wrapper/gradle-wrapper.properties. 
+For more information, see https://docs.gradle.org/current/userguide/gradle_wrapper.html.
+
+Warning: Flutter support for your project's Android Gradle Plugin version (Android Gradle Plugin version 8.11.1) will soon be dropped. Please upgrade your Android Gradle Plugin version to a version of at least Android Gradle Plugin version 9.0.1 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's AGP version is typically defined in the plugins block of the `settings.gradle` file (/home/runner/work/i_Tracelink/i_Tracelink/android/settings.gradle), by a plugin with the id of com.android.application. 
+If you don't see a plugins block, your project was likely created with an older template version. In this case it is most likely defined in the top-level build.gradle file (/home/runner/work/i_Tracelink/i_Tracelink/android/build.gradle) by the following line in the dependencies block of the buildscript: "classpath 'com.android.tools.build:gradle:<version>'".
+
+Warning: Flutter support for your project's Kotlin version (2.2.20) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.3.20 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (/home/runner/work/i_Tracelink/i_Tracelink/android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android. 
+If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (/home/runner/work/i_Tracelink/i_Tracelink/android/build.gradle) by the ext.kotlin_version property.
+
+Loading package information...                                                  
+Loading local repository...                                                     
+[                                       ] 3% Loading local repository...        
+[                                       ] 3% Fetch remote repository...         
+[=                                      ] 3% Fetch remote repository...         
+[=                                      ] 4% Fetch remote repository...         
+[=                                      ] 5% Fetch remote repository...         
+[==                                     ] 5% Fetch remote repository...         
+[==                                     ] 6% Fetch remote repository...         
+[==                                     ] 7% Fetch remote repository...         
+[==                                     ] 7% Computing updates...               
+[===                                    ] 8% Computing updates...               
+[===                                    ] 10% Computing updates...              
+[===                                    ] 10% Installing NDK (Side by side) 25.1
+[===                                    ] 10% Downloading android-ndk-r25b-linux
+[====                                   ] 10% Downloading android-ndk-r25b-linux
+[====                                   ] 11% Downloading android-ndk-r25b-linux
+[====                                   ] 12% Downloading android-ndk-r25b-linux
+[=====                                  ] 13% Downloading android-ndk-r25b-linux
+[=====                                  ] 14% Downloading android-ndk-r25b-linux
+[=====                                  ] 15% Downloading android-ndk-r25b-linux
+[======                                 ] 15% Downloading android-ndk-r25b-linux
+[======                                 ] 16% Downloading android-ndk-r25b-linux
+[======                                 ] 17% Downloading android-ndk-r25b-linux
+[=======                                ] 18% Downloading android-ndk-r25b-linux
+[=======                                ] 19% Downloading android-ndk-r25b-linux
+[=======                                ] 20% Downloading android-ndk-r25b-linux
+[========                               ] 20% Downloading android-ndk-r25b-linux
+[========                               ] 21% Downloading android-ndk-r25b-linux
+[========                               ] 22% Downloading android-ndk-r25b-linux
+[=========                              ] 23% Downloading android-ndk-r25b-linux
+[=========                              ] 24% Downloading android-ndk-r25b-linux
+[=========                              ] 25% Downloading android-ndk-r25b-linux
+[==========                             ] 25% Downloading android-ndk-r25b-linux
+[==========                             ] 26% Downloading android-ndk-r25b-linux
+[==========                             ] 27% Downloading android-ndk-r25b-linux
+[===========                            ] 28% Downloading android-ndk-r25b-linux
+[===========                            ] 29% Downloading android-ndk-r25b-linux
+[===========                            ] 30% Downloading android-ndk-r25b-linux
+[============                           ] 30% Downloading android-ndk-r25b-linux
+[============                           ] 31% Downloading android-ndk-r25b-linux
+[============                           ] 32% Downloading android-ndk-r25b-linux
+[============                           ] 33% Downloading android-ndk-r25b-linux
+[============                           ] 33% Unzipping...                      
+[============                           ] 33% Unzipping... android-ndk-r25b/    
+[============                           ] 33% Unzipping... android-ndk-r25b/CHAN
+[=============                          ] 33% Unzipping... android-ndk-r25b/CHAN
+[=============                          ] 33% Unzipping... android-ndk-r25b/wrap
+[=============                          ] 33% Unzipping... android-ndk-r25b/preb
+[=============                          ] 33% Unzipping... android-ndk-r25b/buil
+[=============                          ] 33% Unzipping... android-ndk-r25b/NOTI
+[=============                          ] 33% Unzipping... android-ndk-r25b/ndk-
+[=============                          ] 33% Unzipping... android-ndk-r25b/NOTI
+[=============                          ] 33% Unzipping... android-ndk-r25b/meta
+[=============                          ] 33% Unzipping... android-ndk-r25b/ndk-
+[=============                          ] 33% Unzipping... android-ndk-r25b/pyth
+[=============                          ] 33% Unzipping... android-ndk-r25b/sour
+[=============                          ] 33% Unzipping... android-ndk-r25b/simp
+[=============                          ] 34% Unzipping... android-ndk-r25b/simp
+[=============                          ] 34% Unzipping... android-ndk-r25b/ndk-
+[=============                          ] 34% Unzipping... android-ndk-r25b/READ
+[=============                          ] 34% Unzipping... android-ndk-r25b/tool
+[=============                          ] 35% Unzipping... android-ndk-r25b/tool
+[==============                         ] 35% Unzipping... android-ndk-r25b/tool
+[==============                         ] 36% Unzipping... android-ndk-r25b/tool
+[==============                         ] 37% Unzipping... android-ndk-r25b/tool
+[===============                        ] 38% Unzipping... android-ndk-r25b/tool
+[===============                        ] 39% Unzipping... android-ndk-r25b/tool
+[===============                        ] 40% Unzipping... android-ndk-r25b/tool
+[================                       ] 40% Unzipping... android-ndk-r25b/tool
+[================                       ] 41% Unzipping... android-ndk-r25b/tool
+[================                       ] 42% Unzipping... android-ndk-r25b/tool
+[=================                      ] 43% Unzipping... android-ndk-r25b/tool
+[=================                      ] 44% Unzipping... android-ndk-r25b/tool
+[=================                      ] 45% Unzipping... android-ndk-r25b/tool
+[==================                     ] 45% Unzipping... android-ndk-r25b/tool
+[==================                     ] 46% Unzipping... android-ndk-r25b/tool
+[==================                     ] 47% Unzipping... android-ndk-r25b/tool
+[===================                    ] 48% Unzipping... android-ndk-r25b/tool
+[===================                    ] 49% Unzipping... android-ndk-r25b/tool
+[===================                    ] 50% Unzipping... android-ndk-r25b/tool
+[====================                   ] 50% Unzipping... android-ndk-r25b/tool
+[====================                   ] 51% Unzipping... android-ndk-r25b/tool
+[====================                   ] 52% Unzipping... android-ndk-r25b/tool
+[=====================                  ] 53% Unzipping... android-ndk-r25b/tool
+[=====================                  ] 54% Unzipping... android-ndk-r25b/tool
+[=====================                  ] 55% Unzipping... android-ndk-r25b/tool
+[=====================                  ] 55% Unzipping... android-ndk-r25b/ndk-
+[=====================                  ] 55% Unzipping... android-ndk-r25b/shad
+[=======================================] 100% Unzipping... android-ndk-r25b/sha
+
+Your project is configured with Android NDK 25.1.8937393, but the following plugin(s) depend on a different Android NDK version:
+- cloud_firestore requires Android NDK 27.0.12077973
+- connectivity_plus requires Android NDK 27.0.12077973
+- firebase_analytics requires Android NDK 27.0.12077973
+- firebase_auth requires Android NDK 27.0.12077973
+- firebase_core requires Android NDK 27.0.12077973
+- firebase_crashlytics requires Android NDK 27.0.12077973
+- firebase_performance requires Android NDK 27.0.12077973
+- firebase_storage requires Android NDK 27.0.12077973
+- mobile_scanner requires Android NDK 27.0.12077973
+- package_info_plus requires Android NDK 27.0.12077973
+- path_provider_android requires Android NDK 27.0.12077973
+- printing requires Android NDK 27.0.12077973
+- share_plus requires Android NDK 27.0.12077973
+- shared_preferences_android requires Android NDK 27.0.12077973
+- sqflite_android requires Android NDK 27.0.12077973
+- url_launcher_android requires Android NDK 27.0.12077973
+Fix this issue by using the highest Android NDK version (they are backward compatible).
+Add the following to /home/runner/work/i_Tracelink/i_Tracelink/android/app/build.gradle:
+
+    android {
+        ndkVersion = "27.0.12077973"
+        ...
+    }
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Running Gradle task 'assembleDebug'...                            328.2s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+build exit: 0
