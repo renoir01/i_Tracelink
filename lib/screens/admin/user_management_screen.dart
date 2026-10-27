@@ -54,6 +54,8 @@ class _UserManagementScreenState extends State<UserManagementScreen>
       final page = await _firestoreService.getUsersPage(reset: !loadMore);
       if (!mounted) return;
       final users = loadMore ? [..._allUsers, ...page.users] : page.users;
+      final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+      users.sort((a, b) => (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch));
       setState(() {
         _allUsers = users;
         _pendingUsers = users.where((u) => !u.isVerified).toList();
@@ -126,7 +128,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      'Total Users',
+                      'Users Loaded',
                       _allUsers.length.toString(),
                       Icons.people,
                       Colors.blue,
