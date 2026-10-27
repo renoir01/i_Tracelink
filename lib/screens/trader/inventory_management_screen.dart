@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
-import '../../utils/app_theme.dart';
+import '../../utils/app_localizations.dart';
 
 class InventoryManagementScreen extends StatelessWidget {
   const InventoryManagementScreen({super.key});
@@ -14,7 +14,7 @@ class InventoryManagementScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inventory Management'),
+        title: Text(AppLocalizations.of(context)!.translate('traderInventoryTitle')),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -22,6 +22,7 @@ class InventoryManagementScreen extends StatelessWidget {
             .collection('inventory')
             .where('traderId', isEqualTo: userId)
             .orderBy('purchaseDate', descending: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -30,7 +31,7 @@ class InventoryManagementScreen extends StatelessWidget {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text('Error: ${snapshot.error}'),
+              child: Text('${AppLocalizations.of(context)!.translate('commonError')}: ${snapshot.error}'),
             );
           }
 
@@ -90,7 +91,7 @@ class InventoryManagementScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _buildSummaryCard(
-                        'Total Stock',
+                        AppLocalizations.of(context)!.translate('traderTotalStock'),
                         '${totalQuantity.toStringAsFixed(0)} kg',
                         Icons.inventory_2,
                         Colors.blue,
@@ -99,7 +100,7 @@ class InventoryManagementScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSummaryCard(
-                        'Total Value',
+                        AppLocalizations.of(context)!.translate('traderTotalValue'),
                         'RWF ${totalValue.toStringAsFixed(0)}',
                         Icons.attach_money,
                         Colors.green,
@@ -108,7 +109,7 @@ class InventoryManagementScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSummaryCard(
-                        'Low Stock',
+                        AppLocalizations.of(context)!.translate('traderLowStockCount'),
                         '$lowStockCount items',
                         Icons.warning,
                         lowStockCount > 0 ? Colors.orange : Colors.grey,
@@ -194,7 +195,7 @@ class InventoryManagementScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(status).withOpacity(0.1),
+                      color: _getStatusColor(status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -231,7 +232,7 @@ class InventoryManagementScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _getQualityColor(quality).withOpacity(0.1),
+                          color: _getQualityColor(quality).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -514,7 +515,7 @@ class InventoryManagementScreen extends StatelessWidget {
                         _showEditPriceDialog(context, docId, data);
                       },
                       icon: const Icon(Icons.edit),
-                      label: const Text('Update Price'),
+                      label: Text(AppLocalizations.of(context)!.translate('traderUpdatePrice')),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -522,7 +523,7 @@ class InventoryManagementScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.close),
-                      label: const Text('Close'),
+                      label: Text(AppLocalizations.of(context)!.translate('commonClose')),
                     ),
                   ),
                 ],
@@ -572,11 +573,11 @@ class InventoryManagementScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Update Selling Price'),
+        title: Text(AppLocalizations.of(context)!.translate('traderUpdateSellingPrice')),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Selling Price per kg (RWF)',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.translate('traderSellingPricePerKg'),
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.attach_money),
             suffixText: 'RWF',
@@ -586,7 +587,7 @@ class InventoryManagementScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.translate('commonCancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -599,15 +600,15 @@ class InventoryManagementScreen extends StatelessWidget {
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Price updated successfully'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.translate('traderPriceUpdated')),
                       backgroundColor: Colors.green,
                     ),
                   );
                 }
               }
             },
-            child: const Text('Update'),
+            child: Text(AppLocalizations.of(context)!.translate('commonUpdate')),
           ),
         ],
       ),

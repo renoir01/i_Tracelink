@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
-import '../../utils/constants.dart';
 
 class TrustedSellersScreen extends StatelessWidget {
   const TrustedSellersScreen({super.key});
@@ -20,47 +19,29 @@ class TrustedSellersScreen extends StatelessWidget {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection(AppConstants.consumerPurchasesCollection)
+            .collection('trusted_sellers')
             .where('consumerId', isEqualTo: userId)
-            .where('wasVerified', isEqualTo: true)
+            .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final purchases = snapshot.data?.docs ?? [];
-
-          // Group by seller
-          final sellerMap = <String, Map<String, dynamic>>{};
-          for (var doc in purchases) {
+          final sellerDocs = snapshot.data?.docs ?? [];
+          final sellers = sellerDocs.map((doc) {
             final data = doc.data() as Map<String, dynamic>;
-            final sellerId = data['sellerId'] ?? '';
-            
-            if (!sellerMap.containsKey(sellerId)) {
-              sellerMap[sellerId] = {
-                'sellerName': data['sellerName'],
-                'sellerType': data['sellerType'],
-                'sellerId': sellerId,
-                'purchases': 1,
-                'ratings': data['rating'] != null ? [data['rating']] : [],
-                'lastPurchase': (data['scanDate'] as Timestamp?)?.toDate(),
-              };
-            } else {
-              sellerMap[sellerId]!['purchases']++;
-              if (data['rating'] != null) {
-                (sellerMap[sellerId]!['ratings'] as List).add(data['rating']);
-              }
-              final currentLast = sellerMap[sellerId]!['lastPurchase'] as DateTime?;
-              final newDate = (data['scanDate'] as Timestamp?)?.toDate();
-              if (newDate != null && (currentLast == null || newDate.isAfter(currentLast))) {
-                sellerMap[sellerId]!['lastPurchase'] = newDate;
-              }
-            }
-          }
-
-          final sellers = sellerMap.values.toList()
-            ..sort((a, b) => b['purchases'].compareTo(a['purchases']));
+            return <String, dynamic>{
+              'sellerName': data['sellerName'] ?? 'Seller',
+              'sellerType': data['sellerType'] ?? 'farmer',
+              'sellerId': data['sellerId'] ?? '',
+              'purchases': 0,
+              'ratings': <dynamic>[],
+              'lastPurchase': (data['createdAt'] as Timestamp?)?.toDate(),
+            };
+          }).toList()
+            ..sort((a, b) => (a['sellerName'] as String)
+                .compareTo(b['sellerName'] as String));
 
           if (sellers.isEmpty) {
             return Center(
@@ -79,7 +60,7 @@ class TrustedSellersScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Start scanning products from verified sellers',
+                    'Add a seller from a product information page to save them here.',
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                 ],
@@ -104,7 +85,7 @@ class TrustedSellersScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'These sellers have been verified through your purchases',
+                        'These are the sellers you have added to your trusted list.',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.blue.shade900,
@@ -145,7 +126,7 @@ class TrustedSellersScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -179,7 +160,7 @@ class TrustedSellersScreen extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.1),
+                              color: Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(

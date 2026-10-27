@@ -222,7 +222,7 @@ class _RegisterPlantingScreenState extends State<RegisterPlantingScreen> {
                     const SizedBox(height: 16),
 
                     DropdownButtonFormField<String>(
-                      value: _selectedAgroDealer,
+                      initialValue: _selectedAgroDealer,
                       decoration: const InputDecoration(
                         labelText: 'Agro-Dealer *',
                         prefixIcon: Icon(Icons.store),
@@ -383,7 +383,7 @@ class _RegisterPlantingScreenState extends State<RegisterPlantingScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),

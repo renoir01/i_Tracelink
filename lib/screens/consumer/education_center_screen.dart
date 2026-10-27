@@ -134,7 +134,7 @@ class EducationCenterScreen extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppTheme.primaryColor, AppTheme.primaryColor.withOpacity(0.7)],
+          colors: [AppTheme.primaryColor, AppTheme.primaryColor.withValues(alpha: 0.7)],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -187,7 +187,7 @@ class EducationCenterScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: color, size: 28),

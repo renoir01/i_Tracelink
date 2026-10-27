@@ -10,6 +10,20 @@ import '../models/seed_batch_model.dart';
 import '../models/payment_model.dart';
 import '../utils/constants.dart';
 
+class UserPage {
+  final List<UserModel> users;
+  final Map<String, DocumentSnapshot<Map<String, dynamic>>> cursors;
+  final Map<String, bool> hasMoreByCollection;
+
+  const UserPage({
+    required this.users,
+    required this.cursors,
+    required this.hasMoreByCollection,
+  });
+
+  bool get hasMore => hasMoreByCollection.values.any((value) => value);
+}
+
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -51,6 +65,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.seedProducersCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => SeedProducerModel.fromFirestore(doc))
@@ -95,6 +110,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.agroDealersCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => AgroDealerModel.fromFirestore(doc))
@@ -120,6 +136,7 @@ class FirestoreService {
     try {
       final snapshot = await _firestore
           .collection(AppConstants.cooperativesCollection)
+          .limit(100)
           .get();
 
       return snapshot.docs
@@ -135,6 +152,7 @@ class FirestoreService {
       final snapshot = await _firestore
           .collection(AppConstants.aggregatorsCollection)
           .where('isActive', isEqualTo: true)
+          .limit(100)
           .get();
 
       return snapshot.docs
@@ -210,7 +228,7 @@ class FirestoreService {
       query = query.where('location.district', isEqualTo: district);
     }
 
-    return query.snapshots().map((snapshot) => snapshot.docs
+    return query.limit(50).snapshots().map((snapshot) => snapshot.docs
         .map((doc) => CooperativeModel.fromFirestore(doc))
         .where((coop) => 
             minQuantity == null || 
@@ -256,6 +274,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.aggregatorsCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => AggregatorModel.fromFirestore(doc))
@@ -300,6 +319,7 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.institutionsCollection)
         .where('isActive', isEqualTo: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => InstitutionModel.fromFirestore(doc))
@@ -373,6 +393,7 @@ class FirestoreService {
         .collection(AppConstants.ordersCollection)
         .where(field, isEqualTo: userId)
         .orderBy('requestDate', descending: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => OrderModel.fromFirestore(doc))
@@ -781,8 +802,75 @@ class FirestoreService {
 
   // ========== USER MANAGEMENT METHODS ==========
 
+  /// Loads a bounded page from each role collection. The admin UI merges and
+  /// sorts these results, avoiding an unbounded read of every registered user.
+  Future<UserPage> getAllUsersPage({
+    int pageSizePerCollection = 10,
+    Map<String, DocumentSnapshot<Map<String, dynamic>>> cursors = const {},
+  }) async {
+    final collections = [
+      AppConstants.seedProducersCollection,
+      AppConstants.agroDealersCollection,
+      AppConstants.cooperativesCollection,
+      AppConstants.aggregatorsCollection,
+      AppConstants.institutionsCollection,
+    ];
+
+    final users = <UserModel>[];
+    final nextCursors = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+    final hasMoreByCollection = <String, bool>{};
+
+    try {
+      for (final collection in collections) {
+        Query<Map<String, dynamic>> query = _firestore
+            .collection(collection)
+            .orderBy(FieldPath.documentId)
+            .limit(pageSizePerCollection);
+        final cursor = cursors[collection];
+        if (cursor != null) {
+          query = query.startAfterDocument(cursor);
+        }
+
+        final snapshot = await query.get();
+        if (snapshot.docs.isNotEmpty) {
+          nextCursors[collection] = snapshot.docs.last;
+          users.addAll(snapshot.docs.map(UserModel.fromFirestore));
+        } else if (cursor != null) {
+          nextCursors[collection] = cursor;
+        }
+        hasMoreByCollection[collection] =
+            snapshot.docs.length == pageSizePerCollection;
+      }
+
+      users.sort((a, b) {
+        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return bDate.compareTo(aDate);
+      });
+
+      return UserPage(
+        users: users,
+        cursors: nextCursors,
+        hasMoreByCollection: hasMoreByCollection,
+      );
+    } catch (e) {
+      throw Exception('Failed to load a page of users: $e');
+    }
+  }
+
   // Get all users for admin panel
-  Future<List<UserModel>> getAllUsers() async {
+  /// Loads a bounded number of profile documents from each user-type collection.
+  /// The admin screen paginates this bounded result locally so opening it never
+  /// triggers an unbounded read across every profile in Firestore.
+  Future<List<UserModel>> getAllUsers({int limitPerCollection = 50}) async {
+    if (limitPerCollection < 1 || limitPerCollection > 100) {
+      throw ArgumentError.value(
+        limitPerCollection,
+        'limitPerCollection',
+        'Must be between 1 and 100',
+      );
+    }
+
     try {
       final collections = [
         AppConstants.seedProducersCollection,
@@ -792,45 +880,54 @@ class FirestoreService {
         AppConstants.institutionsCollection,
       ];
 
-      List<UserModel> allUsers = [];
-
-      for (String collection in collections) {
-        final snapshot = await _firestore.collection(collection).get();
-        for (var doc in snapshot.docs) {
-          final data = doc.data();
-          final userModel = UserModel.fromFirestore(doc);
-          allUsers.add(userModel);
-        }
+      final allUsers = <UserModel>[];
+      for (final collection in collections) {
+        final snapshot = await _firestore
+            .collection(collection)
+            .limit(limitPerCollection)
+            .get();
+        allUsers.addAll(snapshot.docs.map(UserModel.fromFirestore));
       }
 
-      // Sort by creation date (newest first)
       allUsers.sort((a, b) {
-        final aDate = a.createdAt ?? DateTime.now();
-        final bDate = b.createdAt ?? DateTime.now();
+        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         return bDate.compareTo(aDate);
       });
-
       return allUsers;
     } catch (e) {
       throw Exception('Failed to get all users: $e');
     }
   }
 
-  String _getUserTypeFromCollection(String collection) {
-    switch (collection) {
-      case AppConstants.seedProducersCollection:
-        return AppConstants.seedProducerType;
-      case AppConstants.agroDealersCollection:
-        return AppConstants.agroDealerType;
-      case AppConstants.cooperativesCollection:
-        return AppConstants.cooperativeType;
-      case AppConstants.aggregatorsCollection:
-        return AppConstants.aggregatorType;
-      case AppConstants.institutionsCollection:
-        return AppConstants.institutionType;
-      default:
-        return 'unknown';
+  /// Update editable profile fields for a user in their role-specific profile.
+  Future<void> updateUserProfile({
+    required String userId,
+    required String name,
+    required String phone,
+  }) async {
+    final collections = [
+      AppConstants.seedProducersCollection,
+      AppConstants.agroDealersCollection,
+      AppConstants.cooperativesCollection,
+      AppConstants.aggregatorsCollection,
+      AppConstants.institutionsCollection,
+    ];
+
+    for (final collection in collections) {
+      final reference = _firestore.collection(collection).doc(userId);
+      final document = await reference.get();
+      if (document.exists) {
+        await reference.update({
+          'name': name.trim(),
+          'phone': phone.trim(),
+          'phoneNumber': phone.trim(),
+          'updatedAt': Timestamp.now(),
+        });
+        return;
+      }
     }
+    throw Exception('No profile found for user $userId.');
   }
 
   // Verify user account

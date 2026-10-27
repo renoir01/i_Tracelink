@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../services/firestore_service.dart';
-import '../models/order_model.dart';
-import '../models/user_model.dart';
 import '../utils/app_theme.dart';
-import '../utils/app_localizations.dart';
 
 class TraceabilityScreen extends StatefulWidget {
   const TraceabilityScreen({super.key});
@@ -170,7 +166,7 @@ class _TraceabilityScreenState extends State<TraceabilityScreen> {
             if (_errorMessage != null) ...[
               const SizedBox(height: 16),
               Card(
-                color: AppTheme.errorColor.withOpacity(0.1),
+                color: AppTheme.errorColor.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -386,7 +382,7 @@ class _TraceabilityScreenState extends State<TraceabilityScreen> {
               Expanded(
                 child: Container(
                   height: 1,
-                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
                 ),
               ),
             ],
@@ -420,11 +416,17 @@ class _TraceabilityScreenState extends State<TraceabilityScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Share traceability report
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Share functionality coming soon!')),
-              );
+            onPressed: () async {
+              final report = [
+                'iTraceLink Traceability Report',
+                'Batch: ${_batchController.text.isEmpty ? 'N/A' : _batchController.text}',
+                'Order: ${_orderController.text.isEmpty ? 'N/A' : _orderController.text}',
+                'Quantity: ${data['quantity'] ?? 'N/A'} kg',
+                'Variety: ${data['variety'] ?? 'N/A'}',
+                'Quality: ${data['quality'] ?? 'N/A'}',
+                'Status: ${data['status'] ?? 'N/A'}',
+              ].join('\\n');
+              await Share.share(report, subject: 'iTraceLink Traceability Report');
             },
             icon: const Icon(Icons.share),
             label: const Text('Share Report'),

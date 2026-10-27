@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/app_theme.dart';
-import '../../utils/constants.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -394,7 +392,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(icon, color: color),
@@ -423,7 +421,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
               subtitle,
               style: TextStyle(
                 fontSize: 12,
-                color: color.withOpacity(0.7),
+                color: color.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -778,7 +776,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: color),

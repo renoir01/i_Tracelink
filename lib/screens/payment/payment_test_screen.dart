@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/payment_model.dart';
 import '../../services/payment_service.dart';
 import '../../utils/app_theme.dart';
@@ -250,7 +249,7 @@ class _PaymentTestScreenState extends State<PaymentTestScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.grey.shade100,
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.grey.shade100,
           border: Border.all(
             color: isSelected ? color : Colors.grey.shade300,
             width: isSelected ? 2 : 1,

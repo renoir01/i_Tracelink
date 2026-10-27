@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Color Palette
@@ -40,7 +39,8 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.roboto(
+        titleTextStyle: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -49,52 +49,62 @@ class AppTheme {
       
       // Text Theme
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.roboto(
+        displayLarge: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 48,
           fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        displayMedium: GoogleFonts.roboto(
+        displayMedium: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 32,
           fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        displaySmall: GoogleFonts.roboto(
+        displaySmall: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        headlineMedium: GoogleFonts.roboto(
+        headlineMedium: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: textPrimaryColor,
         ),
-        headlineSmall: GoogleFonts.roboto(
+        headlineSmall: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: textPrimaryColor,
         ),
-        titleLarge: GoogleFonts.roboto(
+        titleLarge: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: textPrimaryColor,
         ),
-        bodyLarge: GoogleFonts.roboto(
+        bodyLarge: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 16,
           fontWeight: FontWeight.normal,
           color: textPrimaryColor,
         ),
-        bodyMedium: GoogleFonts.roboto(
+        bodyMedium: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: textPrimaryColor,
         ),
-        bodySmall: GoogleFonts.roboto(
+        bodySmall: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 12,
           fontWeight: FontWeight.normal,
           color: textSecondaryColor,
         ),
-        labelLarge: GoogleFonts.roboto(
+        labelLarge: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: textPrimaryColor,
@@ -111,7 +121,8 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 2,
-          textStyle: GoogleFonts.roboto(
+          textStyle: TextStyle(
+            fontFamily: 'Roboto',
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
@@ -126,7 +137,8 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           side: const BorderSide(color: primaryColor, width: 2),
-          textStyle: GoogleFonts.roboto(
+          textStyle: TextStyle(
+            fontFamily: 'Roboto',
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
@@ -137,7 +149,8 @@ class AppTheme {
         style: TextButton.styleFrom(
           foregroundColor: primaryColor,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          textStyle: GoogleFonts.roboto(
+          textStyle: TextStyle(
+            fontFamily: 'Roboto',
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -169,11 +182,13 @@ class AppTheme {
           borderSide: const BorderSide(color: errorColor, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        labelStyle: GoogleFonts.roboto(
+        labelStyle: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 14,
           color: textSecondaryColor,
         ),
-        hintStyle: GoogleFonts.roboto(
+        hintStyle: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 14,
           color: textSecondaryColor,
         ),
@@ -203,11 +218,13 @@ class AppTheme {
         unselectedItemColor: textSecondaryColor,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.roboto(
+        selectedLabelStyle: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
-        unselectedLabelStyle: GoogleFonts.roboto(
+        unselectedLabelStyle: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 12,
           fontWeight: FontWeight.normal,
         ),
@@ -217,7 +234,8 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: backgroundColor,
         selectedColor: primaryColor,
-        labelStyle: GoogleFonts.roboto(
+        labelStyle: TextStyle(
+          fontFamily: 'Roboto',
           fontSize: 12,
           color: textPrimaryColor,
         ),

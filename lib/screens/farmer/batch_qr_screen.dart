@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/cooperative_model.dart';
 import '../../services/firestore_service.dart';
-import '../../utils/app_theme.dart';
 import '../../utils/qr_generator.dart';
 
 class BatchQRScreen extends StatefulWidget {

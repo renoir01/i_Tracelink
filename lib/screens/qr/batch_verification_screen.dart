@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/seed_batch_model.dart';
 import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/app_theme.dart';
-import '../traceability/traceability_chain_screen.dart';
 
 class BatchVerificationScreen extends StatefulWidget {
   final String batchId;
@@ -303,7 +301,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                   end: Alignment.bottomRight,
                   colors: [
                     AppTheme.primaryColor,
-                    AppTheme.primaryColor.withOpacity(0.8),
+                    AppTheme.primaryColor.withValues(alpha: 0.8),
                   ],
                 ),
               ),
@@ -319,7 +317,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 20,
                             spreadRadius: 5,
                           ),
@@ -516,7 +514,7 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -579,10 +577,10 @@ class _BatchVerificationScreenState extends State<BatchVerificationScreen>
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
         ),
       ),
       child: Row(

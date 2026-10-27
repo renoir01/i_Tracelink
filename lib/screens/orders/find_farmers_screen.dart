@@ -43,7 +43,7 @@ class _FindFarmersScreenState extends State<FindFarmersScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -82,7 +82,7 @@ class _FindFarmersScreenState extends State<FindFarmersScreen> {
                 
                 // District filter
                 DropdownButtonFormField<String>(
-                  value: _selectedDistrict,
+                  initialValue: _selectedDistrict,
                   decoration: const InputDecoration(
                     labelText: 'District',
                     prefixIcon: Icon(Icons.location_on),
@@ -251,7 +251,7 @@ class _CooperativeCard extends StatelessWidget{
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                     child: const Icon(Icons.groups, color: AppTheme.primaryColor),
                   ),
                   const SizedBox(width: 12),
@@ -421,7 +421,7 @@ class _CooperativeCard extends StatelessWidget{
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: _getQualityColor(batch.quality).withOpacity(0.2),
+                                color: _getQualityColor(batch.quality).withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -708,7 +708,7 @@ class _CooperativeCard extends StatelessWidget{
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _getQualityColor(batch.quality).withOpacity(0.2),
+                  color: _getQualityColor(batch.quality).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(

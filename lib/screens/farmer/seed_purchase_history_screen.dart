@@ -7,7 +7,7 @@ import '../../models/agro_dealer_model.dart';
 import '../../utils/app_theme.dart';
 
 class SeedPurchaseHistoryScreen extends StatefulWidget {
-  const SeedPurchaseHistoryScreen({Key? key}) : super(key: key);
+  const SeedPurchaseHistoryScreen({super.key});
 
   @override
   State<SeedPurchaseHistoryScreen> createState() => _SeedPurchaseHistoryScreenState();
@@ -80,6 +80,7 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
                       .collection('agro_dealer_sales')
                       .where('customerId', isEqualTo: _cooperativeId)
                       .orderBy('saleDate', descending: true)
+                      .limit(50)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
@@ -297,9 +298,9 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -327,7 +328,7 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
@@ -429,10 +430,10 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
                     return Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Column(
@@ -458,11 +459,10 @@ class _SeedPurchaseHistoryScreenState extends State<SeedPurchaseHistoryScreen> {
                           _buildDetailRow('Contact Person', dealer.contactPerson),
                           _buildDetailRow('Phone', dealer.phone),
                           _buildDetailRow('License Number', dealer.licenseNumber),
-                          if (dealer.location != null)
-                            _buildDetailRow(
-                              'Location',
-                              '${dealer.location!.district}, ${dealer.location!.sector}',
-                            ),
+                          _buildDetailRow(
+                            'Location',
+                            '${dealer.location.district}, ${dealer.location.sector}',
+                          ),
                         ],
                       ),
                     );

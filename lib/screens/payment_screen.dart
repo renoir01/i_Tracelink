@@ -6,7 +6,6 @@ import '../services/firestore_service.dart';
 import '../models/payment_model.dart';
 import '../models/order_model.dart';
 import '../utils/app_theme.dart';
-import '../utils/constants.dart';
 import 'payment_processing_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -113,7 +112,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
                 Text(
-                  'RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}',
+                  'RWF ${widget.order.totalAmount.toStringAsFixed(0)}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryColor,
@@ -202,7 +201,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
-          color: isSelected ? color.withOpacity(0.05) : Colors.white,
+          color: isSelected ? color.withValues(alpha: 0.05) : Colors.white,
         ),
         child: Row(
           children: [
@@ -210,7 +209,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -303,8 +302,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Expanded(
                     child: Text(
                       _selectedMethod == PaymentMethod.mtnMomo
-                          ? 'You will receive an SMS from MTN MoMo to confirm the payment of RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}.'
-                          : 'You will receive an SMS from Airtel Money to confirm the payment of RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}.',
+                          ? 'You will receive an SMS from MTN MoMo to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0)}.'
+                          : 'You will receive an SMS from Airtel Money to confirm the payment of RWF ${widget.order.totalAmount.toStringAsFixed(0)}.',
                       style: TextStyle(
                         color: Colors.blue.shade700,
                         fontSize: 14,
@@ -407,7 +406,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               )
             : Text(
-                'Pay RWF ${widget.order.totalAmount?.toStringAsFixed(0) ?? '0'}',
+                'Pay RWF ${widget.order.totalAmount.toStringAsFixed(0)}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -433,7 +432,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       return;
     }
 
-    if (!PaymentService().isValidAmount(widget.order.totalAmount ?? 0)) {
+    if (!PaymentService().isValidAmount(widget.order.totalAmount)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid payment amount')),
       );
@@ -448,7 +447,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       final request = PaymentRequest(
         phoneNumber: paymentService.formatPhoneNumber(_phoneController.text),
-        amount: widget.order.totalAmount ?? 0,
+        amount: widget.order.totalAmount,
         currency: 'RWF',
         reference: paymentService.generateTransactionReference(widget.order.id),
         description: 'Payment for Order ${widget.order.id}',
@@ -463,7 +462,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           orderId: widget.order.id,
           payerId: authProvider.userModel?.id ?? '',
           payeeId: widget.order.sellerId,
-          amount: widget.order.totalAmount ?? 0,
+          amount: widget.order.totalAmount,
           currency: 'RWF',
           paymentMethod: _selectedMethod,
           status: PaymentStatus.pending,

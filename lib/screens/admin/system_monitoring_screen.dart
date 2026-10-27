@@ -144,7 +144,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: const Icon(
@@ -175,7 +175,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
                       ),
                       Chip(
                         label: const Text('99.9% Uptime'),
-                        backgroundColor: Colors.green.withOpacity(0.1),
+                        backgroundColor: Colors.green.withValues(alpha: 0.1),
                         labelStyle: const TextStyle(color: Colors.green),
                       ),
                     ],
@@ -589,7 +589,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
               change,
               style: TextStyle(
                 fontSize: 12,
-                color: color.withOpacity(0.7),
+                color: color.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -683,7 +683,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
 
   Widget _buildAlertItem(String title, String message, String severity, Color color, String timestamp) {
     return Card(
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -716,7 +716,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
               children: [
                 Chip(
                   label: Text(severity),
-                  backgroundColor: color.withOpacity(0.2),
+                  backgroundColor: color.withValues(alpha: 0.2),
                   labelStyle: TextStyle(
                     color: color,
                     fontSize: 10,
@@ -748,7 +748,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -894,7 +894,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: percentage / 100,
-          backgroundColor: color.withOpacity(0.2),
+          backgroundColor: color.withValues(alpha: 0.2),
           valueColor: AlwaysStoppedAnimation<Color>(color),
         ),
       ],
@@ -911,7 +911,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -939,7 +939,7 @@ class _SystemMonitoringScreenState extends State<SystemMonitoringScreen>
                           priority,
                           style: const TextStyle(fontSize: 10),
                         ),
-                        backgroundColor: color.withOpacity(0.2),
+                        backgroundColor: color.withValues(alpha: 0.2),
                         labelStyle: TextStyle(color: color),
                         padding: EdgeInsets.zero,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
