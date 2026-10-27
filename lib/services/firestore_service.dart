@@ -10,8 +10,17 @@ import '../models/seed_batch_model.dart';
 import '../models/payment_model.dart';
 import '../utils/constants.dart';
 
+class UserPage {
+  final List<UserModel> users;
+  final bool hasMore;
+
+  const UserPage({required this.users, required this.hasMore});
+}
+
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Map<String, DocumentSnapshot<Map<String, dynamic>>> _userPageCursors = {};
+  final Map<String, bool> _userPageHasMore = {};
 
   // ========== SEED PRODUCERS ==========
   
@@ -782,10 +791,8 @@ class FirestoreService {
   // ========== USER MANAGEMENT METHODS ==========
 
   // Get all users for admin panel
-  Future<List<UserModel>> getAllUsers() async {
+  Future<UserPage> getUsersPage({int pageSize = 10, bool reset = false}) async {
     try {
-      // These collections are independent, so fetch them concurrently instead
-      // of waiting for each network request to finish before starting the next.
       final collections = [
         AppConstants.seedProducersCollection,
         AppConstants.agroDealersCollection,
@@ -794,30 +801,51 @@ class FirestoreService {
         AppConstants.institutionsCollection,
       ];
 
-      final snapshots = await Future.wait(
-        collections.map((collection) =>
-            _firestore.collection(collection).get()),
-      );
-
-      final allUsers = <UserModel>[];
-      for (final snapshot in snapshots) {
-        allUsers.addAll(
-          snapshot.docs.map((doc) => UserModel.fromFirestore(doc)),
-        );
+      if (reset) {
+        _userPageCursors.clear();
+        _userPageHasMore.clear();
       }
 
-      // Sort by creation date (newest first). Use a stable epoch fallback for
-      // legacy records without createdAt; DateTime.now() changes per compare.
-      final epoch = DateTime.fromMillisecondsSinceEpoch(0);
-      allUsers.sort((a, b) =>
-          (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch));
+      final snapshots = await Future.wait(collections.map((collection) async {
+        if (_userPageHasMore[collection] == false) return null;
+        Query<Map<String, dynamic>> query = _firestore.collection(collection).limit(pageSize);
+        final cursor = _userPageCursors[collection];
+        if (cursor != null) query = query.startAfterDocument(cursor);
+        final snapshot = await query.get();
+        if (snapshot.docs.isNotEmpty) _userPageCursors[collection] = snapshot.docs.last;
+        _userPageHasMore[collection] = snapshot.docs.length == pageSize;
+        return snapshot;
+      }));
 
-      return allUsers;
+      final users = <UserModel>[];
+      for (final snapshot in snapshots) {
+        if (snapshot != null) {
+          users.addAll(snapshot.docs.map((doc) => UserModel.fromFirestore(doc)));
+        }
+      }
+
+      final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+      users.sort((a, b) => (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch));
+      return UserPage(
+        users: users,
+        hasMore: collections.any((collection) => _userPageHasMore[collection] != false),
+      );
     } catch (e) {
-      throw Exception('Failed to get all users: $e');
+      throw Exception('Failed to get users page: $e');
     }
   }
 
+  Future<List<UserModel>> getAllUsers() async {
+    // Compatibility wrapper for callers that still require all users.
+    final users = <UserModel>[];
+    var page = await getUsersPage(reset: true);
+    users.addAll(page.users);
+    while (page.hasMore) {
+      page = await getUsersPage();
+      users.addAll(page.users);
+    }
+    return users;
+  }
   String _getUserTypeFromCollection(String collection) {
     switch (collection) {
       case AppConstants.seedProducersCollection:
